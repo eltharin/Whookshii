@@ -5,7 +5,7 @@ class xhprof extends \Core\App\Mvc\Model
 {
     function init()
     {
-        $this->db = \Core::$db;
+        $this->db = new \DB\mysql('localhost','root','iaddfo','xhprof');
         $this->table = "xhprof";
         $this->add_field('XHP_XHPROF',          ['key' => 'PRY', 'type' => 'int']);
         $this->add_field('XHP_ACTION_CALLED',   ['type' => 'var']);

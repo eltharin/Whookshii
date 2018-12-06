@@ -1,6 +1,6 @@
 <?php
 
-require_once APP . 'define.php';
+require_once APP . 'Define.php';
 
 require CORE . 'Core.php';
 require APP . 'Functions.php';

@@ -21,7 +21,7 @@ class Router extends MiddlewareInterface
 				\HTTP::error_page('500','Pas de route trouvée');
 			}
 
-			$controller = \Config::$routes->get_controller();
+			$controller = ucwords(\Config::$routes->get_controller(),'\\');
 			$action     = strtolower(\Config::$routes->get_action());
 			$params     = \Config::$routes->get_params();
 			
