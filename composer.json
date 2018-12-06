@@ -3,7 +3,7 @@
     "description": "Developer Web Box",
     "keywords": ["framework", "PHP", "Web"],
     "license": "GPL-3.0",
-    "type": "dewebox-core",
+    "type": "whookshii-core",
     "require": {
 		"composer/installers": "~1.0",
 		"oomphinc/composer-installers-extender": "*",
