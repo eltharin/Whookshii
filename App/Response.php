@@ -6,7 +6,7 @@ class Response
 {
 	private $body = '';
 	private $message = '';
-	private $content_type = '';
+	private $content_type = 'text/html; charset=utf-8';
 	private $protocol = 'HTTP/1.1';
 	private $code = 200;
 	private $headers = [];
@@ -25,6 +25,12 @@ class Response
 	public function render()
 	{
 		header($this->protocol . " ".$this->code." " . ($this->message!=''?$this->message:\HTTP::$http_status_codes[$this->code]));
+		
+		if($this->content_type != '')
+		{
+			header('Content-Type: '.$this->content_type);
+			
+		}
 		
 		foreach($this->headers as $header)
 		{
@@ -48,7 +54,7 @@ class Response
 		return $this->body;
 	}
 
-	public function set_body(String $body,String $contenttype='')
+	public function set_body(String $body,String $contenttype=null)
 	{
 		if($contenttype !== null)
 		{

@@ -52,6 +52,13 @@ class httprequest
 		$this->context = "Content-type: application/xml\r\n";
         $this->data = $data;
     }
+	    
+    public function set_form_data($data)
+    {
+		$this->context = "Content-Type: application/x-www-form-urlencoded\r\n";
+        $this->data = implode('&',array_map(function($k,$v){return $k.'='.urlencode($v);},array_keys($data),$data));
+		return $this->data;
+    }
 
     public function set_header($header)
     {
@@ -71,7 +78,7 @@ class httprequest
         $this->http['ignore_errors'] = true;
 		
 		$params	 = array('http' => $this->http,"ssl"=>array("verify_peer"=>false, "verify_peer_name"=>false,));
-		\HTML::print_r($this->data);
+		
 		try
 		{
 			$fp	 = @fopen( $this->url, 'rb', false, stream_context_create($params));
@@ -82,15 +89,13 @@ class httprequest
 			$response->values = $this->read_header($http_response_header);
 			$response->values->headers = $http_response_header;
 			$response->values->data = null;
-			
 			if ($fp)
 			{
 				if ($data = stream_get_contents($fp))
 				{
-					
+					$response->values->brutedata = $data;
 					if (substr($response->values->code,0,1) == '2')
 					{
-						$response->values->brutedata = $data;
 						$response->values->type = explode(';',$response->values->type);
 						if(isset($response->values->type[1]))
 						{
@@ -103,6 +108,11 @@ class httprequest
 						
 						$response->values->type = $response->values->type[0];
 
+						if(isset($response->values->encoding) && $response->values->encoding == 'gzip')
+						{
+							$data = gzdecode ($data);
+						}
+						
 						switch($response->values->type)
 						{
 							case 'application/xml' : 	libxml_use_internal_errors(true);
@@ -151,6 +161,10 @@ class httprequest
 			elseif(substr($ligne, 0, 14) == 'Content-Type: ')
 			{
 				$ret->type = substr($ligne, 14);
+			}
+			elseif(substr($ligne, 0, 18) == 'Content-Encoding: ')
+			{
+				$ret->encoding = substr($ligne, 18);
 			}
 		}
 		return $ret;

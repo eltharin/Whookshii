@@ -15,6 +15,7 @@ class login extends \Core\App\Mvc\Controller
 
 	function connect($user,$pass)
 	{
+		echo 'vous vous connectez en ' . $user . ' => ' . $pass;
 		if ($this->login->connect_test($user,$pass))
 		{
 			return true;

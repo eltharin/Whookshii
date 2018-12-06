@@ -45,4 +45,11 @@ class Config
 			unset($_SESSION['_snap_after_redirect']);
 		}
 	}
+	
+	public static function noLimit()
+	{
+		ini_set('memory_limit',-1);
+		set_time_limit(-1);
+		
+	}
 }

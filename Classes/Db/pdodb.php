@@ -87,7 +87,7 @@ class pdodb
 			$this->connect();
 		}
 		//-- on cree une nouvelle requete
-		$this->requester = new requester($this);
+		$this->requester = new Requester($this);
 		return $this->requester->select($arg);
 	}
 		
@@ -98,7 +98,7 @@ class pdodb
 			$this->connect();
 		}
 		//-- on cree une nouvelle requete
-		$this->requester = new requester($this);
+		$this->requester = new Requester($this);
 		return $this->requester->delete();
 	}
 	
@@ -119,7 +119,7 @@ class pdodb
 			\timer::start();
 			$stmt = $this->dbh->prepare($this->query);
 			$stmt->execute($this->params);
-			\debug::sql($this->query,\timer::gettime(),'',$this->params);
+			\Debug::sql($this->query,\timer::gettime(),'',$this->params);
 			return $stmt;
 		} 
 		catch( \PDOException $e ) 
@@ -200,11 +200,19 @@ class pdodb
 			return null;
 		}
 	}
+
 	public function insert($table,$values,$params = array())
 	{
 		$ignore = (in_array('IGNORE',$params))?'IGNORE':'';
 			
 		$this->query = 'INSERT ' . $ignore. ' INTO ' . $table . ' (' . implode(', ',array_keys($values)) . ') VALUES ( :' . implode(', :',array_keys($values)) . ')';
+		$this->params = $values;
+		return $this->_request_insert();
+	}
+
+	public function replace($table,$values,$params = array())
+	{
+		$this->query = 'REPLACE  INTO ' . $table . ' (' . implode(', ',array_keys($values)) . ') VALUES ( :' . implode(', :',array_keys($values)) . ')';
 		$this->params = $values;
 		return $this->_request_insert();
 	}

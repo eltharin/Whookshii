@@ -46,7 +46,7 @@ class Controller
 		$view[$this->class->folderId] = 'Views';
 
 		$this->class->model = implode('\\',$model);
-		$this->class->modelname = implode('_',$this->class->name);
+		$this->class->modelname = lcfirst(implode('_',$this->class->name));
 
 		$this->viewfolder = implode(DS,$view) . DS;
 
@@ -63,7 +63,22 @@ class Controller
 
 	}
 
-	function init()	{}
+	function __get($name)
+    {
+        if(isset($this->{lcfirst($name)}))
+        {
+            $backtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS)[0];
+            $origine = 'File : ' . $backtrace['file'] . '<br>Line : ' . $backtrace['line'] . '<br>Nom de l\'attribut appelé : $this->' . $name;
+            $mail = new \Plugin\Intranet\classes\mailer();
+            $mail->setFrom('Core@intranet.fr');
+            $mail->addAddress('dev@cogep.fr');
+            $mail->Subject = 'get utilisé sur Controlleur';
+            $mail->msgHTML($origine);
+            $mail->send();
+        }
+    }
+
+    function init()	{}
 
 	function _init()
 	{
@@ -93,7 +108,8 @@ class Controller
 				$modelname = (str_replace('\\','_',$model['finalname']));
 				$model = $model['name'];
 
-				$this->$modelname = new $model();
+                $this->{lcfirst($modelname)} = new $model();
+				//$this->$modelname = &$this->{lcfirst($modelname)};
 			}
 			elseif ($show_error == true)
 			{
@@ -221,14 +237,15 @@ class Controller
 	
 	function save($val = null)
 	{
-		if ($val === null)
+		if($this->{$this->class->modelname} !== null)
 		{
-			$val = $_POST;
+			if ($val === null)
+			{
+				$val = $_POST;
+			}
+			$this->{$this->class->modelname}->set_values($val);
+			$this->{$this->class->modelname}->save();
 		}
-		$this->{$this->class->modelname}->set_values($val);
-		$this->{$this->class->modelname}->save();
-		
-		//html::print_r($this->{$this->class->name}->errors);
 	}
 	
 	/*function delete($id,$param=array())
