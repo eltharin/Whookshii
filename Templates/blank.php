@@ -12,7 +12,7 @@
 <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
 <![endif]-->
 		<meta name="viewport" content="width=device-width" />
-        <title></title>
+        <title>GROUPE-COGEP - </title>
     </head>
 
     <body>

@@ -2,7 +2,7 @@
 
 namespace Core\Classes\DB;
 
-class mysql extends pdodb
+class Mysql extends Pdodb
 {
 	function create_pdo()
 	{

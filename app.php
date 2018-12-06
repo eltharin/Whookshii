@@ -12,7 +12,7 @@ define('DS',DIRECTORY_SEPARATOR);
 define('CORE', dirname(__FILE__) . DS);
 define('APP',CORE . 'App' . DS);
 
-require_once APP . 'require.php';
+require_once APP . 'Require.php';
 
 spl_autoload_register('core\App\Loader::ClassAutoload');
 spl_autoload_register('core\App\Loader::fullNamed');

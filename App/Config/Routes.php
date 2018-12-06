@@ -79,6 +79,7 @@ class Routes
 		{
 			if(preg_match($route,\Core::$request.'/',$matches) === 1)
 			{
+				$params = array_merge($matches,$params);
 				foreach ($params as $k => $v)
 				{
 					$this->$k = $v;

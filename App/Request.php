@@ -51,11 +51,11 @@ class Request
 				}
 			}
 
-			if($_SERVER['SCRIPT_NAME'] === '/core/app.php')
+			if(strtolower($_SERVER['SCRIPT_NAME']) === '/core/app.php')
 			{
 				$this->subfolder = '';
 			}
-			elseif(substr($_SERVER['SCRIPT_NAME'],-13) === '/core/app.php')
+			elseif(strtolower(substr($_SERVER['SCRIPT_NAME'],-13)) === '/core/app.php')
 			{
 				$this->subfolder = substr($_SERVER['SCRIPT_NAME'],0,-13);
 			}

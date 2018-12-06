@@ -18,15 +18,9 @@ class form
 		{
 			$params = array('action'=>$params);
 		}
-		if (!is_array($default))
-		{
-			self::$default = self::get_mode($default);
-		} 
-		else
-		{
-			self::$default = $default;
-		}
-		
+
+		self::set_default($default);
+
 		$params = array_merge(array('method'=>'POST',
 									'action'=>'',
 									'enctype'=>true,
@@ -45,6 +39,18 @@ class form
 		return $ret;
 	}
 
+	static function set_default($default)
+	{
+		if (!is_array($default))
+		{
+			self::$default = self::get_mode($default);
+		}
+		else
+		{
+			self::$default = $default;
+		}
+	}
+
 	static function write($string,$param)
 	{
 		if ($param['label'] !== null)
@@ -52,7 +58,7 @@ class form
 			if ($param['cotelabel'] == 'r')
 				{$string = $string . form::label($param['label'],$param['id'],$param['classlabel']);}
 			else
-				{$string = form::label($param['label'],$param['id'],$param['classlabel']) . $param['separator'] .  $string;}
+				{$string = form::label($param['label'] . $param['separator'],$param['id'],$param['classlabel']) .  $string;}
 		}
 		return $param['before'] . $string . $param['after'];
 	}
@@ -93,15 +99,17 @@ class form
 
 	static function label($text,$id,$class='')
 	{
+		$class .= ' label';
 		if ($class != '') {$class = ' class="' . $class . '" ';}
 		return '<label for="' . $id . '" ' . $class . '>' . $text . '</label>';
 	}
 	
 	static function input_text($params)
 	{
+
 		$params	 = self::get_params('input', $params);
 		$options = self::write_params($params);
-		
+
 		$ret = '<input ' . $options . '>';
 		return self::write($ret,$params);
 	}
@@ -240,7 +248,8 @@ class form
 			\config::add_script('/ckeditor/samples/js/sample.js');
 			\config::add_css('/ckeditor/samples/css/samples.css');
 			$ret .= '<script type="text/javascript">
-				//<![CDATA[
+				$(document).ready(function()
+				{
 				CKEDITOR.replace( "' . $params['id'] . '",
 					{
 						enterMode : CKEDITOR.ENTER_BR,
@@ -252,12 +261,12 @@ class form
 							["Link", "Unlink"],
 							["TextColor","FontSize", "Bold", "Italic","Underline"],
 							["NumberedList","BulletedList","-","Blockquote"],
-							"/",
-							[ "Bold", "Italic","JustifyLeft", "JustifyCenter", "JustifyRight", "JustifyBlock", "Image"]
+
+							[ "JustifyLeft", "JustifyCenter", "JustifyRight", "JustifyBlock", "Image"]
 						]
 						
 					});
-				//]]>
+				});
 				</script>' . RN;
 		}
 		
@@ -332,7 +341,7 @@ class form
 	
 	static function get_params($type, $params=array())
 	{
-		$params = array_merge(self::get_default_values($type),self::$default, $params);
+		$params = array_merge(self::get_default_values($type), $params);
 
 
 
@@ -428,6 +437,7 @@ class form
 				$params['size']		 = self::$defaultsize;
 				$params['maxlength'] = self::$defaultlength;
 				$params['mask']		 = null;
+				$params['class']		 = 'input';
 				break;
 			case 'select' :
 				$params['optgroup']	 = false;
@@ -460,7 +470,7 @@ class form
 			default:
 				break;
 		}
-		return $params;
+		return array_merge($params,self::$default);
 	}
 
 	/**
@@ -470,10 +480,11 @@ class form
 	{
 		switch($mode)
 		{
-			case 'tableinrow' : 
+			case 'tableinrow' :
 				return array('separator' => '</td><td>','before'=>'<tr><td>','after'=>'</td></tr>','classlabel'=>'small');
 				break;
-			default : 
+			default :
+				return array();
 				break;
 		}
 	}
