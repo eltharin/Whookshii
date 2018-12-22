@@ -23,8 +23,13 @@ class auth
 	}
 	public static function _init(){}
 	
-	public static function connect()
+	public static function connect($data=[])
 	{
+		if(!empty($data))
+		{
+			self::set_infos($data);
+		}
+		
 		$connector = (strpos(get_called_class(), '\\') ? '\\' . get_called_class() : get_called_class());
 		if (!self::is_connected())
 		{
@@ -38,12 +43,12 @@ class auth
 
 	public static function _connect()
 	{
-		return false;
+		return true;
 	}
 
 	public static function _disconnect()
 	{
-		return false;
+		//return false;
 	}
 
 	public static function is_connected()
