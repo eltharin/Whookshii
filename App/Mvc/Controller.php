@@ -15,7 +15,7 @@ class Controller
 		$this->class->namespace = explode('\\',get_class($this));
 
 		//$this->first_folder = strtolower(array_shift($this->class->name));
-		if($this->class->namespace[0] == 'plugin')
+		if(strtolower($this->class->namespace[0]) == 'plugin')
 		{
 
 			$this->class->folderId = 2;
