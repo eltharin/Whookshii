@@ -68,10 +68,17 @@ class Loader
 			$str = explode('/',$str);
 
 			$namespace = array_shift($str);
-			if(file_exists(ROOT . 'plugin\\' . $namespace . DS . $subFolder . DS . implode(DS,$str).$ext))
+			if(file_exists(ROOT . 'plugin' . DS . $namespace . DS . $subFolder . DS . implode(DS,$str).$ext))
 			{
-				return ['file' => ROOT . 'plugin\\' . $namespace . DS . $subFolder . DS . implode(DS,$str).$ext,
+         		return ['file' => ROOT . 'plugin' . DS . $namespace . DS . $subFolder . DS . implode(DS,$str).$ext,
 						'name' => 'plugin\\' . $namespace . '\\' . $subFolder . '\\' . implode(DS,$str),
+						'finalname' => $namespace . '\\' . implode(DS,$str),
+				];
+			}
+        	elseif(file_exists(ROOT . 'Plugin' . DS . ucfirst($namespace) . DS . $subFolder . DS . implode(DS,$str).$ext))
+			{
+         		return ['file' => ROOT . 'Plugin' . DS . ucfirst($namespace) . DS . $subFolder . DS . implode(DS,$str).$ext,
+						'name' => 'plugin\\' . ucfirst($namespace) . '\\' . $subFolder . '\\' . implode(DS,$str),
 						'finalname' => $namespace . '\\' . implode(DS,$str),
 				];
 			}
