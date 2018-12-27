@@ -35,7 +35,7 @@ class Router extends MiddlewareInterface
 				$action = 'index';
 			}
 
-			if($ctrl = \Core\App\Loader::Load('Controllers',str_replace(['/','_'],['\\','\\'],$controller)))
+			if($ctrl = \Core\App\Loader::Load('Controllers',ucwords(str_replace(['/','_'],['\\','\\'],$controller),'\\')))
 			{
 				$ctrl = $ctrl['name'];
 				$ctrl = new $ctrl();
