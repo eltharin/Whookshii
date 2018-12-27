@@ -25,12 +25,12 @@ class Response
 	public function render()
 	{
 		header($this->protocol . " ".$this->code." " . ($this->message!=''?$this->message:\HTTP::$http_status_codes[$this->code]));
-		
-		if($this->content_type != '')
+	
+		if($this->HascontentTypeNotSent() && $this->content_type != '')
 		{
 			header('Content-Type: '.$this->content_type);
-			
 		}
+	
 		
 		foreach($this->headers as $header)
 		{
@@ -39,6 +39,19 @@ class Response
 		echo $this->body;
 	}
 
+	public function HascontentTypeNotSent()
+	{
+		foreach(\headers_list() as $header)
+		{
+			if(substr($header,0,13) == 'Content-Type:')
+			{
+				return false;
+			}
+		}
+
+		return true;		
+	}
+	
 	public function get_content_type()
 	{
 		return $this->content_type;
