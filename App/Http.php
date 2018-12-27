@@ -213,6 +213,7 @@ class Http
 				}
 			}
 		}
+		throw new Exception();
 	}
 
 	public static function reload()
