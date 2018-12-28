@@ -9,7 +9,7 @@ class form
 	
 	static function load_css()
 	{
-		\config::add_css('/css/form.css');
+		//\config::add_css('/css/form.css');
 	}
 	
 	static function new_form($params = array(),$default=array())

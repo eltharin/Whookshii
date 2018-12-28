@@ -16,7 +16,6 @@ class Http
 
 		$val = array_slice(debug_backtrace(),0,2);
 		unset($val[1]['object']);
-		//throw new \Exception(serialize(array('msg'=>$message,'debug'=>$val)));
 		throw new \Exception($message);
 	}
 
@@ -187,6 +186,7 @@ class Http
 				$page = '/';
 			}
 		}
+		
 		if(!\core::$request->get_modeapi())
 		{
 			if (($_SESSION['debug_mode'] === true) || (self::$donotredirect == true))
@@ -197,23 +197,24 @@ class Http
 			}
 			else
 			{
-				header('Status: 301 Moved Permanently', true, 301);
+				\core::$response->add_header('Status: 301 Moved Permanently', true, 301);
 
 				if(substr($page,0,4) == 'http')
 				{
-						header('Location: ' . $page);
+					\core::$response->add_header('Location: ' . $page);
 				}
 				elseif(substr($page,0,2) == '^/')
 				{
-					header('Location: ' . BASE_URL . DS . core::get()->request->get_url_base() . substr($page,1));
+					\core::$response->add_header('Location: ' . BASE_URL . DS . \core::get()->request->get_url_base() . substr($page,1));
 				}
 				else
 				{
-					header('Location: ' . BASE_URL . $page);
+					\core::$response->add_header('Location: ' . BASE_URL . $page);
 				}
+				\HTTP::error_page(301,'Moved Permanently');
 			}
 		}
-		throw new Exception();
+		
 	}
 
 	public static function reload()
