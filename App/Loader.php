@@ -5,11 +5,14 @@ namespace Core\App;
 class Loader
 {
 	static $classes_loaded = [];
+	
 	public static function fullNamed($str)
 	{
 		$tabStr = explode('\\',trim($str,'\\'));
+		\HTML::print_r($tabStr);
 		if(in_array(strtolower($tabStr[0]),['core','specs','plugin']))
 		{
+			
 			if(file_exists(ROOT . $str.'.php'))
 			{
 				require ROOT.$str.'.php';
@@ -66,8 +69,8 @@ class Loader
 		if($with_plugin)
 		{
 			$str = explode('/',$str);
-
 			$namespace = array_shift($str);
+			
 			if(file_exists(ROOT . 'plugin' . DS . $namespace . DS . $subFolder . DS . implode(DS,$str).$ext))
 			{
          		return ['file' => ROOT . 'plugin' . DS . $namespace . DS . $subFolder . DS . implode(DS,$str).$ext,
