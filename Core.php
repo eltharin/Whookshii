@@ -4,6 +4,8 @@ class Core
 {
 	public static $request = null;
 	public static $response = null;
+	public static $config = null;
+	
 	private static $dispatcher = null;
 	public static $db = null;
 
@@ -23,6 +25,8 @@ class Core
 
 		\Auth::init();
 		\config::init();
+		
+		self::$config = new \config();
 	}
 
 	public static function launch_middleware()
@@ -41,13 +45,23 @@ class Core
 		self::$dispatcher->add_middleware('Core\\App\\Middleware\\Templater');
 		
 
-		self::$dispatcher->handle();
-
+		try
+		{
+			self::$dispatcher->handle();
+		}
+		catch(\Exception $e)
+		{
+		}
 		self::$response->render();
 	}
 	
 	public function add_middleware(String $middleware)
 	{
 		self::$dispatcher->add_middleware($middleware);
+	}
+	
+	public static function stop()
+	{
+		//throw new \Core\App\Exception\Stop();
 	}
 }

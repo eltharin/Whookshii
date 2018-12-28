@@ -4,14 +4,33 @@ class Config
 {
 	use \Core\App\Config\HTMLPage;
 
+	private static $instance;
 	//public static $template;
 	public static $routes;
 	static private $testmode = false;
 
+	public function __construct()
+	{
+		self::$instance = $this;
+	}
+	
+	public function __invoke(?string $element = null)
+	{
+		return $element?self::$instance->$element:self::$instance;
+	}
+	
 	public static function init()
 	{
 		self::$routes = new \Core\App\Config\Routes();
+		
+		//$className = get_class();
+		//s/elf::$instance = new $className();
 		//self::$template = new \Core\App\Config\HTMLElements();
+	}
+	
+	public function addElement(string $name,Core\App\Config\ConfigAbstract $element)
+	{
+		$this->$name = $element;
 	}
 	
 	public static function set_test($val)
