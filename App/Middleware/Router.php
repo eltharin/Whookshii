@@ -61,11 +61,14 @@ class Router extends MiddlewareInterface
 		}
 		catch(\Exception $e)
 		{
-			$s = $_SESSION;
-			session_start();
-			$_SESSION = $s;
-			unset($s);
-					
+			if (session_status() == PHP_SESSION_NONE) 
+			{
+				$s = $_SESSION;
+				session_start();
+				$_SESSION = $s;
+				unset($s);
+			}
+			
 			\Core::$response->add_exception($e);
 			$data = $e->getmessage();
 			if($_SESSION['debug_mode'])
