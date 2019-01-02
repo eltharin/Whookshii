@@ -3,10 +3,16 @@ namespace Core\App\Middleware;
 
 class Launcher extends MiddlewareAbstract
 {
+	private $schema = 'controller/model';
+	private $namespace = '';
+	private $controller = '';
+	private $action = '';
+	private $params = [];
+
 	public function beforeProcess()
 	{
 		$controller = \Core::$request->schema->controller;
-		$action     = strtolower(\Core::$request->schema->action);
+		$action     = strtolower(\Core::$request->schema->action??'index');
 		$params     = \Core::$request->schema->params;
 		
 		if($action == '')

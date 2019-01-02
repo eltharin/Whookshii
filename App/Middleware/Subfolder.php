@@ -4,7 +4,7 @@
 namespace Core\App\Middleware;
 
 
-class Subfolder extends MiddlewareInterface
+class Subfolder extends MiddlewareAbstract
 {
 	public function AfterProcess()
 	{

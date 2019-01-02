@@ -6,6 +6,7 @@ class file extends \Core\App\Mvc\Controller
 {
 	function Action_show(...$file)
 	{
+		\Core::$response->set_code(301);
 		\Config::set_template(null);
 		$file = ROOT . 'plugin' . DS . 'intranet' . DS . 'files' . DS . implode(DS,$file);
 

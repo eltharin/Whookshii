@@ -1,13 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: eltharin
- * Date: 12/11/2017
- * Time: 12:28
- */
-
 namespace Core\App;
-
 
 class Dispatcher
 {
@@ -37,13 +29,26 @@ class Dispatcher
 		return $this->launch_middleware(new $middleware());
 	}
 	
-	private function launch_middleware(Middleware\MiddlewareInterface $middleware)
+	private function launch_middleware(Middleware\MiddlewareAbstract $middleware)
 	{
-		if($middleware->BeforeProcess() !== false)
+		try
 		{
-			$this->handle();
+			if($middleware->BeforeProcess() !== false)
+			{
+				$this->handle();
+			}
+			$middleware->AfterProcess();
 		}
-		$middleware->AfterProcess();
+		catch(\Exception $e)
+		{
+			\Core::$response->add_exception($e);
+			$data = $e->getmessage();
+			if($_SESSION['debug_mode'])
+			{
+				\Core::$response->writeBody($e->getFile() . ' - ligne ' . $e->getLine(). BRN);
+			}
+			\Core::$response->writeBody($data!=''?$data:'Erreur non spécifiée');
+		}
 	}
 
 	private function get_nextMiddleware()

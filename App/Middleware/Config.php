@@ -1,7 +1,7 @@
 <?php
 namespace Core\App\Middleware;
 
-class Config extends MiddlewareInterface
+class Config extends MiddlewareAbstract
 {
 	public function BeforeProcess()
 	{
