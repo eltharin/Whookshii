@@ -1,17 +1,9 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: eltharin
- * Date: 12/11/2017
- * Time: 16:40
- */
-
 namespace Core\App\MiddlewareInterface;
 
-
-class Whoops
+class Whoops extends MiddlewareAbstract
 {
-	public function BeforeProcess()
+	public function beforeProcess()
 	{
 		$whoops = new \Whoops\Run;
 		$whoops->pushHandler(new \Whoops\Handler\PrettyPageHandler);

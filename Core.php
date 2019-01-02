@@ -33,29 +33,20 @@ class Core
 	{
 		self::init();
 
-		self::$dispatcher = new \Core\App\Dispatcher('Core\\App\\Middleware\\Router');
+		self::$dispatcher = new \Core\App\Dispatcher('\\Core\\App\\Middleware\\Launcher');
 
-		self::$dispatcher->add_middleware('Core\\App\\Middleware\\Subfolder');
-		self::$dispatcher->add_middleware('Core\\App\\Middleware\\FileLoader');
-		self::$dispatcher->add_middleware('Core\\App\\Middleware\\Config');
-
-		self::$dispatcher->add_middleware('Core\\App\\Middleware\\Xhprof');
-
-		//self::$dispatcher->add_middleware('Core\\App\\Middleware\\DebugBar');
-		self::$dispatcher->add_middleware('Core\\App\\Middleware\\Templater');
+		self::$dispatcher->add_middleware('\\Core\\App\\Middleware\\Subfolder');
+		self::$dispatcher->add_middleware('\\Core\\App\\Middleware\\FileLoader');
+		self::$dispatcher->add_middleware('\\Core\\App\\Middleware\\Config');
+		//self::$dispatcher->add_middleware('\\Core\\App\\Middleware\\Templater');
+		self::$dispatcher->add_middleware('\\Core\\App\\Middleware\\Router');
 		
-
-		try
-		{
-			self::$dispatcher->handle();
-		}
-		catch(\Exception $e)
-		{
-		}
+		self::$dispatcher->handle();
+		
 		self::$response->render();
 	}
 	
-	public function add_middleware(String $middleware)
+	public static function add_middleware(String $middleware)
 	{
 		self::$dispatcher->add_middleware($middleware);
 	}
