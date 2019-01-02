@@ -1,12 +1,9 @@
 <?php
-
-
 namespace Core\App\Middleware;
 
-
-class FileLoader extends MiddlewareInterface
+class FileLoader extends MiddlewareAbstract
 {
-	public function BeforeProcess()
+	public function beforeProcess()
 	{
 		$request = \Core::$request->get_request();
 		if(($request === '') || (strpos($request,'.') === false))
@@ -24,6 +21,7 @@ class FileLoader extends MiddlewareInterface
 			\HTTP::show_file($file);
 			return false;
 		}
+		return true;
 	}
 
 }

@@ -16,7 +16,7 @@ class Debug
 			echo '<div class="debug">';
 			
 			\DEBUG::print_error();
-			\DEBUG::print_sql();
+			echo \DEBUG::print_sql();
 			\DEBUG::print_msg();
 
 			echo '<h1>SESSION</h1>' . \DEBUG::print_array($_SESSION);
@@ -82,6 +82,11 @@ class Debug
 		}
 	}
 	
+	static function get_sql()
+	{
+		return self::$val['sql'];
+	}
+	
 	static function print_sql()
 	{
 		$ret = '';
@@ -101,7 +106,7 @@ class Debug
 			}
 			$ret .= '</table>';
 		}
-		echo $ret;
+		return $ret;
 	}
 	
 	static function print_error()

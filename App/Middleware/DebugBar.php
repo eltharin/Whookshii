@@ -3,7 +3,7 @@
 namespace Core\App\Middleware;
 
 
-class DebugBar extends MiddlewareInterface
+class DebugBar extends MiddlewareAbstract
 {
 
 	public function BeforeProcess()
@@ -20,6 +20,10 @@ class DebugBar extends MiddlewareInterface
 		{
 			$this->debugbar['exceptions']->addException($e);
 		}
+
+		//$this->debugbar->addCollector(new \DebugBar\DataCollector\RequestDataCollector());
+		$this->debugbar->addCollector(new \DebugBar\DataCollector\MessagesCollector('SQL'));
+		$this->debugbar['SQL']->addMessage(\DEBUG::get_sql());
 
 		$debugbarRenderer = $this->debugbar->getJavascriptRenderer();
 
