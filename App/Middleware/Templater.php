@@ -4,7 +4,7 @@
 namespace Core\App\Middleware;
 
 
-class Templater extends MiddlewareInterface
+class Templater extends MiddlewareAbstract
 {
 	public function BeforeProcess()
 	{
@@ -16,9 +16,27 @@ class Templater extends MiddlewareInterface
 		$buffer = ob_get_clean();
 		\Core::$response->set_body(\Core::$response->get_body().$buffer);
 
-		if ($cls = \Config::get_classTemplate())
+		$this->render(\Core::$config->HTMLtemplate->get_template());
+	}
+	
+	private function render(?String $file)
+	{
+		if(!\Core::$request->get_noTemplate() && \Core::$config->HTMLtemplate->get_template() != '')
 		{
-			$cls->render(\Config::get_template());
+			$template = \Core\App\Loader::SearchFile($file ,'.php','Templates',true);
+
+			if($template === null)
+			{
+				\HTTP::error_page(404,'Le template ' . $file . ' est inconnu');
+				return false;
+			}
+
+			ob_start();
+			require $template['file'];
+			$content = ob_get_contents();
+			ob_end_clean();
+
+			\Core::$response->set_body($content);
 		}
 	}
 }

@@ -9,7 +9,7 @@ class Loader
 	public static function fullNamed($str)
 	{
 		$tabStr = explode('\\',trim($str,'\\'));
-		\HTML::print_r($tabStr);
+		
 		if(in_array(strtolower($tabStr[0]),['core','specs','plugin']))
 		{
 			
