@@ -1,17 +1,17 @@
 <?php
 namespace Core\App\Middleware;
 
-class Xhprof extends MiddlewareInterface
+class Xhprof extends MiddlewareAbstract
 {
     static $model;
 
-	public function BeforeProcess()
+	public function beforeProcess()
 	{
         self::enable();
 
 	}
 
-	public function AfterProcess()
+	public function afterProcess()
 	{
         self::disable();
 	}
@@ -32,10 +32,10 @@ class Xhprof extends MiddlewareInterface
     {
         if (extension_loaded('tideways_xhprof'))
         {
-            $data = self::get_data();
+            $data = self::getData();
             if ($saveType === 'database' && $data !== null)
             {
-                self::LoadModel();
+                self::loadModel();
 
                 if (empty(self::$model->find('XHP_ACTION_CALLED = :action', ['action' => $data['action']])))
                 {
@@ -45,7 +45,7 @@ class Xhprof extends MiddlewareInterface
         }
     }
 
-    private static function get_data()
+    private static function getData()
     {
         $xhprof_data = [];
 
@@ -78,7 +78,7 @@ class Xhprof extends MiddlewareInterface
         return $data;
     }
 
-    private static function LoadModel()
+    private static function loadModel()
     {
         $model = \Core\App\Loader::load('Models','xhprof');
         self::$model = new $model['name']();
@@ -92,7 +92,7 @@ class Xhprof extends MiddlewareInterface
         unset($data['site']);
         foreach ($data as $call)
         {
-            if(!self::classes_already_checked($call['file'], $call['method']))
+            if(!self::classesAlreadyChecked($call['file'], $call['method']))
             {
                 $dataSaved['XHP_FILE']              = $call['file'];
                 $dataSaved['XHP_CALL_WALL_TIME']    = $call['wallTime'];
@@ -103,7 +103,7 @@ class Xhprof extends MiddlewareInterface
         }
     }
 
-    private static function classes_already_checked($file, $method)
+    private static function classesAlreadyChecked($file, $method)
     {
         //$classes = ['Core', 'myloader', 'PHPExcel', 'SMTP', 'TCPDF', 'PHPMailer', 'xhprof', 'main()']; // a changer pour le nouveau core
         $classes = [];
