@@ -2,16 +2,14 @@
 
 class Config
 {
-	use \Core\App\Config\HTMLPage;
-
 	private static $instance;
-	//public static $template;
 	public static $routes;
 	static private $testmode = false;
 
 	public function __construct()
 	{
 		self::$instance = $this;
+		self::$routes = new \Core\App\Config\Routes();
 	}
 	
 	public function __invoke(?string $element = null)

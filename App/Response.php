@@ -76,6 +76,11 @@ class Response
 		$this->body = $body;
 	}
 
+	public function writeBody(String $body)
+	{
+		$this->body .= $body;
+	}
+	
 	public function set_body_json($data)
 	{
 		$this->set_body(($data),'application/json');

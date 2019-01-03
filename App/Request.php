@@ -4,34 +4,26 @@ namespace Core\App;
 
 class Request 
 {
-	private $files = [];
-	private $method = '';
-	private $data = [];
-	private $body = '';
-	private $request = '';
-	private $defaultRequest = '';
-	private $headers = [];
+	public $schema = null;
+	public $headers = [];
 	private $subfolder = '';
 	private $modeapi = false;
 	private $noTemplate = false;
 
-	public function __toString()
-	{
-		return $this->get_request();
-	}
-
 	public function __construct()
 	{
+		$this->schema = new \stdClass();
+		
 		if(PHP_SAPI == 'cli')
 		{
 			$this->sapi = 'CLI';
 			$argv = $_SERVER['argv'];
 			unset($argv[0]);
-			$this->request = implode('/',$argv);
+			$this->schema->string = implode('/',$argv);
 		}
 		else
 		{
-		    $this->headers = getallheaders();
+		    $this->headers = $this->getallheaders();
 
 			$this->sapi = 'PHP';
 
@@ -41,11 +33,11 @@ class Request
 			if(!isset($_SERVER['PATH_INFO']))
 			{
 				$script_name = str_replace('\\','/',$_SERVER['SCRIPT_NAME']);
-				if($script_name == '/core/app.php')
+				if(strtolower($script_name) == '/core/app.php')
 				{
 					$_SERVER['PATH_INFO'] = $_SERVER['PHP_SELF'];
 				}
-				elseif(substr($script_name,-13) == '/core/app.php')
+				elseif(strtolower(substr($script_name,-13)) == '/core/app.php')
 				{
 					$_SERVER['PATH_INFO'] = substr($_SERVER['PHP_SELF'],strlen($script_name)-13);
 				}
@@ -63,7 +55,7 @@ class Request
 			{
 				throw new \Exception('Le fichier source ' . $_SERVER['SCRIPT_NAME'] . ' n\'est pas correct.');
 			}
-			$this->request = trim($_SERVER['PATH_INFO'],'/');
+			$this->schema->string = trim($_SERVER['PATH_INFO'],'/');
 			
 			
 			if(isset($_SERVER['CONTENT_TYPE']) && $_SERVER['CONTENT_TYPE'] == 'application/json' && empty($_POST))
@@ -77,7 +69,7 @@ class Request
 
 	public function get_request() : string
 	{
-		return $this->request ?: \Config::$routes->get_defaultRequest();
+		return $this->schema->string ?: \Config::$routes->get_defaultRequest();
 	}
 
 	public function get_sapi() : bool
@@ -109,4 +101,81 @@ class Request
     {
         return $this->headers[$key]??null;
     }
+	
+	private function getallheaders()
+	{
+		if(function_exists('getallheaders'))
+		{
+			return getallheaders();
+		}
+		else
+		{
+			$tab = array_filter($_SERVER,function($a){return substr($a,0,5)=='HTTP_';}, ARRAY_FILTER_USE_KEY);
+			return array_combine(array_map(function($a){return ucwords(str_replace('_','-',strtolower(substr($a,5))),'-');},array_keys($tab)),$tab);
+		}
+	}
+	
+	//-- Routes
+	public function analyseRoutes() : bool
+	{
+		$request = $this->schema->string ?: \Config::$routes->get_defaultRequest();
+		$this->schema->schema = trim(\Config::$routes->getSchema(), '/');
+		
+		foreach(\Config::$routes->get_routes() as $route => $params)
+		{
+			if(preg_match($route,$request . '/',$matches) === 1)
+			{
+				$params = array_merge($matches,$params);
+				foreach ($params as $k => $v)
+				{
+					$this->schema->$k = $v;
+					echo $k . ' => ' . $v .BRN;
+				}
+				//@TODO Gestion des matches
+
+				$this->getInfosFromSchema($request);
+				return true;
+			}
+		}
+
+		if(!\Config::$routes->get_forceRoute())
+		{
+			$this->getInfosFromSchema($request);
+			return true;
+		}
+
+		return false;
+	}
+	
+	private function getInfosFromSchema($request)
+	{
+		$vars = explode('/', $request);
+		if ($this->schema->schema != '')
+		{
+			$elems = explode('/', $this->schema->schema);
+			//-- pour chaque element du schema
+			foreach ($elems as $elem)
+			{
+				//-- si on a assez d'element de query
+				if (count($vars) >= 1)
+				{
+					if($elem != '.')
+					{
+						//-- on ajoute l'element
+						$this->schema->$elem = $vars[0];
+					}
+					//-- on supprime le premier element de query string
+					$vars = array_slice($vars, 1);
+				}
+			}
+		}
+
+		//-- les parametres sont ce qu'il reste de la query string
+		$this->schema->params = $vars;
+		//-- on supprime les variables
+		unset($vars);
+		unset($elems);
+
+		return true;
+	}
 }
