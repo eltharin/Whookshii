@@ -87,7 +87,7 @@ class httprequest
 			$response->infos = $http_response_header;
 			
 			$response->values = $this->read_header($http_response_header);
-			$response->values->headers = $http_response_header;
+			//$response->values->headers = $http_response_header;
 			$response->values->data = null;
 			if ($fp)
 			{
@@ -116,10 +116,13 @@ class httprequest
 						switch($response->values->type)
 						{
 							case 'application/xml' : 	libxml_use_internal_errors(true);
-														$response->values->data = simplexml_load_string($data); 
-														if(!empty(libxml_get_errors()))
+														$response->values->data = simplexml_load_string(mb_convert_encoding($response->values->brutedata,'UTF-8')); 
+														if($response->values->data === false)
+											 
 														{
-															$response->values->data = $data; 
+															$response->values->errorconvert = libxml_get_errors();
+															$response->values->data = $data;
+												
 														}
 														break;
 							case 'application/json' : $response->values->data = json_decode($data); break;
@@ -148,8 +151,19 @@ class httprequest
 		$ret->length = 0;
 		$ret->type = '';
 
+		$namedHeader = [];			
 		foreach ($tab as $ligne)
 		{
+			if(strpos($ligne,':') !== false)
+			{
+				$ligne2 = trim(substr($ligne,strpos($ligne,':')+1));
+				if(strpos($ligne2,';') !== false)
+				{
+					$ligne2 = substr($ligne2,0,strpos($ligne2,';'));
+				}
+				
+				$namedHeader[substr($ligne,0,strpos($ligne,':'))] = $ligne2;
+			}			   
 			if(substr($ligne, 0, 4) == 'HTTP')
 			{
 				$ret->code = substr($ligne, 9, 3);
@@ -167,6 +181,8 @@ class httprequest
 				$ret->encoding = substr($ligne, 18);
 			}
 		}
+		$ret->headers = array_merge($tab,$namedHeader);		
+		
 		return $ret;
 	}
 }

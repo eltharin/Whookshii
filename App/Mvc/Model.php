@@ -47,7 +47,7 @@ class Model extends Model_Nonbdd
                 }
             }
         }
-        $this->set_uid($uid??str_replace('.','_',$this->table));
+        $this->set_uid($uid??$this->uid?:str_replace('.','_',$this->table));
     }
 
     function set_uid($uid)
@@ -239,7 +239,7 @@ class Model extends Model_Nonbdd
         return $this->values[$this->primaryKey];
     }
 
-    function save($values=null)
+    function save($values=null,$params=[])
     {
         if (($values !== null) && (is_array($values)))
         {
@@ -278,7 +278,7 @@ class Model extends Model_Nonbdd
                 \form::set_old_values(array_merge($this->vars,$this->values));
                 return false;
             }
-            return $this->DBUpdate();
+            return $this->DBUpdate($params);
         }
         else
         {
@@ -291,7 +291,7 @@ class Model extends Model_Nonbdd
                 \form::set_old_values(array_merge($this->vars,$this->values));
                 return false;
             }
-            return $this->DBInsert();
+            return $this->DBInsert($params);
         }
 
     }
