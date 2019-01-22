@@ -5,14 +5,13 @@
     "license": "GPL-3.0",
     "type": "whookshii-core",
     "require": {
-		"composer/installers": "~1.0",
+		"composer/installers": "*",
 		"oomphinc/composer-installers-extender": "*",
-        "phpoffice/phpspreadsheet": "^1.0",
-        "tecnickcom/tcpdf": "^6.2",
-        "setasign/fpdi-tcpdf": "^2.0",
-        "setasign/fpdi": "^2.0",
-        "adldap2/adldap2": "^8.1",
-        "phpmailer/phpmailer": "^6.0"
+        "phpoffice/phpspreadsheet": "*",
+        "tecnickcom/tcpdf": "*",
+        "setasign/fpdi-tcpdf": "*",
+        "setasign/fpdi": "*",
+        "phpmailer/phpmailer": "*"
     },
     "minimum-stability": "dev",
     "prefer-stable": true
