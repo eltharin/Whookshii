@@ -6,12 +6,7 @@
     "type": "whookshii-core",
     "require": {
 		"composer/installers": "*",
-		"oomphinc/composer-installers-extender": "*",
-        "phpoffice/phpspreadsheet": "*",
-        "tecnickcom/tcpdf": "*",
-        "setasign/fpdi-tcpdf": "*",
-        "setasign/fpdi": "*",
-        "phpmailer/phpmailer": "*"
+		"oomphinc/composer-installers-extender": "*"
     },
     "minimum-stability": "dev",
     "prefer-stable": true
