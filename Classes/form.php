@@ -6,10 +6,10 @@ class form
 	static $defaultsize = 25;
 	static $defaultlength = 50;
 	static $default = array();
+	private static $iteminline = null;
 	
 	static function load_css()
 	{
-		//\config::add_css('/css/form.css');
 	}
 	
 	static function new_form($params = array(),$default=array())
@@ -27,6 +27,7 @@ class form
 									'id'=>'form',
 									'options'=>'',
 									'class'=>'',
+									'divclass'=>'',
 								), $params);
 		
 		self::load_css();
@@ -34,11 +35,16 @@ class form
 		
 		if ($params['enctype']==true)
 			$ret .= 'ENCTYPE="multipart/form-data"';
-		$ret .= '><div>';
+		$ret .= '><div class="' . $params['divclass'] . '">';
 		
 		return $ret;
 	}
 
+	static function itemInLine($nb,array $flexSizes = null)
+	{
+		static::$iteminline = ['max' => $nb, 'nb' => $nb, 'flexSizes' => $flexSizes??array_fill(0,$nb,1)];
+	}
+	
 	static function set_default($default)
 	{
 		if (!is_array($default))
@@ -53,14 +59,59 @@ class form
 
 	static function write($string,$param)
 	{
+		$string = $param['beforefield'] . $string . $param['afterfield'];
+		
+		if($param['noDivItem'] !== true)
+		{
+			$string = '<div class="item">' . $string . '</div>';
+		}
+		
 		if ($param['label'] !== null)
 		{
 			if ($param['cotelabel'] == 'r')
 				{$string = $string . form::label($param['label'],$param['id'],$param['classlabel']);}
 			else
-				{$string = form::label($param['label'] . $param['separator'],$param['id'],$param['classlabel']) .  $string;}
+				{$string = form::label($param['label'] . $param['separator'],$param['id'],$param['classlabel']) . $string;}
 		}
-		return $param['before'] . $string . $param['after'];
+		
+		$string = $param['before'] . $string . $param['after'];
+		
+		
+		if(static::$iteminline !== null)
+		{
+			if($param['noDivElement'] === false)
+			{
+				$string =  '<div class="form-element grid' . (12 / array_sum(static::$iteminline['flexSizes']) * static::$iteminline['flexSizes'][count(static::$iteminline['flexSizes']) - static::$iteminline['nb']]) . '">' . $string . '</div>';
+			}
+			
+			if($param['noDivRow'] === false && static::$iteminline['max'] == static::$iteminline['nb'])
+			{
+				$string =  '<div class="form-row">' . $string;
+			}
+			
+			static::$iteminline['nb']--;
+			
+			if(static::$iteminline['nb'] == 0)
+			{
+				if($param['noDivRow'] === false)
+				{
+					$string =  $string . '</div>';
+				}
+				static::$iteminline = null;
+			}
+		}
+		else
+		{
+			if($param['noDivElement'] === false)
+			{
+				$string =  '<div class="form-element ' . ($param['divclass']?:'') . '">' . $string . '</div>';
+			}
+			if($param['noDivRow'] === false)
+			{
+				$string =  '<div class="form-row">' . $string . '</div>';
+			}
+		}
+		return $string;
 	}
 	
 	static function submit($value = 'Valider',$withendform=true,$name='')
@@ -124,9 +175,13 @@ class form
 		foreach($tab as $k => $v)
 		{
 			$ret .= form::item_radio(array('label'=>$v,
+											'classlabel' => 'radio_label ' . $params['classlabel'],
 											'id'=>$params['name'] . $k,
 											'name'=>$params['name'],
 											'value'=>$k,
+											'cotelabel' => 'r',
+											'noDivItem' => true,
+											'divclass'=>'form-multielement ',
 											'before'=>'',
 											'checked' => ($params['value'] == $k?'checked':''),
 											'after'=>''));
@@ -152,13 +207,17 @@ class form
 		foreach($tab as $k => $v)
 		{
 			$ret .= '<td>' . form::item_checkbox(array('label'=>$v,
-												'id'=>$params['name'] . $k,
-												'name'=>$params['name'] . '[]',
-												'value'=>$k,
-												'before'=>'',
-												'checked' => (in_array($k,$params['value'])?'checked':''),
-												'valueoff' => null,
-												'after'=>'')) . '</td>';
+													'classlabel' => 'radio_label ' . $params['classlabel'],
+													'id'=>$params['name'] . $k,
+													'name'=>$params['name'] . '[]',
+													'value'=>$k,
+													'before'=>'',
+													'cotelabel' => 'r',
+													'noDivItem' => true,
+													'divclass'=>'form-multielement ',
+													'checked' => (in_array($k,$params['value'])?'checked':''),
+													'valueoff' => null,
+													'after'=>'')) . '</td>';
 			if ((++$i)%$params['gotoline'] == 0)
 			{
 				$ret .= '</tr><tr>';
@@ -205,7 +264,7 @@ class form
 				if ($params['withkey'])
 					$ret .= 'value="' . $key . '" ';
 
-				if (($key == $params['value']))
+				if (((string)$key == $params['value']))
 				{
 					$ret .= " selected ";
 				}
@@ -244,9 +303,9 @@ class form
 		
 		if ($ckeditor == true)
 		{
-			\config::add_script('/ckeditor/ckeditor.js');
-			\config::add_script('/ckeditor/samples/js/sample.js');
-			\config::add_css('/ckeditor/samples/css/samples.css');
+			\Core::$config->HTMLtemplate->add_script('/ckeditor/ckeditor.js');
+			\Core::$config->HTMLtemplate->add_script('/ckeditor/samples/js/sample.js');
+			\Core::$config->HTMLtemplate->add_css('/ckeditor/samples/css/samples.css');
 			$ret .= '<script type="text/javascript">
 				$(document).ready(function()
 				{
@@ -285,7 +344,7 @@ class form
 			$ret .= self::hidden($params['name'],$params['valueoff'],$params['id'].'val0');
 		}
 		
-		$ret .= '<input type="checkbox" name="' . $params['name'] . '" id="' . $params['id'] . '" class="'.$params['class'].'" value="' . $params['value'] . '"  ' . $params['options'] . '';
+		$ret .= '<input type="checkbox" name="' . $params['name'] . '" id="' . $params['id'] . '" class="'.$params['class'].'" value="' . $params['value'] . '"  ' . $params['options'];
 		
 		foreach($params['attr'] as $k => $v)
 		{
@@ -319,10 +378,6 @@ class form
 	
 	static function item_date($params)
 	{
-		\config::add_script('/jquery-ui/1.12.1/jquery-ui.min.js');
-		\config::add_script('/js/jquery.ui.datepicker-fr.js');
-		\config::add_css('/jquery-ui/1.12.1/jquery-ui.min.css');
-		
 		$params	 = self::get_params('input', $params);
 		$params	 = self::get_params('date', $params);
 		$options = self::write_params($params);
@@ -421,6 +476,12 @@ class form
 		$params['text']			 = '';
 		$params['separator']	 = ' : ';
 		$params['before']		 = '';
+		$params['afterfield']	 = '';
+		$params['beforefield']	 = '';
+		$params['noDivElement']	 = false;
+		$params['noDivRow'] 	 = false;
+		$params['noDivItem'] 	 = false;
+		$params['divclass'] 	 = 'grid1';
 		$params['after']		 = '';
 		$params['div']			 = false;
 		$params['options']		 = null;
@@ -428,7 +489,7 @@ class form
 		$params['label']		 = null;
 		$params['cotelabel']	 = 'l';
 		$params['classlabel']	 = '';
-		$params['attr']	 = array();
+		$params['attr']	 		 = array();
 
 		switch ($type)
 		{
@@ -451,12 +512,13 @@ class form
 				break;
 			case 'radio' : 
 				$params['checked']  = '';
-				$params['cotelabel'] = 'r';
+				$params['cotelabel']	 = 'l';
 				break;
 			case 'checkbox' : 
 				$params['checked']  = '';
+				$params['cotelabel']	 = 'l';
 				$params['valueoff'] = 0;
-				$params['cotelabel'] = 'r';
+				
 				$params['value']  = 1;
 				break;
 			case 'date' : 

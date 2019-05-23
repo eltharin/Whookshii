@@ -37,7 +37,7 @@ class Model_Nonbdd
 		$defaut = array('type'=>'varchar',
 			'libelle'=>'',
 			'size'=>0,
-			'null'=>'NO',
+			'null'=>false,
 			'default'=>'',
 			'key'=>''
 		);
@@ -97,7 +97,25 @@ class Model_Nonbdd
 				}
 				elseif($this->fields[$field]['type'] == 'json')
 				{
-					$value = json_encode($value);
+					$value = json_encode($value,JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT);
+				}
+				elseif($this->fields[$field]['type'] == 'int')
+				{
+					$value = preg_replace('#[^0-9]*#','',$value);
+					
+					if($this->fields[$field]['null'] === true && $value === '')
+					{
+						$value = null;
+					}
+				}
+				elseif($this->fields[$field]['type'] == 'float')
+				{
+					$value = preg_replace('#[^0-9\.\,]*#','',$value);
+					
+					if($this->fields[$field]['null'] === true && $value === '')
+					{
+						$value = null;
+					}
 				}
 				$this->values[$field] = $value;
 			}

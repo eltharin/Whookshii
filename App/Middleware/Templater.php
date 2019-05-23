@@ -21,7 +21,7 @@ class Templater extends MiddlewareAbstract
 	
 	private function render(?String $file)
 	{
-		if(!\Core::$request->get_noTemplate() && \Core::$config->HTMLtemplate->get_template() != '')
+		if(\Core::$response->getWithTemplate() && \Core::$config->HTMLtemplate->get_template() != '')
 		{
 			$template = \Core\App\Loader::SearchFile($file ,'.php','Templates',true);
 

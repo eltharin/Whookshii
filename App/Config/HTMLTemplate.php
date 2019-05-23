@@ -39,7 +39,7 @@ class HTMLTemplate extends ConfigAbstract
 		}
 		else
 		{
-			echo '<script>if($("head").get(0).innerHTML.indexOf("' . $css . '") == -1){$("head").append($(\'<link rel="stylesheet" type="text/css" href="' . $css . '" media="screen" >\'));}</script>';
+			echo '<script id="addcss">if($($($("head").get(0)).children("link[type=\'text/css\']")).filter("link[href=\'/' . $css . '\']").length == 0){$("head").append($(\'<link rel="stylesheet" type="text/css" href="' . $css . '" media="screen" >\'));$(\'#addcss\').remove();}</script>';
 		}
 	}
 
@@ -61,7 +61,7 @@ class HTMLTemplate extends ConfigAbstract
 		}
 		else
 		{
-			echo '<script>if($("head").get(0).innerHTML.indexOf("' . $script . '") == -1){$("head").append($(\'<script type="text/javascript" src="' . $script . '"><\/script>\'));}</script>';
+			echo '<script id="addscript">if($($($("head").get(0)).children("script[type=\'text/javascript\']")).filter("script[src=\'' . $script . '\']").length == 0){$("head").append($(\'<script type="text/javascript" src="' . $script . '"><\/script>\'));$(\'#addscript\').remove();}</script>';
 		}
 	}
 
@@ -91,6 +91,11 @@ class HTMLTemplate extends ConfigAbstract
 	public function addMenu(array $arr)
 	{
 		$this->menu[] = $arr;
+	}
+	
+	public function set_menu(array $arr)
+	{
+		$this->menu = $arr;
 	}
 	
 	public function getMenu()

@@ -77,7 +77,7 @@ class Http
 
 	public static function download_header($name,$type='application/octet-stream',$size=0)
 	{
-		\config::set_template(null);
+		\Core::$response->setWithTemplate(false);
 		ob_clean();
 		//-- on met les header
 		\Core::$response->add_header('Content-disposition: attachment; filename="' . $name . '"');

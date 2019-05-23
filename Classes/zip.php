@@ -189,7 +189,7 @@ class zip
 	function render($filename)
 	{
 		$content = $this->file() ;
-		\config::set_template(null);
+		\Core::$response->setWithTemplate(false);
 		ob_end_clean();
 		header('Content-disposition: attachment; filename='.$filename.'.zip');
 		echo $content;

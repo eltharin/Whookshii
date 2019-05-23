@@ -105,7 +105,7 @@ class Controller
 		{
 			if($model = \Core\App\Loader::Load('Models',$name))
 			{
-				$modelname = (str_replace('\\','_',$model['finalname']));
+				$modelname = (str_replace(['\\','/'],['_','_'],$model['finalname']));
 				$model = $model['name'];
 
                 $this->{lcfirst($modelname)} = new $model();
