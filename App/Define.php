@@ -9,8 +9,8 @@ define('BRN',BR.RN);
 define('ROOT',dirname(CORE) . DS);
 define('SPECS',ROOT . 'Specs' . DS);
 define('TEMP',ROOT . 'Temp' . DS);
-define('WEBROOT', ROOT . DS . 'webroot');
+define('WEBROOT', ROOT . 'Webroot' . DS);
 
-define('LOG',ROOT.DS.'log'.DS);
-define('FILES',SPECS.DS.'files');
-define('DATA',SPECS.DS.'data');
+define('LOG',ROOT . 'Log'.DS);
+define('FILES',SPECS . 'Files' . DS);
+define('DATA',SPECS . 'Data' . DS);

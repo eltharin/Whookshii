@@ -50,9 +50,9 @@ class pdf extends \setasign\Fpdi\TcpdfFpdi
 	
 	public function Output($name='doc.pdf', $dest='I')
 	{
-		if($dest == 'S')
+		if($dest !== 'S')
 		{
-			\config::set_template(null);
+			\Core::$response->setWithTemplate(false);
 			\Core::$response->set_content_type('application/pdf');
 		}
 		return parent::Output($name,$dest);

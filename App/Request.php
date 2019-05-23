@@ -8,7 +8,7 @@ class Request
 	public $headers = [];
 	private $subfolder = '';
 	private $modeapi = false;
-	private $noTemplate = false;
+	private $files;
 
 	public function __construct()
 	{
@@ -43,28 +43,24 @@ class Request
 				}
 			}
 
-			if(strtolower($_SERVER['SCRIPT_NAME']) === '/core/app.php')
+			if(!strtolower(substr($_SERVER['SCRIPT_NAME'],-13)) === '/core/app.php' || strtolower($_SERVER['SCRIPT_NAME']) === '/core/app.php')
 			{
 				$this->subfolder = '';
 			}
-			elseif(strtolower(substr($_SERVER['SCRIPT_NAME'],-13)) === '/core/app.php')
+			else
 			{
 				$this->subfolder = substr($_SERVER['SCRIPT_NAME'],0,-13);
 			}
-			else
-			{
-				throw new \Exception('Le fichier source ' . $_SERVER['SCRIPT_NAME'] . ' n\'est pas correct.');
-			}
+			
 			$this->schema->string = trim($_SERVER['PATH_INFO'],'/');
-			
-			
+						
 			if(isset($_SERVER['CONTENT_TYPE']) && $_SERVER['CONTENT_TYPE'] == 'application/json' && empty($_POST))
 			{
 				$_POST = json_decode(file_get_contents('php://input'),1);
 			}
 		}
 
-		$this->noTemplate = $this->get_sapi() || $this->modeapi;
+		$this->manageFiles();
 	}
 
 	public function get_request() : string
@@ -85,11 +81,6 @@ class Request
 	public function get_subfolder() : string
 	{
 		return $this->subfolder;
-	}
-
-	public function get_noTemplate() : bool
-	{
-		return $this->noTemplate;
 	}
 
 	public function get_headers() : array
@@ -129,7 +120,6 @@ class Request
 				foreach ($params as $k => $v)
 				{
 					$this->schema->$k = $v;
-					echo $k . ' => ' . $v .BRN;
 				}
 				//@TODO Gestion des matches
 
@@ -178,4 +168,29 @@ class Request
 
 		return true;
 	}
-}
+
+	public function getFiles()
+	{
+		return $this->files;
+	}
+
+	public function manageFiles()
+	{
+		$files = [];
+
+		foreach($_FILES as $filename => $file)
+		{
+			if(!isset($file['name'][0]))
+			{
+				$files[$filename] = new \Core\Classes\UploadedFile($file);
+			}
+			else
+			{
+				foreach($file['name'] as $k => $v)
+				{
+					$files[$filename][$k] = new \Core\Classes\UploadedFile($file['name'][$k], $file['type'][$k], $file['tmp_name'][$k], $file['error'][$k], $file['size'][$k]);
+				}
+			}
+		}
+		$this->files = $files;
+	}}

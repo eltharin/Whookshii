@@ -11,6 +11,12 @@ class Response
 	private $code = 200;
 	private $headers = [];
 	private $exceptions = [];
+	private $withTemplate = true;
+
+	public function __construct()
+	{
+		$this->withTemplate = !(\Core::$request->get_sapi() || \Core::$request->get_modeapi());
+	}
 
 	public function start_cache()
 	{
@@ -50,6 +56,16 @@ class Response
 		}
 
 		return true;		
+	}
+	
+	public function getWithTemplate()
+	{
+		return $this->withTemplate;
+	}
+	
+	public function setWithTemplate($bool)
+	{
+		$this->withTemplate = $bool;
 	}
 	
 	public function get_content_type()

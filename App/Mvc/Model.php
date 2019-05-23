@@ -13,6 +13,7 @@ class Model extends Model_Nonbdd
 	public $allowUpdate = 1;
 	public $allowDelete = 1;
 	protected $forecReplaceInto = false;
+	public $valuesNotPrepared = [];
 
 	final function __init_model($uid=null)
 	{
@@ -404,7 +405,7 @@ class Model extends Model_Nonbdd
 		}
 		if ($this->_BeforeAll() && $this->_BeforeInsert())
 		{
-			$this->values[$this->primaryKey] = $this->db->insert($this->table, $this->values,$params);
+			$this->values[$this->primaryKey] = $this->db->insert($this->table, $this->values,$params,$this->valuesNotPrepared);
 			if ($this->values[$this->primaryKey] !== null)
 			{
 				//$this->values[$this->primaryKey] = $this->values[$this->primaryKey];

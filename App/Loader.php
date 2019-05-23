@@ -59,7 +59,7 @@ class Loader
         	if(file_exists(ROOT . $folder . DS . $subFolder . DS .$str . $ext))
 			{
 				return ['file' => ROOT . $folder . DS . $subFolder . DS .$str . $ext,
-						'name' => $folder . '\\' . $subFolder . '\\' .$str,
+						'name' => str_replace('/','\\',$folder . '\\' . $subFolder . '\\' .$str),
 						'finalname' => $str,
 					];
 			}

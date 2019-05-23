@@ -201,11 +201,14 @@ class pdodb
 		}
 	}
 
-	public function insert($table,$values,$params = array())
+	public function insert($table,$values,$params = array(),$valuesNotPrepared=[])
 	{
 		$ignore = (in_array('IGNORE',$params))?'IGNORE':'';
-			
-		$this->query = 'INSERT ' . $ignore. ' INTO ' . $table . ' (' . implode(', ',array_keys($values)) . ') VALUES ( :' . implode(', :',array_keys($values)) . ')';
+				
+		$sqlvalues = array_map(function($a){return ':'.$a;},array_keys($values));
+		
+		$this->query = 'INSERT ' . $ignore. ' INTO ' . $table . ' (' . implode(', ',array_merge(array_keys($values),array_keys($valuesNotPrepared))) . ') 
+						VALUES ( ' . implode(', ',array_merge($sqlvalues,$valuesNotPrepared)) . ')';
 		$this->params = $values;
 		return $this->_request_insert();
 	}

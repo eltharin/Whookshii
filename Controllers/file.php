@@ -7,7 +7,7 @@ class file extends \Core\App\Mvc\Controller
 	function Action_show(...$file)
 	{
 		\Core::$response->set_code(301);
-		\Config::set_template(null);
+		\Core::$response->setWithTemplate(false);
 		$file = ROOT . 'plugin' . DS . 'intranet' . DS . 'files' . DS . implode(DS,$file);
 
 		file_put_contents('D:\\WEB\\erreurfile.log',$file.RN,FILE_APPEND);

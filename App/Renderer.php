@@ -13,7 +13,7 @@ class Renderer //implements \Core\Interfaces\TemplateInterface
 
 	public function render(?String $file)
 	{
-		if(!\Core::$request->get_noTemplate() && \Config::get_template() != '')
+		if(\Core::$response->getWithTemplate() && \Config::get_template() != '')
 		{
 			$template = \Core\App\Loader::SearchFile($file ,'.php','Templates',true);
 

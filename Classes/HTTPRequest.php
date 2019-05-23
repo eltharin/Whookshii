@@ -94,6 +94,11 @@ class httprequest
 				if ($data = stream_get_contents($fp))
 				{
 					$response->values->brutedata = $data;
+					if(isset($response->values->encoding) && $response->values->encoding == 'gzip')
+					{
+						$data = gzdecode ($data);
+					}
+						
 					if (substr($response->values->code,0,1) == '2')
 					{
 						$response->values->type = explode(';',$response->values->type);
@@ -108,10 +113,12 @@ class httprequest
 						
 						$response->values->type = $response->values->type[0];
 
-						if(isset($response->values->encoding) && $response->values->encoding == 'gzip')
-						{
-							$data = gzdecode ($data);
-						}
+						
+
+						
+						
+						
+						
 						
 						switch($response->values->type)
 						{
@@ -125,7 +132,8 @@ class httprequest
 												
 														}
 														break;
-							case 'application/json' : $response->values->data = json_decode($data); break;
+							case 'application/json' : $response->values->data = json_decode($data)?:$data;
+														break;
 							default : $response->values->data = $data;break;
 						}
 					}

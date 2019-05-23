@@ -120,42 +120,4 @@ class HTML
 	{
 		return '<script language="javascript">' . RN . $string . RN . '</script>'.RN;
 	}
-	
-	public static function make_menu($array)
-	{
-		if (is_array($array))
-		{
-			$ret = '';
-
-			if (($array !== null) && (count($array)>0))
-			{
-
-				//-- affichage de chaque item
-				foreach ($array as $part => $data)
-				{
-					if ( (isset($data['menu'])) && (count($data['menu']) > 0))
-					{
-						$ret .= '<li>' . RN . '<p>' . $data['title'] . '</p>' . RN;
-					
-						$ret .= '<ul>' . RN;
-						foreach($data['menu'] as $m)
-						{
-							$ret .= '<li><a href="' . $m['link'] . '">' . $m['title'] . '</a></li>' . RN;
-						}
-						$ret .= '</ul>' . RN;
-					
-						$ret .= '</li>';
-					}
-				}
-			}
-			else
-			{
-				$ret = null;
-			}
-
-			return $ret;
-		}	
-	}
-	
-
 }
