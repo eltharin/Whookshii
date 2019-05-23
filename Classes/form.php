@@ -81,7 +81,8 @@ class form
 		{
 			if($param['noDivElement'] === false)
 			{
-				$string =  '<div class="form-element grid' . (12 / array_sum(static::$iteminline['flexSizes']) * static::$iteminline['flexSizes'][count(static::$iteminline['flexSizes']) - static::$iteminline['nb']]) . '">' . $string . '</div>';
+				$classSize = strpos($param['divclass'],'grid')!==false?'':'grid' . (12 / array_sum(static::$iteminline['flexSizes']) * static::$iteminline['flexSizes'][count(static::$iteminline['flexSizes']) - static::$iteminline['nb']]);
+				$string =  '<div class="form-element ' . ($param['divclass']?:'') . '">' . $string . '</div>';
 			}
 			
 			if($param['noDivRow'] === false && static::$iteminline['max'] == static::$iteminline['nb'])
