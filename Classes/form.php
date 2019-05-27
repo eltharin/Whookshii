@@ -61,17 +61,24 @@ class form
 	{
 		$string = $param['beforefield'] . $string . $param['afterfield'];
 		
+		
+		if ($param['label'] !== null && $param['cotelabel'] == 'r')
+		{
+			$string = $string . form::label($param['label'],$param['id'],$param['classlabel']);
+		}
+		elseif($param['type'] == 'radio' || $param['type'] == 'checkbox')
+		{
+			$string = $string . form::label('',$param['id'],'');
+		}	
+				
 		if($param['noDivItem'] !== true)
 		{
 			$string = '<div class="item">' . $string . '</div>';
 		}
 		
-		if ($param['label'] !== null)
+		if ($param['label'] !== null && $param['cotelabel'] != 'r')
 		{
-			if ($param['cotelabel'] == 'r')
-				{$string = $string . form::label($param['label'],$param['id'],$param['classlabel']);}
-			else
-				{$string = form::label($param['label'] . $param['separator'],$param['id'],$param['classlabel']) . $string;}
+			$string = form::label($param['label'] . $param['separator'],$param['id'],$param['classlabel']) . $string;
 		}
 		
 		$string = $param['before'] . $string . $param['after'];
@@ -181,8 +188,7 @@ class form
 											'name'=>$params['name'],
 											'value'=>$k,
 											'cotelabel' => 'r',
-											'noDivItem' => true,
-											'divclass'=>'form-multielement ',
+											'noDivRow' => true,
 											'before'=>'',
 											'checked' => ($params['value'] == $k?'checked':''),
 											'after'=>''));
@@ -215,7 +221,6 @@ class form
 													'before'=>'',
 													'cotelabel' => 'r',
 													'noDivItem' => true,
-													'divclass'=>'form-multielement ',
 													'checked' => (in_array($k,$params['value'])?'checked':''),
 													'valueoff' => null,
 													'after'=>'')) . '</td>';
@@ -354,6 +359,7 @@ class form
 		
 		$ret .= ' ' . $params['checked'] . '>';
 		
+		$params['divclass'] .= ' form-multielement ';
 		return self::write($ret,$params);
 	}
 
@@ -364,6 +370,7 @@ class form
 		
 		$ret = '<input type="radio" name="' . $params['name'] . '" id="' . $params['id'] . '" value="' . $params['value'] . '" ' . $params['checked'] . '>';
 		
+		$params['divclass'] .= ' form-multielement ';
 		return self::write($ret,$params);
 	}
 	
@@ -470,27 +477,28 @@ class form
 
 	static function get_default_values($type)
 	{
-		$params					 = array();
-		$params['name']			 = null;
-		$params['id']			 = null;
-		$params['class']		 = '';
-		$params['text']			 = '';
-		$params['separator']	 = ' : ';
-		$params['before']		 = '';
-		$params['afterfield']	 = '';
-		$params['beforefield']	 = '';
-		$params['noDivElement']	 = false;
-		$params['noDivRow'] 	 = false;
-		$params['noDivItem'] 	 = false;
-		$params['divclass'] 	 = 'grid1';
-		$params['after']		 = '';
-		$params['div']			 = false;
-		$params['options']		 = null;
-		$params['value']		 = null;
-		$params['label']		 = null;
-		$params['cotelabel']	 = 'l';
-		$params['classlabel']	 = '';
-		$params['attr']	 		 = array();
+		$params						 	= array();
+		$params['name']				 	= null;
+		$params['id']				 	= null;
+		$params['class']		 		= '';
+		$params['text']					= '';
+		$params['separator']			= ' : ';
+		$params['before']				= '';
+		$params['afterfield']			= '';
+		$params['beforefield']			= '';
+		$params['noDivElement']			= false;
+		$params['noDivRow'] 		 	= false;
+		$params['noDivItem']	 		= false;
+		$params['divclass'] 			= 'grid1';
+		$params['after']				= '';
+		$params['div']					= false;
+		$params['options']				= null;
+		$params['value']		 		= null;
+		$params['label']				= null;
+		$params['cotelabel']			= 'l';
+		$params['classlabel']	 		= '';
+		$params['attr']	 		 		= array();
+		$params['type']		 			= $type;
 
 		switch ($type)
 		{
@@ -500,6 +508,8 @@ class form
 				$params['maxlength'] = self::$defaultlength;
 				$params['mask']		 = null;
 				$params['class']		 = 'input';
+				
+
 				break;
 			case 'select' :
 				$params['optgroup']	 = false;
@@ -513,11 +523,11 @@ class form
 				break;
 			case 'radio' : 
 				$params['checked']  = '';
-				$params['cotelabel']	 = 'l';
+				$params['cotelabel']	 = 'r';
 				break;
 			case 'checkbox' : 
 				$params['checked']  = '';
-				$params['cotelabel']	 = 'l';
+				$params['cotelabel']	 = 'r';
 				$params['valueoff'] = 0;
 				
 				$params['value']  = 1;
