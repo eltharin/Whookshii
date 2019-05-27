@@ -41,6 +41,10 @@ class Request
 				{
 					$_SERVER['PATH_INFO'] = substr($_SERVER['PHP_SELF'],strlen($script_name)-13);
 				}
+				else
+				{
+					$_SERVER['PATH_INFO'] = '';
+				}
 			}
 
 			if(!strtolower(substr($_SERVER['SCRIPT_NAME'],-13)) === '/core/app.php' || strtolower($_SERVER['SCRIPT_NAME']) === '/core/app.php')
