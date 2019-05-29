@@ -73,7 +73,7 @@ class form
 				
 		if($param['noDivItem'] !== true)
 		{
-			$string = '<div class="item">' . $string . '</div>';
+			$string = '<div class="item ' . $param['classDivItem'] . '">' . $string . '</div>';
 		}
 		
 		if ($param['label'] !== null && $param['cotelabel'] != 'r')
@@ -192,12 +192,10 @@ class form
 											'before'=>'',
 											'checked' => ($params['value'] == $k?'checked':''),
 											'after'=>''));
-			if ((++$i)%$params['gotoline'] == 0)
-			{
-				$ret .=  '<br>';
-			}
 		}
-		
+
+		$params['classDivItem'] = 'flexitem'.$params['gotoline'];
+
 		return self::write($ret,$params);
 	}
 	
@@ -208,28 +206,25 @@ class form
 
 		$ret = '';
 		$i=0;
-		$ret .= '<table class="noborder"><tr>';
+
 		if (!is_array($params['value'])) {$params['value'] = array($params['value']);}
 			
 		foreach($tab as $k => $v)
 		{
-			$ret .= '<td>' . form::item_checkbox(array('label'=>$v,
+			$ret .= form::item_checkbox(array('label'=>$v,
 													'classlabel' => 'radio_label ' . $params['classlabel'],
 													'id'=>$params['name'] . $k,
 													'name'=>$params['name'] . '[]',
 													'value'=>$k,
 													'before'=>'',
 													'cotelabel' => 'r',
-													'noDivItem' => true,
+													'noDivRow' => true,
 													'checked' => (in_array($k,$params['value'])?'checked':''),
 													'valueoff' => null,
-													'after'=>'')) . '</td>';
-			if ((++$i)%$params['gotoline'] == 0)
-			{
-				$ret .= '</tr><tr>';
-			}
+													'after'=>''));
+
 		}
-		$ret .= '</tr></table>';
+		$params['classDivItem'] = 'flexitem'.$params['gotoline'];
 		return self::write($ret,$params);
 	}
 	
@@ -490,6 +485,7 @@ class form
 		$params['noDivRow'] 		 	= false;
 		$params['noDivItem']	 		= false;
 		$params['divclass'] 			= 'grid1';
+		$params['classDivItem']			= '';
 		$params['after']				= '';
 		$params['div']					= false;
 		$params['options']				= null;
@@ -507,7 +503,7 @@ class form
 				$params['size']		 = self::$defaultsize;
 				$params['maxlength'] = self::$defaultlength;
 				$params['mask']		 = null;
-				$params['class']		 = 'input';
+				$params['class']	 = 'input';
 				
 
 				break;
