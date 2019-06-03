@@ -194,7 +194,7 @@ class form
 											'after'=>''));
 		}
 
-		$params['classDivItem'] = 'flexitem'.$params['gotoline'];
+		$params['classDivItem'] = 'flexitem'.min($params['gotoline'],count($tab));
 
 		return self::write($ret,$params);
 	}
@@ -224,7 +224,8 @@ class form
 													'after'=>''));
 
 		}
-		$params['classDivItem'] = 'flexitem'.$params['gotoline'];
+		$params['classDivItem'] = 'flexitem'.min($params['gotoline'],count($tab));
+
 		return self::write($ret,$params);
 	}
 	
