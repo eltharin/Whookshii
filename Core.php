@@ -55,4 +55,9 @@ class Core
 	{
 		//throw new \Core\App\Exception\Stop();
 	}
+
+	public static function doBreak()
+	{
+		throw new \Core\App\Exception\DoBreak();
+	}
 }
