@@ -13,7 +13,7 @@ class Launcher extends MiddlewareAbstract
 	{
 		$controller = \Core::$request->schema->controller;
 		$action     = strtolower(\Core::$request->schema->action??'index');
-		$params     = \Core::$request->schema->params;
+		$params     = \Core::$request->schema->params??[];
 		
 		if($action == '')
 		{
@@ -21,7 +21,14 @@ class Launcher extends MiddlewareAbstract
 		}		
 		
 		session_write_close();
-		$controller->launch_function($action,$params);
+		try
+		{
+			$controller->launch_function($action,$params);
+		}
+		catch(\Core\App\Exception\DoBreak $e)
+		{
+			//-- nothing to do, it's juste a break
+		}
 		$s = $_SESSION;
 		session_start();
 		$_SESSION = $s;

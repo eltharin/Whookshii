@@ -43,9 +43,9 @@ class Routes
 		return $this->routes;
 	}
 
-	public function add_route($route,$params)
+	public function add_route($route,$params,$cond = true)
 	{
-		$this->routes[$route] = $params;
+		$this->routes[$route] = ['route' => $route, 'params' => $params, 'cond' => $cond ];
 	}
 
 	public function get_forceRoute()
