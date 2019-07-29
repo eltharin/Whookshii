@@ -38,12 +38,11 @@ class Dispatcher
 				$this->handle();
 			}
 			$middleware->AfterProcess();
-		}
-		catch(\Exception $e)
+		}catch(\Exception $e)
 		{
 			\Core::$response->add_exception($e);
 			$data = $e->getmessage();
-			if($_SESSION['debug_mode'])
+			if(isset($_SESSION['debug_mode']) && $_SESSION['debug_mode'] == true)
 			{
 				\Core::$response->writeBody($e->getFile() . ' - ligne ' . $e->getLine(). BRN);
 			}

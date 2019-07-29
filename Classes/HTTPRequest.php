@@ -123,7 +123,7 @@ class httprequest
 						switch($response->values->type)
 						{
 							case 'application/xml' : 	libxml_use_internal_errors(true);
-														$response->values->data = simplexml_load_string(mb_convert_encoding($response->values->brutedata,'UTF-8')); 
+														$response->values->data = simplexml_load_string($data); 
 														if($response->values->data === false)
 											 
 														{

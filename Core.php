@@ -18,10 +18,10 @@ class Core
 
 		define('BASE_URL',self::$request->get_subfolder());
 
-		class_alias('\\Core\\App\\Http','HTTP');
-		class_alias('\\Core\\App\\Html','HTML');
-		class_alias('\\Core\\App\\Auth','Auth');
-		class_alias('\\Core\\App\\ACL' ,'ACL');
+		class_alias(\Core\App\Http::class,'HTTP');
+		class_alias(\Core\App\Html::class,'HTML');
+		class_alias(\Core\App\Auth::class,'Auth');
+		class_alias(\Core\App\ACL::class,'ACL');
 
 		\Auth::init();
 		\config::init();
@@ -33,13 +33,13 @@ class Core
 	{
 		self::init();
 
-		self::$dispatcher = new \Core\App\Dispatcher('\\Core\\App\\Middleware\\Launcher');
+		self::$dispatcher = new \Core\App\Dispatcher(\Core\App\Middleware\Launcher::class);
 
-		self::$dispatcher->add_middleware('\\Core\\App\\Middleware\\Subfolder');
-		self::$dispatcher->add_middleware('\\Core\\App\\Middleware\\FileLoader');
-		self::$dispatcher->add_middleware('\\Core\\App\\Middleware\\Config');
-		//self::$dispatcher->add_middleware('\\Core\\App\\Middleware\\Templater');
-		self::$dispatcher->add_middleware('\\Core\\App\\Middleware\\Router');
+		self::$dispatcher->add_middleware(\Core\App\Middleware\Subfolder::class);
+		self::$dispatcher->add_middleware(\Core\App\Middleware\FileLoader::class);
+		self::$dispatcher->add_middleware(\Core\App\Middleware\Config::class);
+		//self::$dispatcher->add_middleware(\Core\App\Middleware\Templater::class);
+		self::$dispatcher->add_middleware(\Core\App\Middleware\Router::class);
 		
 		self::$dispatcher->handle();
 		
