@@ -113,27 +113,37 @@ class Request
 	//-- Routes
 	public function analyseRoutes() : bool
 	{
-		$request = $this->schema->string ?: \Config::$routes->get_defaultRequest();
-		$this->schema->schema = trim(\Config::$routes->getSchema(), '/');
+		$request = $this->schema->string;
 		
-		foreach(\Config::$routes->get_routes() as $route => $params)
+		foreach(\Config::$routes->get_routes() as $route)
 		{
-			if(preg_match($route,$request . '/',$matches) === 1)
+			if(is_callable($route['cond']))
 			{
-				$params = array_merge($matches,$params);
-				foreach ($params as $k => $v)
+				$route['cond'] = call_user_func($route['cond']);
+			}
+			
+			if(preg_match($route['route'],$request,$matches) === 1 && $route['cond'] === true)
+			{
+				foreach (array_merge($matches,$route['params']) as $k => $v)
 				{
-					$this->schema->$k = $v;
+					if(substr($k,0,6) == 'params')
+					{
+						$this->schema->params[substr($k,6)] = $v;
+					}
+					else
+					{
+						$this->schema->$k = $v;
+					}
 				}
-				//@TODO Gestion des matches
-
-				$this->getInfosFromSchema($request);
 				return true;
 			}
 		}
 
 		if(!\Config::$routes->get_forceRoute())
 		{
+			$request = $this->schema->string ?: \Config::$routes->get_defaultRequest();
+			$this->schema->schema = trim(\Config::$routes->getSchema(), '/');
+		
 			$this->getInfosFromSchema($request);
 			return true;
 		}
