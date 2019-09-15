@@ -94,7 +94,9 @@ class HTML
 	
 	public static function var_dump($tab)
 	{
-		echo '<pre>' . var_dump($tab) . '</pre>';
+		echo '<pre>';
+		var_dump($tab);
+		echo '</pre>';
 	}
 	
 	public static function redirect($page)

@@ -4,8 +4,8 @@ namespace Core\App;
 
 class Loader
 {
-	static $classes_loaded = [];
-	
+	private static $classes_loaded = [];
+	/*
 	public static function fullNamed($str)
 	{
 		$tabStr = explode('\\',trim($str,'\\'));
@@ -28,8 +28,13 @@ class Loader
 		$cls = self::Load('Classes',$str,true);
 	}
 
-
-	public static function file($str)
+*/
+	/**
+	 * charge un fichier externe présent dans Specs/Files ou Core/Files
+	 * @param string $str
+	 * @return string|null
+	 */
+	public static function file(string $str) : ?string
 	{
 		if($file = self::SearchFile($str,'','Files',true))
 		{
@@ -38,7 +43,12 @@ class Loader
 		return null;
 	}
 
-	public static function fileVendor($str)
+	/**
+	 * charge un fichier externe présent dans Specs/Files ou Core/Files
+	 * @param string $str
+	 * @return string|null
+	 */
+	public static function fileVendor(string $str) : ?string
 	{
 		if(substr($str,0,7) == 'vendor/')
 		{
@@ -50,13 +60,21 @@ class Loader
 		return null;
 	}
 
+	/**
+	 * Cherche le fichier spécifié dans les différents dossiers de l'application
+	 * @param String $str
+	 * @param String $ext
+	 * @param        $subFolder
+	 * @param bool   $with_plugin
+	 * @return array|null
+	 */
 	public static function SearchFile(String $str,String $ext,$subFolder,bool $with_plugin = false)
 	{
     	$str = str_replace('\\','/',$str);
     
 		foreach(['Specs','Core'] as $folder)
 		{
-        	if(file_exists(ROOT . $folder . DS . $subFolder . DS .$str . $ext))
+			if(file_exists(ROOT . $folder . DS . $subFolder . DS .$str . $ext))
 			{
 				return ['file' => ROOT . $folder . DS . $subFolder . DS .$str . $ext,
 						'name' => str_replace('/','\\',$folder . '\\' . $subFolder . '\\' .$str),
@@ -89,15 +107,16 @@ class Loader
 		return null;
 	}
 
+
 	public static function Load(string $cat, string $classe,$alias = false)
 	{
 		$classe = str_replace('/','\\',$classe);
-    
+
 		if(isset(self::$classes_loaded[$cat][$classe]))
 		{
 			return self::$classes_loaded[$cat][$classe];
 		}
-		
+
 		if($file = self::SearchFile($classe,'.php',$cat,true))
 		{
 			require_once $file['file'];
@@ -113,10 +132,11 @@ class Loader
 			return $file;
 		}
 	}
-	
+
+	/*
 	public static function load_model(string $model)
 	{
 		return self::Load('Models',$model);
-	}
+	}*/
 
 }

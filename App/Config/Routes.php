@@ -1,76 +1,50 @@
 <?php
-
 namespace Core\App\Config;
 
-class Routes
+use Core\App\Router\Route;
+
+class Routes extends ConfigElementAbstract
 {
-	private $schema = 'controller/action';
-	private $defaultRequest = 'index/index';
+	const AUTOFILECONFIG = 'auto.routes';
 
-	//private $controller = '';
-	//private $action = 'index';
-	//private $params = [];
+	protected $config = [
+		'routes' => [],
+		'automaticsRoutes' => false,
+		'defaultRoute' => 'index/index',
+	];
 
-	//private $blank_controller = false;
-	//private $makeurl = '';
-
-	private $routes = [];
-	private $force_route = false;
-
-
-	public function getSchema()
+	public function loadConfig(string $file = null)
 	{
-		return $this->schema;
+		$fileconfigcontent = $this->LoadConfigFile($file ?? static::AUTOFILECONFIG);
+
+		if($fileconfigcontent !== null)
+		{
+			foreach($fileconfigcontent as $name => $config)
+			{
+				if($name == 'routes')
+				{
+					foreach($config as $routeName => $route)
+					{
+						$this->addRoute($route[0], $route[1], $route[2], $routeName);
+					}
+				}
+				else
+				{
+					$this->config[$name] = $config;
+				}
+			}
+		}
 	}
 
-	public function set_schema($schema)
+	/**
+	 * Creation d'une route
+	 * @param string   $path
+	 * @param array|string    $method
+	 * @param callable|string $callback
+	 * @param string   $name
+	 */
+	public function addRoute(string $path, $method, $callback, string $name)
 	{
-		$this->schema = $schema;
+		$this->config['routes'][$name] = new Route(['path' => $path,'method' => $method,'callback' => $callback,'name' => $name]);
 	}
-
-	public function get_defaultRequest()
-	{
-		return $this->defaultRequest;
-	}
-
-	public function set_defaultRequest($defaultRequest)
-	{
-		$this->defaultRequest = $defaultRequest;
-	}
-
-	public function get_routes()
-	{
-		return $this->routes;
-	}
-
-	public function add_route($route,$params,$cond = true)
-	{
-		$this->routes[$route] = ['route' => $route, 'params' => $params, 'cond' => $cond ];
-	}
-
-	public function get_forceRoute()
-	{
-		return $this->force_route;
-	}
-
-	public function set_forceRoute($force)
-	{
-		$this->force_route = $force;
-	}
-
-/*	public function get_controller()
-    {
-        return $this->controller;
-    }
-	
-    public function get_action()
-    {
-        return $this->action;
-    }
-
-    public function get_params()
-    {
-        return $this->params;
-    }*/
-	
 }

@@ -1,31 +1,37 @@
 <?php
-
 namespace Core\App\Middleware;
+
+use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Server\MiddlewareInterface;
+use Psr\Http\Server\RequestHandlerInterface;
 
 
 class DebugBar extends MiddlewareAbstract
 {
 
-	public function BeforeProcess()
+	public function  beforeProcess(ServerRequestInterface $request) : ?ResponseInterface
 	{
-		$this->debugbar = new \DebugBar\StandardDebugBar();
-
-		$this->debugbar["messages"]->addMessage("hello world!");
-
+		\Config::createElement('DebugBar');
+		return null;
 	}
 
-	public function AfterProcess()
+	public function afterProcess(ServerRequestInterface $request, ResponseInterface $response) : ResponseInterface
 	{
-		foreach(\Core::$response->get_exceptions() as $e)
+		$debugbar = new \DebugBar\StandardDebugBar();
+
+		$debugbar["messages"]->addMessage("hello world!");
+
+		/*foreach(\Core::$response->get_exceptions() as $e)
 		{
 			$this->debugbar['exceptions']->addException($e);
-		}
+		}*/
 
 		//$this->debugbar->addCollector(new \DebugBar\DataCollector\RequestDataCollector());
-		$this->debugbar->addCollector(new \DebugBar\DataCollector\MessagesCollector('SQL'));
-		$this->debugbar['SQL']->addMessage(\DEBUG::get_sql());
+		$debugbar->addCollector(new \DebugBar\DataCollector\MessagesCollector('SQL'));
+		$debugbar['SQL']->addMessage(\DEBUG::get_sql());
 
-		$debugbarRenderer = $this->debugbar->getJavascriptRenderer();
+		$debugbarRenderer = $debugbar->getJavascriptRenderer();
 
 		$body =\Core::$response->get_body();
 		$body = str_replace('</head>',$debugbarRenderer->renderHead() . '</head>',$body);

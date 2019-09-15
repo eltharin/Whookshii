@@ -305,9 +305,9 @@ class form
 		
 		if ($ckeditor == true)
 		{
-			\Core::$config->HTMLtemplate->add_script('/ckeditor/ckeditor.js');
-			\Core::$config->HTMLtemplate->add_script('/ckeditor/samples/js/sample.js');
-			\Core::$config->HTMLtemplate->add_css('/ckeditor/samples/css/samples.css');
+			\Config::get('HTMLTemplate')->add_script('/ckeditor/ckeditor.js');
+			\Config::get('HTMLTemplate')->add_script('/ckeditor/samples/js/sample.js');
+			\Config::get('HTMLTemplate')->add_css('/ckeditor/samples/css/samples.css');
 			$ret .= '<script type="text/javascript">
 				$(document).ready(function()
 				{
@@ -390,7 +390,7 @@ class form
 		$ret .= ' <script>
 					$(function() 
 					{
-						$( "#' . $params['id'] . '" ).datepicker( {dateFormat: "' . $params['format'] . '" '.$params['date_options'].', changeMonth: '.$params['dateChangeMonth'].', changeYear: '.$params['dateChangeYear'].'});
+						$( "#' . $params['id'] . '" ).datepicker( {dateFormat: "' . $params['format'] . '" '.$params['date_options'].'});
 					});			
 					</script>';
 		
@@ -532,8 +532,6 @@ class form
 			case 'date' : 
 				$params['format'] = "dd/mm/yy";
 				$params['date_options'] = "";
-				$params['dateChangeMonth'] = "true";
-				$params['dateChangeYear'] = "true";
 				break;
 			case 'multiradio' : 
 			case 'multicheckbox' : 	

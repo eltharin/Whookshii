@@ -2,26 +2,48 @@
 
 namespace Core\App\Config;
 
-class HTMLTemplate extends ConfigAbstract
+class HTMLTemplate extends ConfigElementAbstract
 {
+	protected $noTemplate = false;
 	protected $css = [];
 	protected $scripts = [];
 	protected $menu = [];
 	protected $template_file = null;
 	protected $globaltitle = '';
 	protected $title = '';
-	
-	public function get_template()
+	protected $message = [];
+
+	public function __construct()
+	{
+		$this->actualmessage = $_SESSION['__message'];
+		$_SESSION['__message'] = [];
+		$this->message = &$_SESSION['__message'];
+	}
+
+	/**
+	 * @param bool $noTemplate
+	 */
+	public function setNoTemplate(bool $noTemplate): void
+	{
+		$this->noTemplate = $noTemplate;
+	}
+
+	public function getNoTemplate()
+	{
+		return $this->noTemplate;
+	}
+
+	public function getTemplate()
 	{
 		return $this->template_file;
 	}
 
-	public function set_template($template_file)
+	public function setTemplate($template_file)
 	{
 		$this->template_file = $template_file;
 	}
 	
-	public function get_css()
+	public function getCss()
 	{
 		$ret = '';
 		foreach (array_keys($this->css) as $val)
@@ -31,7 +53,7 @@ class HTMLTemplate extends ConfigAbstract
 		return $ret;
 	}
 
-	public function add_css($css)
+	public function addCss($css)
 	{
 		if(\Core::$request->get_modeapi() == '')
 		{
@@ -43,7 +65,7 @@ class HTMLTemplate extends ConfigAbstract
 		}
 	}
 
-	public function get_script()
+	public function getScript()
 	{
 		$ret = '';
 		foreach (array_keys($this->scripts) as $val)
@@ -53,7 +75,7 @@ class HTMLTemplate extends ConfigAbstract
 		return $ret;
 	}
 
-	public function add_script($script)
+	public function addScript($script)
 	{
 		if(\Core::$request->get_modeapi() == '')
 		{
@@ -65,17 +87,22 @@ class HTMLTemplate extends ConfigAbstract
 		}
 	}
 
-	public function set_globaltitle($title)
+	public function setGlobaltitle($title)
+	{
+		$this->globaltitle = $title;
+	}
+
+	public function getGlobaltitle($title)
 	{
 		$this->globaltitle = $title;
 	}
 	
-	public function set_title($title)
+	public function setTitle($title)
 	{
 		$this->title = $title;
 	}
 
-	public function get_title()
+	public function getTitle()
 	{
 		if ($this->globaltitle != '')
 			return $this->globaltitle . ' - ' . $this->title;
@@ -102,5 +129,19 @@ class HTMLTemplate extends ConfigAbstract
 	{
 		$ret = '';
 		return $ret;
+	}
+
+	public function addMessage(string $message, array $options) : void
+	{
+		$options = array_merge(['type' => 'info','position' => 'top'], $options);
+
+		$this->message[$options['position']][] = '<div class="' . $options['type'] . '">' . $message . '</div>';
+	}
+
+	public function getMessages(string $position) : string
+	{
+		$messages = implode('',$this->actualmessage[$position]??[]);
+		unset($this->actualmessage[$position]);
+		return $messages;
 	}
 }

@@ -1,6 +1,8 @@
 <?php
 namespace Core\Classes\OAuth;
 
+use \Core\Classes\HTTPRequest;
+
 class Google extends OAuth
 {
 	protected $configFile = CONFIG . 'googleOAuth.json';
@@ -34,7 +36,7 @@ class Google extends OAuth
 
 	public function getAuthenticateRequest()
 	{
-		$req = new \HTTPRequest('https://www.googleapis.com/oauth2/v4/token');
+		$req = new HTTPRequest('https://www.googleapis.com/oauth2/v4/token');
 		$req->set_form_data([
 			'code' => $_GET['code'],
 			'client_id' => $this->config['client_id'],
@@ -47,7 +49,7 @@ class Google extends OAuth
 
 	public function getUserinfoRequest()
 	{
-		$req = new \HTTPRequest('https://openidconnect.googleapis.com/v1/userinfo');
+		$req = new HTTPRequest('https://openidconnect.googleapis.com/v1/userinfo');
 		$req->add_header('Authorization: Bearer ' . $this->auth->access_token);
 		$val = $req->get();
 		//\HTML::print_r($val);

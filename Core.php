@@ -1,63 +1,94 @@
 <?php
+namespace Core;
+
+use GuzzleHttp\Psr7\Response;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
+use Core\App\Exception\HttpException;
 
 class Core
 {
-	public static $request = null;
-	public static $response = null;
-	public static $config = null;
-	
-	private static $dispatcher = null;
-	public static $db = null;
+	private $config;
 
-
-
-	public static function init()
+	public function __construct()
 	{
-		self::$request = new \Core\App\Request();
-		self::$response = new \Core\App\Response();
+		error_reporting(-1);
+		ini_set('display_errors', true);
 
-		define('BASE_URL',self::$request->get_subfolder());
+		define('DS',DIRECTORY_SEPARATOR);
+		define('CORE', __DIR__ . DS);
+		define('APP',CORE . 'App' . DS);
 
+		//define('BASE_URL',self::$request->get_subfolder());
+
+		class_alias(\Core\Classes\Debug::class,'Debug');
+		class_alias(\Core\App\Config::class,'Config');
 		class_alias(\Core\App\Http::class,'HTTP');
 		class_alias(\Core\App\Html::class,'HTML');
 		class_alias(\Core\App\Auth::class,'Auth');
 		class_alias(\Core\App\ACL::class,'ACL');
 
+		require_once APP . 'Require.php';
+
+		\Config::init();
 		\Auth::init();
-		\config::init();
+
+		\Config::createElement('Vars',\Core\App\Config\Vars::class);
+		\Config::createElement('Middlewares',\Core\App\Config\Middlewares::class);
+		\Config::createElement('Routes',\Core\App\Config\Routes::class);
+		\Config::createElement('Providers',\Core\App\Config\Providers::class);
+	}
+
+	public function run(\Psr\Http\Message\ServerRequestInterface $request) : \Psr\Http\Message\ResponseInterface
+	{
+		\Config::get('Vars')->LoadConfig();
+		\Config::get('Vars')->addConfig(SPECS . 'config.inc.php',false);
+		\Config::get('Middlewares')->LoadConfig();
+		\Config::get('Routes')->LoadConfig();
+
+		$response = new Response();
+
+		$response = (new \Core\App\Dispatcher())
+				->handle($request);
+
+		return $response;
+	}
+
+	/*
+	public function run(\Psr\Http\Message\ServerRequestInterface $request) : \Psr\Http\Message\ResponseInterface
+	{
+		$uri = $request->getUri()->getPath();
+		if(!empty($uri) && $uri[-1] === "/")
+		{
+			return (new Response())
+				->withStatus(301)
+				->withHeader('Location',substr($uri,0,-1));
+		}
 		
-		self::$config = new \config();
-	}
+		$route = $this->router->match($request);
+		if(is_null($route))
+		{
+			return new Response(404,[],'Not Found');
+		}
 
-	public static function launch_middleware()
-	{
-		self::init();
+		$params = $route->getParams();
+		$request = array_reduce(array_keys($params), function($request, $key) use ($params) {
+			return $request->withAttribute($key, $params[$key]);
+		}, $request);
 
-		self::$dispatcher = new \Core\App\Dispatcher(\Core\App\Middleware\Launcher::class);
+		$response = call_user_func_array($route->getCallback(),[$request]);
 
-		self::$dispatcher->add_middleware(\Core\App\Middleware\Subfolder::class);
-		self::$dispatcher->add_middleware(\Core\App\Middleware\FileLoader::class);
-		self::$dispatcher->add_middleware(\Core\App\Middleware\Config::class);
-		//self::$dispatcher->add_middleware(\Core\App\Middleware\Templater::class);
-		self::$dispatcher->add_middleware(\Core\App\Middleware\Router::class);
-		
-		self::$dispatcher->handle();
-		
-		self::$response->render();
-	}
-	
-	public static function add_middleware(String $middleware)
-	{
-		self::$dispatcher->add_middleware($middleware);
-	}
-	
-	public static function stop()
-	{
-		//throw new \Core\App\Exception\Stop();
-	}
-
-	public static function doBreak()
-	{
-		throw new \Core\App\Exception\DoBreak();
-	}
+		if(is_string($response))
+		{
+			return new Response(200,[],$response);
+		}
+		elseif($response instanceof ResponseInterface)
+		{
+			return $response;
+		}
+		else
+		{
+			throw new \Exception('The response is not correct.');
+		}
+	}*/
 }

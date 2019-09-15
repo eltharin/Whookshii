@@ -2,6 +2,8 @@
 namespace Core\Classes\OAuth;
 
 use Core\App\Exception\Stop;
+use GuzzleHttp\Psr7\Response;
+use Core\App\Exception\HttpException;
 
 abstract class OAuth
 {
@@ -32,15 +34,12 @@ abstract class OAuth
 
 	public function redirectToLoginAdress()
 	{
-		\Core::$response->add_header('Location: ' . $this->getAutorizationAdress());
-		echo '<a href="' . $this->getAutorizationAdress() . '" >Aller sur la page de connexion</a>';
-		\Core::doBreak();
+		return new Response(301,['Location' => $this->getAutorizationAdress()],'<a href="' . $this->getAutorizationAdress() . '" >Aller sur la page de connexion</a>');
 	}
+
 	public function redirectToDisableLoginAdress()
 	{
-		\Core::$response->add_header('Location: ' . $this->config['refuseLoginURL']);
-		echo '<a href="' . $this->config['refuseLoginURL'] . '" >Aller sur la page de connexion</a>';
-		\Core::doBreak();
+		return new Response(301,['Location' => $this->config['refuseLoginURL']],'<a href="' . $this->config['refuseLoginURL'] . '" >Aller sur la page de connexion</a>');
 	}
 
 	public function getInfosUser()
@@ -64,9 +63,7 @@ abstract class OAuth
 	{
 		if($this->hasRefuseConnect())
 		{
-			$this->redirectToDisableLoginAdress();
-			\Core::doBreak();
-			return null;
+			return $this->redirectToDisableLoginAdress();
 		}
 
 		if($this->haveToConnect())
@@ -76,9 +73,8 @@ abstract class OAuth
 				return $info;
 			}
 		}
-		$this->redirectToLoginAdress();
-		\Core::doBreak();
-		return null;
+
+		return $this->redirectToLoginAdress();
 	}
 
 	public function authenticate()
@@ -92,7 +88,7 @@ abstract class OAuth
 		else
 		{
 			$this->redirectToLoginAdress();
-			\HTTP::error_page('500','impossible de se connecter');
+			throw new HTTPException('impossible de se connecter',500);
 		}
 	}
 
@@ -104,7 +100,6 @@ abstract class OAuth
 		}
 
 		$this->redirectToLoginAdress();
-		\HTTP::error_page('500','impossible de récupérer les informations du compte.');
-		return null;
+		throw new HTTPException('impossible de récupérer les informations du compte.',500);
 	}
 }
