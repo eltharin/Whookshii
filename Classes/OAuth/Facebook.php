@@ -1,6 +1,8 @@
 <?php
 namespace Core\Classes\OAuth;
 
+use \Core\Classes\HTTPRequest;
+
 class Facebook extends OAuth
 {
 	protected $configFile = CONFIG . 'facebookOAuth.json';
@@ -34,7 +36,7 @@ class Facebook extends OAuth
 
 	public function getAuthenticateRequest()
 	{
-		$req = new \HTTPRequest('https://graph.facebook.com/v3.3/oauth/access_token');
+		$req = new HTTPRequest('https://graph.facebook.com/v3.3/oauth/access_token');
 		$req->set_form_data([
 			'code' => $_GET['code'],
 			'client_id' => $this->config['client_id'],
@@ -47,7 +49,7 @@ class Facebook extends OAuth
 
 	public function getUserinfoRequest()
 	{
-		$req = new \HTTPRequest('https://graph.facebook.com/v3.3/me');
+		$req = new HTTPRequest('https://graph.facebook.com/v3.3/me');
 		$req->add_header('Authorization: Bearer ' . $this->auth->access_token);
 		$req->set_form_data([
 			'fields' => 'id,first_name,last_name,middle_name,name_format,picture,short_name,name,email'

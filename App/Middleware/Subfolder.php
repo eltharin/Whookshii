@@ -6,7 +6,7 @@ namespace Core\App\Middleware;
 
 class Subfolder extends MiddlewareAbstract
 {
-	public function AfterProcess()
+	public function aAfterProcess()
 	{
 		//\Core::$response->set_body(preg_replace('#([\'\"]{1})/#','${1}' . \Core::$request->get_subfolder() . '/',\Core::$response->get_body()));
 		$content = \Core::$response->get_body();

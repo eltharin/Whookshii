@@ -1,9 +1,14 @@
 <?php
 namespace Core\App\Middleware;
 
+use GuzzleHttp\Psr7\Response;
+use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Server\RequestHandlerInterface;
+
 class Config extends MiddlewareAbstract
 {
-	public function BeforeProcess()
+	public function beforeProcess(ServerRequestInterface $request) : ?ResponseInterface
 	{
 		if(file_exists(SPECS . DS . 'config.php'))
 		{
@@ -13,5 +18,7 @@ class Config extends MiddlewareAbstract
 		{
 			require_once(SPECS . DS . 'config.inc');
 		}
+
+		return null;
 	}
 }

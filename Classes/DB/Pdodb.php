@@ -2,6 +2,9 @@
 
 namespace Core\Classes\DB;
 
+use Core\Classes\Timer;
+//use Core\Classes\Debug;
+
 class pdodb
 {
 	protected $host = '';
@@ -76,7 +79,7 @@ class pdodb
 			$this->connect();
 		}
 		//-- on cree une nouvelle requete
-		$this->requester = new requester($this);
+		$this->requester = new Requester($this);
 		return $this->requester;
 	}		
 	
@@ -116,15 +119,15 @@ class pdodb
 		}
 		try 
 		{
-			\timer::start();
+			Timer::start();
 			$stmt = $this->dbh->prepare($this->query);
 			$stmt->execute($this->params);
-			\Debug::sql($this->query,\timer::gettime(),'',$this->params);
+			\Debug::sql($this->query,Timer::gettime(),'',$this->params);
 			return $stmt;
 		} 
 		catch( \PDOException $e ) 
 		{
-			\debug::sql($this->query,\timer::gettime(),$e->getMessage(),$this->params);
+			\Debug::sql($this->query,timer::gettime(),$e->getMessage(),$this->params);
 			$this->lasterror = $e->getMessage();
 			return null;
 		} 
@@ -236,7 +239,7 @@ class pdodb
 				$this->connect();
 			}
 			//-- on cree une nouvelle requete
-			$this->requester = new requester($this);
+			$this->requester = new Requester($this);
 			return $this->requester->update($table);
 		}
 		else

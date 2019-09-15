@@ -1,11 +1,23 @@
 <?php
 namespace Core\Classes\DB;
 
-class requester 
+class Requester
 {
+	/**
+	 * @var string
+	 */
 	private $query = '';
+	/**
+	 * @var string
+	 */
 	private $type = '';
+	/**
+	 * @var array
+	 */
 	private $params = array();
+	/**
+	 * @var object
+	 */
 	private $query_elements;
 	
 	

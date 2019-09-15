@@ -1,66 +1,64 @@
 <?php
 namespace Core\App;
 
-class Dispatcher
+use GuzzleHttp\Psr7\Response;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Server\RequestHandlerInterface;
+
+class Dispatcher implements RequestHandlerInterface
 {
+	/**
+	 * @var array tableau des middlewares à charger
+	 */
 	private $middlewares = [];
-	private $routeMiddleware = '';
+
+	/**
+	 * @var int index du prochain middleware à executer
+	 */
 	private $index = 0;
 
-	public function __construct(string $routeMiddleware)
+	/**
+	 * Initialize le dispatcher, charge un fichier de config ou à défaut la config par défaut
+	 * Dispatcher constructor.
+	 */
+	public function __construct()
 	{
-		$this->routeMiddleware = $routeMiddleware;
-	}
-	
-	public function add_middleware(string $middeleware)
-	{
-		$this->middlewares[] = $middeleware;
+		$this->middlewares = \Config::get('Middlewares')->getConfig();
 	}
 
-	public function handle()
+	/**
+	 * @param ServerRequestInterface $request
+	 * @return ResponseInterface
+	 */
+	public function handle(ServerRequestInterface $request): ResponseInterface
 	{
-		$middleware = $this->get_nextMiddleware();
+		$middleware = $this->getNextMiddleware();
 
 		if(is_null($middleware))
 		{
-			return null;
+			return new Response();
 		}
-
-		return $this->launch_middleware(new $middleware());
-	}
-	
-	private function launch_middleware(Middleware\MiddlewareAbstract $middleware)
-	{
-		try
-		{
-			if($middleware->BeforeProcess() !== false)
-			{
-				$this->handle();
-			}
-			$middleware->AfterProcess();
-		}catch(\Exception $e)
-		{
-			\Core::$response->add_exception($e);
-			$data = $e->getmessage();
-			if(isset($_SESSION['debug_mode']) && $_SESSION['debug_mode'] == true)
-			{
-				\Core::$response->writeBody($e->getFile() . ' - ligne ' . $e->getLine(). BRN);
-			}
-			\Core::$response->writeBody($data!=''?$data:'Erreur non spécifiée');
-		}
+		$ret = (new $middleware())->process($request, $this);
+		return $ret;
 	}
 
-	private function get_nextMiddleware()
+	/**
+	 * cherche le middleware suivant
+	 * @return mixed|null
+	 */
+	private function getNextMiddleware()
 	{
 		if(isset($this->middlewares[$this->index]))
 		{
 			return $this->middlewares[$this->index++];
 		}
-		elseif($this->index == count($this->middlewares))
+		/*elseif($this->index == count($this->middlewares))
 		{
 			$this->index++;
 			return $this->routeMiddleware;
-		}
+		}*/
 		return null;
 	}
+
 }

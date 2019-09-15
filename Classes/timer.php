@@ -1,7 +1,7 @@
 <?php
 namespace Core\Classes;
 
-class timer
+class Timer
 {
 	//! Timer value
 	private static $timer=0;

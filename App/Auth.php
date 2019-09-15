@@ -9,6 +9,7 @@ class auth
 
 	public static function init()
 	{
+		session_start();
 		if (!isset($_SESSION['_auth']))
 		{
 			$_SESSION['_auth'] = array();
@@ -21,9 +22,9 @@ class auth
 		}
 		call_user_func_array('static::_init', func_get_args());
 	}
-	
+
 	public static function _init(){}
-	
+
 	public static function connect($data=[])
 	{
 		if(!empty($data))
@@ -74,7 +75,7 @@ class auth
 	{
 		call_user_func_array(static::$infos['connector'] . '::_disconnect', func_get_args());
 		static::$infos = array('connected'=>false);
-		
+
 	}
 	
 	public static function get($k)
