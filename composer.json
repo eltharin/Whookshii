@@ -6,7 +6,10 @@
     "type": "whookshii-core",
     "require": {
 		"composer/installers": "*",
-		"oomphinc/composer-installers-extender": "*"
+		"oomphinc/composer-installers-extender": "*",
+		"guzzlehttp/psr7": "^1.6",
+        "http-interop/response-sender": "^1.0",
+        "psr/http-server-middleware": "^1.0"
     },
     "minimum-stability": "dev",
     "prefer-stable": true
