@@ -1,7 +1,7 @@
 <?php
-namespace core\classes;
+namespace Core\Classes;
 
-class check
+class Check
 {
 	static function email($email)
 	{
@@ -51,21 +51,6 @@ class check
 		if (preg_match('/(yopmail)/',$str))
 		{return false;}
 		else	{return true;}
-		
-		/*
-@TODO: 
-		@cool.fr.nf
-@jetable.fr.nf
-@nospam.ze.tc
-@nomail.xl.cx
-@mega.zik.dj
-@speed.1s.fr
-@courriel.fr.nf
-@moncourrier.fr.nf
-@monemail.fr.nf
-@monmail.fr.nf
-
-		*/
 	}
 	
 }

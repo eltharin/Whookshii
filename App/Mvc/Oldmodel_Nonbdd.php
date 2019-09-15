@@ -9,7 +9,7 @@
 namespace Core\App\Mvc;
 
 
-class Model_Nonbdd
+class Oldmodel_Nonbdd
 {
 	//-- tableau contenant les champs de la base
 	protected $fields = array();
@@ -198,6 +198,7 @@ class Model_Nonbdd
 				{
 					if ($this->values[$field] == null)
 					{
+
 						if ($rule['rule'] == 'notEmpty')
 						{
 							$errors[] = array('champ' => $field,
@@ -208,16 +209,15 @@ class Model_Nonbdd
 					{
 						if ($rule['rule'] == 'notEmpty')
 						{
-
 						}
-						elseif (method_exists('check',$rule['rule']))
+						elseif (method_exists(\Core\Classes\Check::class,$rule['rule']))
 						{
 							if(!is_array($rule['param']))
 							{
 								$rule['param'] = array($rule['param']);
 							}
 
-							if (!call_user_func_array(array('check',$rule['rule']), array_merge(array($this->values[$field]),$rule['param'])))
+							if (!call_user_func_array(array(\Core\Classes\Check::class,$rule['rule']), array_merge(array($this->values[$field]),$rule['param'])))
 							{
 								$errors[] = array('champ' => $field,
 									'message' => $rule['message']);

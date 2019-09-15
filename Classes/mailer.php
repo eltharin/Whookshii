@@ -1,7 +1,7 @@
 <?php
-namespace core\classes;
+namespace Core\Classes;
 
-class mailer extends \PHPMailer\PHPMailer\PHPMailer
+class Mailer extends \PHPMailer\PHPMailer\PHPMailer
 {
 	public function __construct($exceptions = false)
 	{
