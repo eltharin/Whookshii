@@ -11,7 +11,7 @@ class ConfigElementAbstract
 	{
 		$file = ($file??static::AUTOFILECONFIG);
 
-		if($file !== null)
+		if($file !== null && file_exists(CONFIG . $file . '.php'))
 		{
 			$this->config = $this->LoadConfigFile($file) ?? [];
 		}
