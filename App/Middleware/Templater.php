@@ -21,6 +21,10 @@ class Templater extends MiddlewareAbstract
 	public function afterProcess(ServerRequestInterface $request, ResponseInterface $response) : ResponseInterface
 	{
 		//$buffer = ob_get_clean();
+		if(\Config::get('HTMLTemplate') === null)
+		{
+			return $response;
+		}
 
 		$buffer = $this->render($response->getBody(), \Config::get('HTMLTemplate')->getTemplate());
 
