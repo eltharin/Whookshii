@@ -9,7 +9,7 @@ class Routes extends ConfigElementAbstract
 
 	protected $config = [
 		'routes' => [],
-		'automaticsRoutes' => false,
+		'automaticsRoutes' => true,
 		'defaultRoute' => 'index/index',
 	];
 
