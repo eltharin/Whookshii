@@ -42,7 +42,10 @@ class Core
 	public function run(\Psr\Http\Message\ServerRequestInterface $request) : \Psr\Http\Message\ResponseInterface
 	{
 		\Config::get('Vars')->LoadConfig();
-		\Config::get('Vars')->addConfig(SPECS . 'config.inc.php',false);
+		if(file_exists(SPECS . 'config.inc.php'))
+		{
+			\Config::get('Vars')->addConfig(SPECS . 'config.inc.php',false);
+		}
 		\Config::get('Middlewares')->LoadConfig();
 		\Config::get('Routes')->LoadConfig();
 
