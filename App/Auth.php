@@ -62,7 +62,7 @@ class auth
 	{
 		if (!static::is_connected())
 		{
-			\HTTP::error_page('403',static::$goawwaymessage);
+			\HTTP::errorPage('403',static::$goawwaymessage);
 		}
 	}
 

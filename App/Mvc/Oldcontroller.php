@@ -114,18 +114,21 @@ class Oldcontroller
 				$model = $model['name'];
 
                 $this->{lcfirst($modelname)} = new $model();
-                return $this->{lcfirst($modelname)};
+                if(count($array) == 1)
+				{
+					return $this->{lcfirst($modelname)};
+				}
 				//$this->$modelname = &$this->{lcfirst($modelname)};
 			}
 			elseif ($show_error == true)
 			{
 				if ($_SESSION['debug_mode'] == 1)
 				{
-					\HTTP::error_page('500','Le model ' . $name . ' n\'existe pas.');
+					\HTTP::errorPage('500','Le model ' . $name . ' n\'existe pas.');
 				}
 				else
 				{
-					\HTTP::error_page('404');
+					\HTTP::errorPage('404');
 				}
 			}
 		}
@@ -174,12 +177,12 @@ class Oldcontroller
 			}
 			else
 			{
-				\HTTP::error_page('403','Vous n\'êtes pas authorisé à executer cette fonction.');
+				\HTTP::errorPage('403','Vous n\'êtes pas authorisé à executer cette fonction.');
 			}
 		}
 		else
 		{
-			\HTTP::error_page('500','fonction ' . $action . ' non trouvée');
+			\HTTP::errorPage('500','fonction ' . $action . ' non trouvée');
 		}
 	}
 
@@ -204,17 +207,27 @@ class Oldcontroller
 			}
 			else
 			{
-				\HTTP::error_page('404','Cette page n\'existe pas : ' . DS . $this->viewfolder .$vue . '.php  '/* . $view*/);
+				\HTTP::errorPage('404','Cette page n\'existe pas : ' . DS . $this->viewfolder .$vue . '.php  '/* . $view*/);
 			}
 		}
 	}
 
 	function get_link($link='')
 	{
+		$this->getLink($link);
+	}
+	
+	function getLink($link='')
+	{
 		return $this->url . '/' . $link;
 	}
 
 	function add_vars($k,$v=null)
+	{
+		$this->addVars($k,$v);
+	}
+	
+	function addVars($k,$v=null)
 	{
 		if(is_array($k))
 		{

@@ -24,7 +24,7 @@ class Dispatcher implements RequestHandlerInterface
 	 */
 	public function __construct()
 	{
-		$this->middlewares = \Config::get('Middlewares')->getConfig();
+		//$this->middlewares = &\Config::get('Middlewares')->getConfig();
 	}
 
 	/**
@@ -49,15 +49,17 @@ class Dispatcher implements RequestHandlerInterface
 	 */
 	private function getNextMiddleware()
 	{
-		if(isset($this->middlewares[$this->index]))
+		$middlewares = \Config::get('Middlewares')->getConfig();
+
+		if(isset($middlewares[$this->index]))
 		{
-			return $this->middlewares[$this->index++];
+			return $middlewares[$this->index++];
 		}
-		/*elseif($this->index == count($this->middlewares))
+		elseif($this->index == count($middlewares))
 		{
 			$this->index++;
-			return $this->routeMiddleware;
-		}*/
+			return \Core\App\Middleware\Launcher::class;
+		}
 		return null;
 	}
 

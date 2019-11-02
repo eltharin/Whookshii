@@ -11,9 +11,12 @@ class ConfigElementAbstract
 	{
 		$file = ($file??static::AUTOFILECONFIG);
 
-		if($file !== null && file_exists(CONFIG . $file . '.php'))
+		if($file !== null)
 		{
-			$this->config = $this->LoadConfigFile($file) ?? [];
+			if(($config = $this->LoadConfigFile($file)) !== null)
+			{
+				$this->config = $config;
+			}
 		}
 	}
 
@@ -61,6 +64,7 @@ class ConfigElementAbstract
 			throw new \Exception('La clé ' . $key . 'existe déjà');
 		}
 		$this->config[$key] = $value;
+		return $this->config[$key];
 	}
 
 	public function setConfig($key, $value)
