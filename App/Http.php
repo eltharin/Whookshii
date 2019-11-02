@@ -4,9 +4,8 @@ namespace Core\App;
 
 
 use Core\App\Exception\HttpException;
-use Core\App\Exception\RedirectException;
+use Core\App\Exception\RenderResponseException;
 use GuzzleHttp\Psr7\Response;
-use GuzzleHttp\Psr7\Stream;
 use Psr\Http\Message\ResponseInterface;
 
 /**
@@ -23,7 +22,9 @@ class Http
 
 	public static function redirect($url)
 	{
-		throw new RedirectException($url);
+		\Config::get('Response')->setCode('301');
+		\Config::get('Response')->addHeader('Location', $url);
+		throw new RenderResponseException();
 	}
 
 	public static function errorPage($errno, $message = null)
@@ -33,12 +34,17 @@ class Http
 		throw new HttpException($message,$errno,null,json_encode($val));
 	}
 
+	public static function showFile(string $file)
+	{
+		
+	}
+	
 	/**
 	 * Affiche un fichier local
 	 * @param string $file chemin du fichier à afficher
 	 * @return ResponseInterface
 	 */
-	public static function showFile(string $file) : ResponseInterface
+	public static function getResponseWithFile(string $file) : ResponseInterface
 	{
 		$ext = pathinfo($file, PATHINFO_EXTENSION);
 
@@ -126,6 +132,46 @@ class Http
 		}
 		return "application/octet-stream";
 	}
+	
+	public static function forceDownload($filename)
+	{
+		if(file_exists($filename))
+		{
+			$result = new \finfo();
+			$type = $result->file($filename, FILEINFO_MIME_TYPE);
+			self::downloadHeader(basename($filename),$type,filesize($filename));
+			readfile($filename);
+		}
+	}
+
+	public static function downloadHeader($name,$type='application/octet-stream',$size=0)
+	{
+		\Config::get('HTMLTemplate')->setNoTemplate(true);
+		ob_clean();
+		//-- on met les header
+		\Config::get('Response')->addHeader('Content-disposition','attachment; filename="' . $name . '"');
+		\Config::get('Response')->addHeader('Content-type','application/force-download');
+		\Config::get('Response')->addHeader('Content-Transfer-Encoding',$type . "\n");
+		
+		if ($size > 0)
+		{
+			\Config::get('Response')->addHeader('Content-Length',$size);
+		}
+
+		//-- si on est sur IE on a des header differents
+		if (isset($_SERVER['HTTP_USER_AGENT']) && (strpos($_SERVER['HTTP_USER_AGENT'], 'MSIE') !== false))
+		{
+		//	\Core::$response->addHeader('Cache-Control: must-revalidate, post-check=0, pre-check=0');
+		//	\Core::$response->addHeader('Pragma: public');
+		}
+		else
+		{
+		//	\Core::$response->addHeader('Pragma: no-cache');
+		}
+		//\Core::$response->addHeader('Cache-Control: must-revalidate, post-check=0, pre-check=0, public');
+		
+	}
+
 /*
 	public static function show_file_old($file)
 	{
@@ -151,44 +197,7 @@ class Http
 		}
 	}
 
-	public static function force_download($filename)
-	{
-		if(file_exists($filename))
-		{
-			$result = new \finfo();
-			$type = $result->file($filename, FILEINFO_MIME_TYPE);
-			self::download_header(basename($filename),$type,filesize($filename));
-			readfile($filename);
-		}
-	}
-
-	public static function download_header($name,$type='application/octet-stream',$size=0)
-	{
-		\Core::$response->setWithTemplate(false);
-		ob_clean();
-		//-- on met les header
-		\Core::$response->add_header('Content-disposition: attachment; filename="' . $name . '"');
-		\Core::$response->add_header('Content-type: application/force-download');
-		\Core::$response->add_header('Content-Transfer-Encoding: ' . $type . "\n");
-		
-		if ($size > 0)
-		{
-			\Core::$response->add_header('Content-Length: ' . $size);
-		}
-
-		//-- si on est sur IE on a des header differents
-		if (isset($_SERVER['HTTP_USER_AGENT']) && (strpos($_SERVER['HTTP_USER_AGENT'], 'MSIE') !== false))
-		{
-		//	\Core::$response->add_header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
-		//	\Core::$response->add_header('Pragma: public');
-		}
-		else
-		{
-		//	\Core::$response->add_header('Pragma: no-cache');
-		}
-		//\Core::$response->add_header('Cache-Control: must-revalidate, post-check=0, pre-check=0, public');
-		
-	}
+	
 
 
 
@@ -235,7 +244,7 @@ class Http
 				{
 					\core::$response->add_header('Location: ' . BASE_URL . $page);
 				}
-				\HTTP::error_page(301,'Moved Permanently');
+				\HTTP::errorPage(301,'Moved Permanently');
 			}
 		}
 		

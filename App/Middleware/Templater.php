@@ -12,7 +12,7 @@ use function GuzzleHttp\Psr7\stream_for;
 
 class Templater extends MiddlewareAbstract
 {
-	public function aaabeforeProcess(ServerRequestInterface $request) : ?ResponseInterface
+	public function beforeProcess(ServerRequestInterface $request) : ?ResponseInterface
 	{
 		//ob_start();
 		return null;
@@ -21,7 +21,7 @@ class Templater extends MiddlewareAbstract
 	public function afterProcess(ServerRequestInterface $request, ResponseInterface $response) : ResponseInterface
 	{
 		//$buffer = ob_get_clean();
-		if(\Config::get('HTMLTemplate') === null)
+		if(\Config::get('HTMLTemplate') === null || \Config::get('HTMLTemplate')->getNoTemplate() || \Config::get('Vars')->getConfig('modeAjax'))
 		{
 			return $response;
 		}

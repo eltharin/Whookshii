@@ -1,7 +1,7 @@
 <?php
 namespace Core\App\Mvc;
 
-class Oldmodel_intervallaire extends Oldmodel
+class Model_intervallaire extends Model
 {
 	protected function _BeforeInsert()	{	if(parent::_BeforeInsert()) {return $this->__BeforeInsert_intervallaire();} return false;}
 	

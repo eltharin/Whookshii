@@ -6,19 +6,21 @@ use Core\App\Mvc\EntityField;
 class Entity
 {
 	protected $fields = [];
+	protected $fieldsNames = [];
 
 	protected $values = [];
 
 	public function __construct()
 	{
-		$this->setFields();
+		$this->init();
 	}
 
-	public function setFields() : void {}
+	public function init() : void {}
 
 	protected function addField($fieldName, $fieldInfo = [])
 	{
 		$this->fields[$fieldName] = new EntityField($fieldName, $fieldInfo);
+		$this->fieldsNames[$this->fields[$fieldName]->getField()] = $fieldName;
 	}
 
 	public function __set($key, $val)
@@ -26,6 +28,10 @@ class Entity
 		if(array_key_exists($key, $this->fields))
 		{
 			$this->fields[$key]->setValue($val);
+		}
+		if(array_key_exists($key, $this->fieldsNames))
+		{
+			$this->fields[$this->fieldsNames[$key]]->setValue($val);
 		}
 		else
 		{
@@ -35,7 +41,6 @@ class Entity
 
 	public function __get($key)
 	{
-		echo 'try to get ' . $key;
 		if(array_key_exists($key, $this->fields))
 		{
 			return $this->fields[$key]->getValue();

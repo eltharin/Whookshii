@@ -52,8 +52,8 @@ class pdf extends \setasign\Fpdi\TcpdfFpdi
 	{
 		if($dest !== 'S')
 		{
-			\Core::$response->setWithTemplate(false);
-			\Core::$response->set_content_type('application/pdf');
+			\Config::get('HTMLTemplate')->setNoTemplate(true);
+			\Config::get('Response')->addHeader('Content-type','application/pdf');
 		}
 		return parent::Output($name,$dest);
 	}

@@ -11,6 +11,7 @@ class EntityTest extends TestCase
 
 	public function setUp(): void
 	{
+		$this->app = new \Core\Core();
 		$this->entity1 = new \Tests\Core\EntityTest1();
 	}
 
@@ -47,6 +48,8 @@ class EntityTest extends TestCase
 		$this->assertEquals('mon_nom', $this->entity1->nom);
 		$this->assertEquals(null, $this->entity1->prenom);
 	}
+
+	public
 
 	public function testValidateValues()
 	{

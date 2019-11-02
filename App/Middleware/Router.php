@@ -82,11 +82,11 @@ class Router extends MiddlewareAbstract
 
 	private function checkPath(Route $route,ServerRequestInterface $request) : bool
 	{
-		$path = '#^' . preg_replace_callback('/\{([a-zA-Z0-9\-\_]+)\s*:\s*([^\}]+)\}/',
+		$path = '#^/' . ltrim(preg_replace_callback('/\{([a-zA-Z0-9\-\_]+)\s*:\s*([^\}]+)\}/',
 							function ($matches){
 								return '(?<' . $matches[1]. '>' . str_replace('.','[^/]',$matches[2]). ')';
 							},
-							$route->getPath()) . '$#';
+							$route->getPath()),'/') . '$#';
 
 		if($route->getPath() == $request->getUri()->getPath())
 		{
@@ -103,7 +103,6 @@ class Router extends MiddlewareAbstract
 			}
 			return true;
 		}
-		//echo $route->getPath() . ' -> ' . $request->getUri()->getPath();
 		return false;
 	}
 

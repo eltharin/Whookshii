@@ -3,6 +3,7 @@ namespace Core\App\Middleware;
 
 use Core\App\Exception\HttpException;
 use Core\App\Exception\RedirectException;
+use Core\App\Exception\RenderResponseException;
 use GuzzleHttp\Psr7\Response;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -43,40 +44,49 @@ class Launcher extends MiddlewareAbstract
 
 				try
 				{
-					$controller = new $controllerclass['name']($request);
-
-					if(!method_exists($controller, 'Action_' . $action))
+					try
 					{
-						return new Response(404,[],'Method ' .$action. ' Not Found in ' . $controllername);
+						$actionReturn = null;
+						$controller = new $controllerclass['name']($request);
+
+						if(!method_exists($controller, 'Action_' . $action))
+						{
+							return new Response(404,[],'Method ' .$action. ' Not Found in ' . $controllername);
+						}
+
+						$attributes = $request->getAttribute('__actionParams');
+
+						/*if($controller instanceof \Core\App\Mvc\Controller)
+						{
+							echo 'new';
+							return new Response(200,[],'new');
+						}
+						elseif($controller instanceof \Core\App\Mvc\Oldcontroller)
+						{*/
+
+						ob_start();
+						if($controller instanceof \Core\App\Mvc\Controller)
+						{
+							$actionReturn = call_user_func_array([$controller,'Action_' . $action],$attributes);
+							//TODO : Laisser comme ca ou pas
+						}
+						elseif($controller instanceof \Core\App\Mvc\Oldcontroller)
+						{
+							$actionReturn = call_user_func_array([$controller,'Action_' . $action],$attributes);
+						}
+					}
+					catch(RenderResponseException $e)
+					{
+
 					}
 
-					$attributes = $request->getAttribute('__actionParams');
-
-					/*if($controller instanceof \Core\App\Mvc\Controller)
-					{
-						echo 'new';
-						return new Response(200,[],'new');
-					}
-					elseif($controller instanceof \Core\App\Mvc\Oldcontroller)
-					{*/
-
-					ob_start();
-					if($controller instanceof \Core\App\Mvc\Controller)
-					{
-						$actionReturn = call_user_func_array([$controller,'Action_' . $action],$attributes);
-						//TODO : Laisser comme ca ou pas
-					}
-					elseif($controller instanceof \Core\App\Mvc\Oldcontroller)
-					{
-						$actionReturn = call_user_func_array([$controller,'Action_' . $action],$attributes);
-					}
 					$content = ob_get_clean();
 
 					if($actionReturn !== null && $actionReturn instanceof Response)
 					{
 						return $actionReturn;
 					}
-					return new Response(200,[],$content);
+					return \Config::get('Response')->getResponse()->withBody(\GuzzleHttp\Psr7\stream_for($content));
 				}
 				catch(HTTPException $e)
 				{
@@ -84,8 +94,10 @@ class Launcher extends MiddlewareAbstract
 				}
 				catch(RedirectException $e)
 				{
-					return new Response(301,['Location'=>$e->getMessage()]);
+					//return new Response(301,['Location'=>$e->getMessage()]);
+					return new Response(200,[],'Redirection');
 				}
+				
 				/*}
 				else
 				{
@@ -99,22 +111,4 @@ class Launcher extends MiddlewareAbstract
 		return new Response(500,[],'Erreur serveur');
 
 	}
-	/*public function beforeProcess()
-	{
-		$controller = \Core::$request->schema->controller;
-		$action     = strtolower(\Core::$request->schema->action??'index');
-		$params     = \Core::$request->schema->params??[];
-		
-		if($action == '')
-		{
-			$action = 'index';
-		}		
-		
-		session_write_close();
-		$controller->launch_function($action,$params);
-		$s = $_SESSION;
-		session_start();
-		$_SESSION = $s;
-		unset($s);
-	}*/
 }

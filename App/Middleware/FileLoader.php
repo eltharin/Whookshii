@@ -19,13 +19,13 @@ class FileLoader extends MiddlewareAbstract
 
 		if(($file = \Core\App\Loader::file($uri)) !== null)
 		{
-			$response = \HTTP::showFile($file);
+			$response = \HTTP::getResponseWithFile($file);
 
 			return $response;
 		}
 		elseif(($file = \Core\App\Loader::fileVendor($uri)) !== null)
 		{
-			return \HTTP::showFile($file);
+			return \HTTP::getResponseWithFile($file);
 		}
 		return null;
 	}
