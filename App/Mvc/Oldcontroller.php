@@ -214,7 +214,7 @@ class Oldcontroller
 
 	function get_link($link='')
 	{
-		$this->getLink($link);
+		return $this->getLink($link);
 	}
 	
 	function getLink($link='')
