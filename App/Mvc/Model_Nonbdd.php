@@ -9,7 +9,7 @@
 namespace Core\App\Mvc;
 
 
-class Oldmodel_Nonbdd
+class Model_Nonbdd
 {
 	//-- tableau contenant les champs de la base
 	protected $fields = array();
@@ -286,7 +286,7 @@ class Oldmodel_Nonbdd
 		}
 		else
 		{
-			\HTTP::error_page('500','Le model ' . $name . ' n\'existe pas.');
+			\HTTP::errorPage('500','Le model ' . $name . ' n\'existe pas.');
 		}
 	}
 

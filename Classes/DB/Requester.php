@@ -54,17 +54,17 @@ class Requester
 	 * $mode=\PDO::FETCH_ASSOC =>  normal
 	 * $mode=\PDO::FETCH_ASSOC
 	 */
-	function get($mode=\PDO::FETCH_ASSOC)
+	function get($mode=\PDO::FETCH_ASSOC,$fetch_argument = null)
 	{
 		$this->make_query();
 		$this->parent->set_vars($this->query,$this->params);
-		return $this->parent->get($mode);
+		return $this->parent->get($mode,$fetch_argument);
 	}
-	function findFirst()
+	function findFirst($mode=\PDO::FETCH_ASSOC,$fetch_argument = null)
 	{
 		$this->make_query();
 		$this->parent->set_vars($this->query,$this->params);
-		return $this->parent->findFirst();
+		return $this->parent->findFirst($mode,$fetch_argument);
 	}		
 	
 

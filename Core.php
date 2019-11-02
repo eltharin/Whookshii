@@ -19,6 +19,7 @@ class Core
 		define('CORE', __DIR__ . DS);
 		define('APP',CORE . 'App' . DS);
 
+		if(!defined('BASE_URL')) {define('BASE_URL','/');}
 		//define('BASE_URL',self::$request->get_subfolder());
 
 		class_alias(\Core\Classes\Debug::class,'Debug');
@@ -32,11 +33,6 @@ class Core
 
 		\Config::init();
 		\Auth::init();
-
-		\Config::createElement('Vars',\Core\App\Config\Vars::class);
-		\Config::createElement('Middlewares',\Core\App\Config\Middlewares::class);
-		\Config::createElement('Routes',\Core\App\Config\Routes::class);
-		\Config::createElement('Providers',\Core\App\Config\Providers::class);
 	}
 
 	public function run(\Psr\Http\Message\ServerRequestInterface $request) : \Psr\Http\Message\ResponseInterface
@@ -46,6 +42,9 @@ class Core
 		{
 			\Config::get('Vars')->addConfig(SPECS . 'config.inc.php',false);
 		}
+
+		\Config::get('Vars')->setConfig('modeAjax',(isset($request->getServerParams()['HTTP_X_REQUESTED_WITH']) && strtolower($request->getServerParams()['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest'));
+
 		\Config::get('Middlewares')->LoadConfig();
 		\Config::get('Routes')->LoadConfig();
 

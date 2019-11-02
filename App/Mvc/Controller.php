@@ -12,7 +12,7 @@ class Controller
 	protected $request;
 
 	protected $vars = [];
-
+	protected $defaultAction = 'index'; //TODO : set default action
 	protected $classInfos;
 
 
@@ -36,7 +36,8 @@ class Controller
 
 		$classArray = $this->classInfos->namespace;
 		$classArray[$this->classInfos->folderTypePosition] = 'Models';
-
+		$this->url = '/' . str_replace('_','\\',get_class($this));
+		
 		$modelName = '\\' . implode('\\', $classArray);
 
 		if(class_exists($modelName))
@@ -60,6 +61,11 @@ class Controller
 		return $this->url . '/' . $link;
 	}*/
 
+	function getLink($link='')
+	{
+		return $this->url . '/' . $link;
+	}
+	
 	protected function init()	{}
 
 	protected function _init()

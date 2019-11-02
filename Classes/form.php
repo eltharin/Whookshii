@@ -1,7 +1,7 @@
 <?php
 namespace Core\Classes;
 
-class form
+class Form
 {
 	static $defaultsize = 25;
 	static $defaultlength = 50;
@@ -305,9 +305,9 @@ class form
 		
 		if ($ckeditor == true)
 		{
-			\Config::get('HTMLTemplate')->add_script('/ckeditor/ckeditor.js');
-			\Config::get('HTMLTemplate')->add_script('/ckeditor/samples/js/sample.js');
-			\Config::get('HTMLTemplate')->add_css('/ckeditor/samples/css/samples.css');
+			\Config::get('HTMLTemplate')->addScript('/ckeditor/ckeditor.js');
+			\Config::get('HTMLTemplate')->addScript('/ckeditor/samples/js/sample.js');
+			\Config::get('HTMLTemplate')->addCss('/ckeditor/samples/css/samples.css');
 			$ret .= '<script type="text/javascript">
 				$(document).ready(function()
 				{
@@ -416,7 +416,7 @@ class form
 			{
 				if (substr($params['name'],-2) == '[]')
 				{
-					$params['id'] = substr($params['name'],0,-2) . '_' . \func\uniqid();
+					$params['id'] = substr($params['name'],0,-2) . '_' . \uniqid();
 				}
 				else
 				{

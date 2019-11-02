@@ -3,7 +3,7 @@ namespace Core\App\Exception;
 
 use Throwable;
 
-class HttpException extends RenderResponseException
+class HttpException extends \Exception
 {
 	private $pageContent = '';
 

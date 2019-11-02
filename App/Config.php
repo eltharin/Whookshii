@@ -8,6 +8,12 @@ class Config
 	public static function init()
 	{
 		self::$elements = new \stdClass;
+		
+		self::createElement('Vars',\Core\App\Config\Vars::class);
+		self::createElement('Middlewares',\Core\App\Config\Middlewares::class);
+		self::createElement('Routes',\Core\App\Config\Routes::class);
+		self::createElement('Providers',\Core\App\Config\Providers::class);
+		self::createElement('Response',\Core\App\Config\Response::class);
 	}
 
 	public static function createElement($name, $class)

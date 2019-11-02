@@ -189,9 +189,9 @@ class zip
 	function render($filename)
 	{
 		$content = $this->file() ;
-		\Core::$response->setWithTemplate(false);
+		\Config::get('HTMLTemplate')->setNoTemplate(true);
 		ob_end_clean();
-		header('Content-disposition: attachment; filename='.$filename.'.zip');
+		\Config::get('Response')->addHeader('Content-disposition','attachment; filename='.$filename.'.zip');
 		echo $content;
 	}
 } // end of the 'zipfile' class

@@ -39,7 +39,7 @@ class Acl
 			return true;
 		}
 		
-		\HTTP::error_page('403','Vous n\'avez pas acces à cette partie');
+		\HTTP::errorPage('403','Vous n\'avez pas acces à cette partie');
 		
 	}
 		

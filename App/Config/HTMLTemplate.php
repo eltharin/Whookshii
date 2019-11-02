@@ -15,7 +15,7 @@ class HTMLTemplate extends ConfigElementAbstract
 
 	public function __construct()
 	{
-		$this->actualmessage = $_SESSION['__message'];
+		$this->actualmessage = $_SESSION['__message']??null;
 		$_SESSION['__message'] = [];
 		$this->message = &$_SESSION['__message'];
 	}
@@ -55,7 +55,7 @@ class HTMLTemplate extends ConfigElementAbstract
 
 	public function addCss($css)
 	{
-		if(\Core::$request->get_modeapi() == '')
+		if(\Config::get('Vars')->getConfig('modeAjax') == true)
 		{
 			$this->css[$css] = $css;
 		}
@@ -77,7 +77,7 @@ class HTMLTemplate extends ConfigElementAbstract
 
 	public function addScript($script)
 	{
-		if(\Core::$request->get_modeapi() == '')
+		if(\Config::get('Vars')->getConfig('modeAjax') == true)
 		{
 			$this->scripts[$script] = $script;
 		}
@@ -120,7 +120,7 @@ class HTMLTemplate extends ConfigElementAbstract
 		$this->menu[] = $arr;
 	}
 	
-	public function set_menu(array $arr)
+	public function setMenu(array $arr)
 	{
 		$this->menu = $arr;
 	}
@@ -143,5 +143,10 @@ class HTMLTemplate extends ConfigElementAbstract
 		$messages = implode('',$this->actualmessage[$position]??[]);
 		unset($this->actualmessage[$position]);
 		return $messages;
+	}
+	
+	public function getSnap()
+	{
+		return null;
 	}
 }
