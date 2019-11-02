@@ -2,10 +2,10 @@
 
 namespace Core\Classes\DB;
 
+use Iterator;
 use Core\Classes\Timer;
-//use Core\Classes\Debug;
 
-class pdodb
+class pdodb implements Iterator
 {
 	protected $host = '';
 	protected $user = '';
@@ -18,10 +18,75 @@ class pdodb
 	private $query = '';
 	private $params = array();
 	
+		
+	private $fetching = false;
+	
+	private $iteratorResult = null;
+	private $iteratorKey = null;
+	private $iteratorValid = false;
+	
+	
 	function __construct($host = null,$user = null,$pass = null,$db = null)
 	{
 		$this->set_params($host,$user,$pass,$db);
 	}
+
+	public function execFile($file)
+	{
+		if(!file_exists($file))
+		{
+			throw new \Exception('File ' . $file . ' doesn\'t exist');
+		}
+
+		return $this->exec(file_get_contents($file));
+	}
+	
+    public function current()
+    {
+        return $this->iteratorResult;
+    }
+
+    public function next()
+    {
+        $this->iteratorKey++;
+        $this->iteratorResult = $this->pdoStatement->fetch(
+            \PDO::FETCH_OBJ, 
+            \PDO::FETCH_ORI_ABS, 
+            $this->iteratorKey
+        );
+        if (false === $this->iteratorResult) {
+            $this->iteratorValid = false;
+            return null;
+        }
+    }
+
+    public function key()
+    {
+        return $this->iteratorKey;
+    }
+
+    public function valid()
+    {
+        return $this->iteratorValid;
+    }
+
+    public function rewind()
+    {
+		if($this->fetching)
+		{
+			$this->make_query();
+			$this->parent->set_vars($this->query,$this->params);
+			$this->parent->exec();
+			$this->fetching = true;
+		}
+        $this->iteratorKey = 0;
+    }	
+	
+	
+	
+	
+	
+	
 	
 	function set_params($host = null,$user = null,$pass = null,$db = null)
 	{
@@ -43,7 +108,7 @@ class pdodb
 		} 
 		catch( \PDOException $e ) 
 		{
-			\HTTP::error_page('500',$e->getMessage());
+			\HTTP::errorPage('500',$e->getMessage());
 			//\error::set('ERROR',$e->getMessage());
 		} 
 	}
@@ -127,18 +192,26 @@ class pdodb
 		} 
 		catch( \PDOException $e ) 
 		{
-			\Debug::sql($this->query,timer::gettime(),$e->getMessage(),$this->params);
+			\debug::sql($this->query,Timer::gettime(),$e->getMessage(),$this->params);
 			$this->lasterror = $e->getMessage();
 			return null;
 		} 
 	}
 	
-	function get($mode = \PDO::FETCH_ASSOC)
+	function get($mode = \PDO::ATTR_DEFAULT_FETCH_MODE,$fetch_argument = null)
 	{
 		//$mode = \PDO::FETCH_ASSOC|\PDO::FETCH_GROUP;
 		if ($stmt = $this->prepare_and_execute())
 		{
-			$Rows = $stmt->fetchAll($mode);
+			if($fetch_argument === null)
+			{
+				$Rows = $stmt->fetchAll($mode);
+			}
+			else
+			{
+				$Rows = $stmt->fetchAll($mode,$fetch_argument);
+			}
+
 			if (method_exists($this,'convert_val'))
 			{
 				array_walk_recursive($Rows, array($this,'convert_val'));
@@ -148,11 +221,18 @@ class pdodb
 		return null;
 	}
 	
-	public function findFirst()
+	public function findFirst($mode = \PDO::ATTR_DEFAULT_FETCH_MODE,$fetch_argument = null)
 	{
 		if ($stmt = $this->prepare_and_execute())
 		{
-			$Rows = $stmt->fetch(\PDO::FETCH_ASSOC);
+			if($fetch_argument === null)
+			{
+				$Rows = $stmt->fetch($mode);
+			}
+			else
+			{
+				$Rows = $stmt->fetch($mode,$fetch_argument);
+			}
 			return $Rows;
 		}
 		return null;
@@ -169,6 +249,11 @@ class pdodb
 	
 	public function exec($query=null)
 	{
+		if (!($this->_connected))
+		{
+			$this->connect();
+		}
+
 		if ($query !== null)
 		{
 			return $this->dbh->exec($query);

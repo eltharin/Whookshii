@@ -57,7 +57,7 @@ class Google extends OAuth
 		{
 			if($val->data->email_verified != 1)
 			{
-				\HTTP::error_page('500','impossible de récupérer les informations du compte.');
+				\HTTP::errorPage('500','impossible de récupérer les informations du compte.');
 				return null;
 			}
 

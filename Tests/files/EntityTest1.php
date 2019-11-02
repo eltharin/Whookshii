@@ -5,6 +5,7 @@ use Core\App\Mvc\Entity;
 
 class EntityTest1 extends Entity
 {
+
 	private $toto = 2;
 
 	public function setFields() : void

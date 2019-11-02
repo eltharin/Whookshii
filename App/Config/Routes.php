@@ -47,4 +47,9 @@ class Routes extends ConfigElementAbstract
 	{
 		$this->config['routes'][$name] = new Route(['path' => $path,'method' => $method,'callback' => $callback,'name' => $name]);
 	}
+
+	public function setDefaultRoute($route)
+	{
+		$this->setConfig('defaultRoute',$route);
+	}
 }

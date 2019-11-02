@@ -33,9 +33,9 @@ class DebugBar extends MiddlewareAbstract
 
 		$debugbarRenderer = $debugbar->getJavascriptRenderer();
 
-		$body =\Core::$response->get_body();
+		$body = $response->getBody();
 		$body = str_replace('</head>',$debugbarRenderer->renderHead() . '</head>',$body);
 		$body = str_replace('</body>',$debugbarRenderer->render() . '</body>',$body);
-		\Core::$response->set_body($body);
+		return $response->withbody(\GuzzleHttp\Psr7\stream_for($body));
 	}
 }
