@@ -161,14 +161,14 @@ class Http
 		//-- si on est sur IE on a des header differents
 		if (isset($_SERVER['HTTP_USER_AGENT']) && (strpos($_SERVER['HTTP_USER_AGENT'], 'MSIE') !== false))
 		{
-		//	\Core::$response->addHeader('Cache-Control: must-revalidate, post-check=0, pre-check=0');
-		//	\Core::$response->addHeader('Pragma: public');
+		//	\Config::get('Response')->addHeader('Cache-Control','must-revalidate, post-check=0, pre-check=0');
+		//	\Config::get('Response')->addHeader('Pragma','public');
 		}
 		else
 		{
-		//	\Core::$response->addHeader('Pragma: no-cache');
+		//	\Config::get('Response')->addHeader('Pragma','no-cache');
 		}
-		//\Core::$response->addHeader('Cache-Control: must-revalidate, post-check=0, pre-check=0, public');
+		//\Config::get('Response')->addHeader('Cache-Control','must-revalidate, post-check=0, pre-check=0, public');
 		
 	}
 
@@ -183,7 +183,7 @@ class Http
 		else
 		{
 			$type = self::get_mime_type($ext);
-			\Core::$response->add_header('Content-type: '.$type);
+			\Config::get('Response')->addHeader('Content-type',$type);
 
 			$text = file_get_contents($file);
 			if (substr($text, 0, 2) == chr(0xFF) . chr(0xFE))
@@ -230,19 +230,19 @@ class Http
 			}
 			else
 			{
-				\core::$response->add_header('Status: 301 Moved Permanently', true, 301);
+				\Config::get('Response')->addHeader('Status','301 Moved Permanently', true, 301);
 
 				if(substr($page,0,4) == 'http')
 				{
-					\core::$response->add_header('Location: ' . $page);
+					\Config::get('Response')->addHeader('Location',$page);
 				}
 				elseif(substr($page,0,2) == '^/')
 				{
-					\core::$response->add_header('Location: ' . BASE_URL . DS . \core::get()->request->get_url_base() . substr($page,1));
+					\Config::get('Response')->addHeader('Location',BASE_URL . DS . \core::get()->request->get_url_base() . substr($page,1));
 				}
 				else
 				{
-					\core::$response->add_header('Location: ' . BASE_URL . $page);
+					\Config::get('Response')->addHeader('Location',BASE_URL . $page);
 				}
 				\HTTP::errorPage(301,'Moved Permanently');
 			}
