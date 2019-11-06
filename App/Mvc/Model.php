@@ -110,7 +110,7 @@ class Model extends Model_Nonbdd
 
     public function create_empty($val = array())
 	{
-		$this->createEmpty($val);
+		return $this->createEmpty($val);
 	}
 
     public function createEmpty($val = array())
