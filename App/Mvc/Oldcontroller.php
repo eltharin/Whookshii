@@ -94,7 +94,7 @@ class Oldcontroller
 		$ctrl = \Core\App\Loader::Load('Controllers',$name);
 		$ctrl = $ctrl['name'];
 		
-		return new $ctrl();
+		return new $ctrl($this->request);
 	}
 	
 	function LoadModel($array,$show_error=true)

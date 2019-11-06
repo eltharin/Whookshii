@@ -19,7 +19,7 @@ class Core
 		define('CORE', __DIR__ . DS);
 		define('APP',CORE . 'App' . DS);
 
-		if(!defined('BASE_URL')) {define('BASE_URL','/');}
+		if(!defined('BASE_URL')) {define('BASE_URL','');}
 		//define('BASE_URL',self::$request->get_subfolder());
 
 		class_alias(\Core\Classes\Debug::class,'Debug');
