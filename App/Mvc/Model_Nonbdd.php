@@ -269,7 +269,7 @@ class Model_Nonbdd
 	public function create_from($type)
 	{
 		$values = array();
-		foreach (core::$request->$type as $field => $data)
+		foreach ($request->$type as $field => $data)
 		{
 			$values[$field] = $data;
 		}

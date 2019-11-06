@@ -32,8 +32,6 @@ class Controller
 			$this->classInfos->folderTypePosition = 1;
 		}
 
-		//$this->url = '/' . /*core::$request->get_url_base() .*/ implode('_',$this->classInfos->name);
-
 		$classArray = $this->classInfos->namespace;
 		$classArray[$this->classInfos->folderTypePosition] = 'Models';
 		$this->url = '/' . str_replace('_','\\',get_class($this));
