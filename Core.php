@@ -33,6 +33,11 @@ class Core
 
 		\Config::init();
 		\Auth::init();
+		
+		if(isset($_SERVER['CONTENT_TYPE']) && $_SERVER['CONTENT_TYPE'] == 'application/json' && empty($_POST))
+		{
+			$_POST = json_decode(file_get_contents('php://input'),1);
+		}
 	}
 
 	public function run(\Psr\Http\Message\ServerRequestInterface $request) : \Psr\Http\Message\ResponseInterface
