@@ -54,7 +54,7 @@ class Oldcontroller
 
 		$this->viewfolder = implode(DS,$view) . DS;
 
-		$this->url = '/' . /*core::$request->get_url_base() .*/ implode('_',$this->class->name);
+		$this->url = '/' . /*$request->get_url_base() .*/ implode('_',$this->class->name);
 		
 		/*
 		$this->data = new stdClass();
