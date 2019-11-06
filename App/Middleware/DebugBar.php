@@ -22,11 +22,6 @@ class DebugBar extends MiddlewareAbstract
 
 		$debugbar["messages"]->addMessage("hello world!");
 
-		/*foreach(\Core::$response->get_exceptions() as $e)
-		{
-			$this->debugbar['exceptions']->addException($e);
-		}*/
-
 		//$this->debugbar->addCollector(new \DebugBar\DataCollector\RequestDataCollector());
 		$debugbar->addCollector(new \DebugBar\DataCollector\MessagesCollector('SQL'));
 		$debugbar['SQL']->addMessage(\DEBUG::get_sql());
