@@ -14,7 +14,7 @@ use Psr\Http\Message\ResponseInterface;
  */
 class Http
 {
-	//private static $donotredirect = false;
+	private static $donotredirect = false;
 	/**
 	 * @var array status HTTP par défaut
 	 */
