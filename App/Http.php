@@ -49,15 +49,15 @@ class Http
 			}
 			else
 			{
-				\Config::get('Response')->addHeader('Status: 301 Moved Permanently', true, 301);
+				\Config::get('Response')->addHeader('Status','301 Moved Permanently', true, 301);
 
 				if(substr($page,0,4) == 'http')
 				{
-					\Config::get('Response')->addHeader('Location: ' . $page);
+					\Config::get('Response')->addHeader('Location', $page);
 				}
 				else
 				{
-					\Config::get('Response')->addHeader('Location: ' . BASE_URL . $page);
+					\Config::get('Response')->addHeader('Location', BASE_URL . $page);
 				}
 				\Config::get('Response')->setCode(301);
 			}
