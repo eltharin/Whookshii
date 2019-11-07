@@ -12,6 +12,7 @@ class Core
 
 	public function __construct()
 	{
+		setlocale(LC_TIME, "fra_FRA");
 		error_reporting(-1);
 		ini_set('display_errors', true);
 
