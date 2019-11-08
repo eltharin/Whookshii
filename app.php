@@ -4,6 +4,18 @@ require dirname(__DIR__) . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR 
 
 $request = \GuzzleHttp\Psr7\ServerRequest::fromGlobals();
 
+if(PHP_SAPI == 'cli')
+{
+	$request = $request->withAttribute('SAPI','CLI');
+	$argv = $_SERVER['argv'];
+	unset($argv[0]);
+	$request = $request->withUri($request->getUri()->withPath(implode('/',$argv)));
+}
+else
+{
+	$request = $request->withAttribute('SAPI','WEB');
+}
+
 $app = new Core\Core();
 $response = $app->run($request);
 
