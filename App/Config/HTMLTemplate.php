@@ -145,8 +145,25 @@ class HTMLTemplate extends ConfigElementAbstract
 		return $messages;
 	}
 	
-	public function getSnap()
+	public static function setSnapAfterRedirect($msg, $color="yellow", $duration=5000)
 	{
-		return null;
+		$_SESSION['_snap_after_redirect'][] = ['msg' => str_replace('\'','\\\'',$msg), 'color' => $color, 'duration' => $duration];
+	}
+	
+	public static function getSnap()
+	{
+		if(isset($_SESSION['snap_after_redirect']))
+		{
+			foreach($_SESSION['snap_after_redirect'] as $snap)
+			{
+				echo 'ohSnap(\''.$snap['msg'].'\', {color: \''.$snap['color'].'\', duration: \''.$snap['duration'].'\'}); '.RN;
+			}
+			unset($_SESSION['snap_after_redirect']);
+		}
+		if(isset($_SESSION['_snap_after_redirect']))
+		{
+			$_SESSION['snap_after_redirect'] = $_SESSION['_snap_after_redirect'];
+			unset($_SESSION['_snap_after_redirect']);
+		}
 	}
 }
