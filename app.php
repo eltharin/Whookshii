@@ -9,7 +9,7 @@ if(PHP_SAPI == 'cli')
 	$request = $request->withAttribute('SAPI','CLI');
 	$argv = $_SERVER['argv'];
 	unset($argv[0]);
-	$request = $request->withUri($request->getUri()->withPath(implode('/',$argv)));
+	$request = $request->withUri($request->getUri()->withPath('/'.implode('/',$argv)));
 }
 else
 {
