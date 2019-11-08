@@ -90,7 +90,8 @@ class Launcher extends MiddlewareAbstract
 				}
 				catch(HTTPException $e)
 				{
-					return new Response($e->getCode(),[],$e->getMessage() . BRN . print_r(json_decode($e->getPageContent()),true));
+					$content = ob_get_clean();
+					return new Response($e->getCode(),[],$e->getMessage() . BRN . print_r(json_decode($e->getPageContent()),true) . BRN . $content);
 				}
 				catch(RedirectException $e)
 				{
