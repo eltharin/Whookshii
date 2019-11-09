@@ -54,7 +54,7 @@ class Router extends MiddlewareAbstract
 
 			return new Route([
 						'name' => 'automatic',
-						'callback' => $controller.'/'.($action??'index'),
+						'callback' => ['controller' => $controller, 'action' => ($action??'index')],
 						'params' => $request
 						]);
 		}
@@ -86,21 +86,40 @@ class Router extends MiddlewareAbstract
 							function ($matches){
 								return '(?<' . $matches[1]. '>' . str_replace('.','[^/]',$matches[2]). ')';
 							},
-							$route->getPath()),'/') . '$#';
+							$route->getPath()),'/') . '#';
 
 		if($route->getPath() == $request->getUri()->getPath())
 		{
 			return true;
 		}
+
 		if(preg_match($path,$request->getUri()->getPath(),$matches))
 		{
+
 			foreach($matches as $k => $match)
 			{
-				if(!is_int($k))
+				if($k === 'controller')
+				{
+					$route->getCallback()->setController($match);
+				}
+				elseif($k === 'action')
+				{
+					$route->getCallback()->setAction($match);
+				}
+				elseif(!is_int($k))
 				{
 					$route->addParam($k, $match);
 				}
 			}
+
+			if($request->getUri()->getPath() !== $matches[0])
+			{
+				foreach(explode('/',trim(substr($request->getUri()->getPath(),strlen($matches[0])),'/')) as $k => $p)
+				{
+					$route->addParam('_params'.$k, $p);
+				}
+			}
+
 			return true;
 		}
 		return false;
