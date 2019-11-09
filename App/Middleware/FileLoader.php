@@ -10,7 +10,7 @@ class FileLoader extends MiddlewareAbstract
 {
 	public function beforeProcess(ServerRequestInterface $request) : ?ResponseInterface
 	{
-		$uri = ltrim($request->getUri()->getPath(),'/');
+		$uri = urldecode(ltrim($request->getUri()->getPath(),'/'));
 
 		if(($uri === '') || (strpos($uri,'.') === false))
 		{
