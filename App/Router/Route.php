@@ -18,16 +18,20 @@ class Route
 	{
 		$this->path = $data['path']??'';
 		$this->method = $data['method']??'';
-		$this->callback = $data['callback']??'';
+		$this->callback = new Callback($data['callback']??'');
 		$this->name = $data['name']??'';
 		$this->params = $data['params']??[];
 	}
 
+	public function setCallback($callback)
+	{
+		$this->callback = new Callback($callback);
+	}
+	
 	public function addParam($key, $val)
 	{
 		$this->params[$key] = $val;
 	}
-
 
 	/**
 	 * @return string
