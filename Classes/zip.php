@@ -190,9 +190,7 @@ class zip
 	{
 		$content = $this->file() ;
 		\Config::get('HTMLTemplate')->setNoTemplate(true);
-		ob_end_clean();
-		\Config::get('Response')->addHeader('Content-disposition','attachment; filename='.$filename.'.zip');
+		\HTTP::downloadHeader($filename.'.zip',\HTTP::getMimeType('zip'),strlen($content));
 		echo $content;
 	}
-} // end of the 'zipfile' class
-?>
+}

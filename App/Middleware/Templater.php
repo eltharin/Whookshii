@@ -21,7 +21,7 @@ class Templater extends MiddlewareAbstract
 	public function afterProcess(ServerRequestInterface $request, ResponseInterface $response) : ResponseInterface
 	{
 		//$buffer = ob_get_clean();
-		if(\Config::get('HTMLTemplate') === null || \Config::get('HTMLTemplate')->getNoTemplate() || \Config::get('Vars')->getConfig('modeAjax'))
+		if(\Config::get('HTMLTemplate') === null || \Config::get('HTMLTemplate')->getNoTemplate() || \Config::get('Vars')->getConfig('modeAjax') || $request->getAttribute('SAPI')=='CLI')
 		{
 			return $response;
 		}
