@@ -220,4 +220,13 @@ class Http
 			\Config::get('Response')->addHeader('Content-Length',$size);
 		}	
 	}
+	
+	public static function getUrl()
+	{
+		if (!isset($_SERVER["REQUEST_SCHEME"]))
+		{
+			$_SERVER["REQUEST_SCHEME"] = 'https';
+		}
+		return $_SERVER["REQUEST_SCHEME"] . '://' . $_SERVER["SERVER_NAME"] . BASE_URL . '/';
+	}
 }
