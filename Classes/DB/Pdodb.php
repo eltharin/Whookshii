@@ -2,10 +2,9 @@
 
 namespace Core\Classes\DB;
 
-use Iterator;
 use Core\Classes\Timer;
 
-class pdodb implements Iterator
+class pdodb
 {
 	protected $host = '';
 	protected $user = '';
@@ -19,11 +18,7 @@ class pdodb implements Iterator
 	private $params = array();
 	
 		
-	private $fetching = false;
-	
-	private $iteratorResult = null;
-	private $iteratorKey = null;
-	private $iteratorValid = false;
+
 	
 	
 	function __construct($host = null,$user = null,$pass = null,$db = null)
@@ -41,48 +36,7 @@ class pdodb implements Iterator
 		return $this->exec(file_get_contents($file));
 	}
 	
-    public function current()
-    {
-        return $this->iteratorResult;
-    }
 
-    public function next()
-    {
-        $this->iteratorKey++;
-        $this->iteratorResult = $this->pdoStatement->fetch(
-            \PDO::FETCH_OBJ, 
-            \PDO::FETCH_ORI_ABS, 
-            $this->iteratorKey
-        );
-        if (false === $this->iteratorResult) {
-            $this->iteratorValid = false;
-            return null;
-        }
-    }
-
-    public function key()
-    {
-        return $this->iteratorKey;
-    }
-
-    public function valid()
-    {
-        return $this->iteratorValid;
-    }
-
-    public function rewind()
-    {
-		if($this->fetching)
-		{
-			$this->make_query();
-			$this->parent->set_vars($this->query,$this->params);
-			$this->parent->exec();
-			$this->fetching = true;
-		}
-        $this->iteratorKey = 0;
-    }	
-	
-	
 	
 	
 	
@@ -176,7 +130,7 @@ class pdodb implements Iterator
 		if ($params !== null) {$this->params = $params;}
 	}
 	
-	private function prepare_and_execute()
+	public function prepare_and_execute()
 	{
 		if (!($this->_connected))
 		{
