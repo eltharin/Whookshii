@@ -26,15 +26,17 @@ class Controller
 		if(strtolower($this->classInfos->namespace[0]) == 'plugin')
 		{
 			$this->classInfos->folderTypePosition = 2;
+			$this->url = '/' . $this->classInfos->namespace[1] . '/' . implode('/', array_slice($this->classInfos->namespace,3));
 		}
 		else
 		{
 			$this->classInfos->folderTypePosition = 1;
+			$this->url = '/' . implode('/', array_slice($this->classInfos->namespace,2));
 		}
 
 		$classArray = $this->classInfos->namespace;
 		$classArray[$this->classInfos->folderTypePosition] = 'Models';
-		$this->url = '/' . str_replace('_','\\',get_class($this));
+
 		
 		$modelName = '\\' . implode('\\', $classArray);
 
