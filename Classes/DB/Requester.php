@@ -1,7 +1,10 @@
 <?php
 namespace Core\Classes\DB;
 
-class Requester
+use Iterator;
+use Core\Classes\Timer;
+
+class Requester implements Iterator
 {
 	/**
 	 * @var string
@@ -386,4 +389,59 @@ class Requester
 		$this->params = array_merge($this->params,$array);
 		return $this;
 	}
+
+
+	private $fetching = false;
+	private $iteratorStmt = null;
+
+	private $iteratorResult = null;
+	private $iteratorKey = null;
+	private $iteratorValid = false;
+
+	public function current()
+    {
+    	echo 'current' . BRN;
+        return $this->iteratorResult;
+    }
+
+    public function next()
+    {
+    	echo 'next' . BRN;
+        $this->iteratorKey++;
+        $this->iteratorResult = $this->iteratorStmt->fetch( \PDO::FETCH_ASSOC );
+        if (false === $this->iteratorResult)
+        {
+            $this->iteratorValid = false;
+            return null;
+        }
+    }
+
+    public function key()
+    {
+    	echo 'key' . BRN;
+        return $this->iteratorKey;
+    }
+
+    public function valid()
+    {
+    	echo 'valid' . BRN;
+        return $this->iteratorValid;
+    }
+
+    public function rewind()
+    {
+    	echo 'rewind' . BRN;
+		if(!$this->iteratorValid)
+		{
+			echo 'fetching' . BRN;
+			$this->make_query();
+			$this->parent->set_vars($this->query,$this->params);
+			$this->iteratorStmt = $this->parent->prepare_and_execute();
+			$this->iteratorResult = $this->iteratorStmt->fetch( \PDO::FETCH_ASSOC );
+			$this->iteratorValid = true;
+		}
+        $this->iteratorKey = 0;
+    }
+
+
 }
