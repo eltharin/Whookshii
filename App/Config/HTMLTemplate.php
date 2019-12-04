@@ -55,7 +55,7 @@ class HTMLTemplate extends ConfigElementAbstract
 
 	public function addCss($css)
 	{
-		if(\Config::get('Vars')->getConfig('modeAjax') == true)
+		if(\Config::get('Vars')->getConfig('modeAjax') !== true)
 		{
 			$this->css[$css] = $css;
 		}
@@ -77,7 +77,7 @@ class HTMLTemplate extends ConfigElementAbstract
 
 	public function addScript($script)
 	{
-		if(\Config::get('Vars')->getConfig('modeAjax') == true)
+		if(\Config::get('Vars')->getConfig('modeAjax') !== true)
 		{
 			$this->scripts[$script] = $script;
 		}
