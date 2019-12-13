@@ -1,6 +1,7 @@
 <?php
 namespace Core\App\Middleware;
 
+use Core\App\Exception\HttpException;
 use GuzzleHttp\Psr7\Response;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -10,13 +11,20 @@ class Config extends MiddlewareAbstract
 {
 	public function beforeProcess(ServerRequestInterface $request) : ?ResponseInterface
 	{
-		if(file_exists(SPECS . DS . 'config.php'))
+		try
 		{
-			require_once(SPECS . DS . 'config.php');
+			if(file_exists(SPECS . DS . 'config.php'))
+			{
+				require_once(SPECS . DS . 'config.php');
+			}
+			if(file_exists(SPECS . DS . 'config.inc'))
+			{
+				require_once(SPECS . DS . 'config.inc');
+			}
 		}
-		if(file_exists(SPECS . DS . 'config.inc'))
+		catch(HTTPException $e)
 		{
-			require_once(SPECS . DS . 'config.inc');
+			return new Response($e->getCode(),[],$e->getMessage());
 		}
 
 		return null;
