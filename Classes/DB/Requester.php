@@ -400,13 +400,11 @@ class Requester implements Iterator
 
 	public function current()
     {
-    	echo 'current' . BRN;
         return $this->iteratorResult;
     }
 
     public function next()
     {
-    	echo 'next' . BRN;
         $this->iteratorKey++;
         $this->iteratorResult = $this->iteratorStmt->fetch( \PDO::FETCH_ASSOC );
         if (false === $this->iteratorResult)
@@ -418,22 +416,18 @@ class Requester implements Iterator
 
     public function key()
     {
-    	echo 'key' . BRN;
         return $this->iteratorKey;
     }
 
     public function valid()
     {
-    	echo 'valid' . BRN;
         return $this->iteratorValid;
     }
 
     public function rewind()
     {
-    	echo 'rewind' . BRN;
 		if(!$this->iteratorValid)
 		{
-			echo 'fetching' . BRN;
 			$this->make_query();
 			$this->parent->set_vars($this->query,$this->params);
 			$this->iteratorStmt = $this->parent->prepare_and_execute();
@@ -442,6 +436,4 @@ class Requester implements Iterator
 		}
         $this->iteratorKey = 0;
     }
-
-
 }
