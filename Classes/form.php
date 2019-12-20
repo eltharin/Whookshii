@@ -182,11 +182,17 @@ class Form
 		$i=0;
 		foreach($tab as $k => $v)
 		{
-			$ret .= form::item_radio(array('label'=>$v,
-											'classlabel' => 'radio_label ' . $params['classlabel'],
+			if(!is_array($v))
+			{
+				$v = ['label' => $v];
+			}
+
+			$ret .= form::item_radio(array('label'=>$v['label'],
 											'id'=>$params['name'] . $k,
 											'name'=>$params['name'],
 											'value'=>$k,
+											'classlabel' => 'radio_label ' . $params['classlabel'],
+											'options' => $v['options']??'',
 											'cotelabel' => 'r',
 											'noDivRow' => true,
 											'before'=>'',
@@ -364,7 +370,7 @@ class Form
 		$params	 = self::get_params('radio', $params);
 		$options = self::write_params($params,'radio');
 		
-		$ret = '<input type="radio" name="' . $params['name'] . '" id="' . $params['id'] . '" value="' . $params['value'] . '" ' . $params['checked'] . '>';
+		$ret = '<input type="radio" name="' . $params['name'] . '" id="' . $params['id'] . '" value="' . $params['value'] . '"  ' . $params['options'] . ' ' . $params['checked'] . '>';
 		
 		$params['divclass'] .= ' form-multielement ';
 		return self::write($ret,$params);
