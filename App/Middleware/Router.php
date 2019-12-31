@@ -15,7 +15,8 @@ class Router extends MiddlewareAbstract
 	{
 		if($request->getUri()->getPath() === '/')
 		{
-			$request = $request->withUri($request->getUri()->withPath(\Config::get('Routes')->getConfig('defaultRoute')));
+			$defaultRoute = \Config::get('Routes')->getConfig('defaultRoute');
+			$request = $request->withUri($request->getUri()->withPath($defaultRoute[0]=='/'?$defaultRoute:'/'.$defaultRoute));
 		}
 
 		$route = $this->match($request);
