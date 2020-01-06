@@ -148,13 +148,13 @@ class Model_Nonbdd
 	{
 		if((preg_match("#^(0?\d|[12]\d|3[01])([/\-])(0?\d|1[012])([/\-])(\d{4})$#", $date))) //format français
 		{
-			$date = new DateTime(str_replace("/", "-", $date));
+			$date = new \DateTime(str_replace("/", "-", $date));
 
 			return date_format($date, 'Y-m-d H:i:s');
 		}
 		else if((preg_match("#^(19\d{2}|20\d{2})([/\-])(0?\d|1[012])([/\-])(0?\d|[12]\d|3[01])$#", $date))) //format américain
 		{
-			$date = new DateTime($date);
+			$date = new \DateTime($date);
 
 			return date_format($date, 'Y-m-d H:i:s');
 		}
