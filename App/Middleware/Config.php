@@ -15,11 +15,11 @@ class Config extends MiddlewareAbstract
 		{
 			if(file_exists(SPECS . DS . 'config.php'))
 			{
-				require_once(SPECS . DS . 'config.php');
+				$r1 = require_once(SPECS . DS . 'config.php');
 			}
 			if(file_exists(SPECS . DS . 'config.inc'))
 			{
-				require_once(SPECS . DS . 'config.inc');
+				$r2 = require_once(SPECS . DS . 'config.inc');
 			}
 		}
 		catch(HTTPException $e)
@@ -27,6 +27,14 @@ class Config extends MiddlewareAbstract
 			return new Response($e->getCode(),[],$e->getMessage());
 		}
 
+		if($r1 != null)
+		{
+			return $r1;
+		}
+		if($r2 != null)
+		{
+			return $r2;
+		}
 		return null;
 	}
 }
