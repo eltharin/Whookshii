@@ -16,10 +16,21 @@ class Config extends MiddlewareAbstract
 			if(file_exists(SPECS . DS . 'config.php'))
 			{
 				$r1 = require_once(SPECS . DS . 'config.php');
+
+				if($r1 instanceof ResponseInterface)
+				{
+					return $r1;
+				}
 			}
 			if(file_exists(SPECS . DS . 'config.inc'))
 			{
 				$r2 = require_once(SPECS . DS . 'config.inc');
+
+				if($r2 instanceof ResponseInterface)
+				{
+					return $r2;
+				}
+
 			}
 		}
 		catch(HTTPException $e)
@@ -27,14 +38,6 @@ class Config extends MiddlewareAbstract
 			return new Response($e->getCode(),[],$e->getMessage());
 		}
 
-		if($r1 != null)
-		{
-			return $r1;
-		}
-		if($r2 != null)
-		{
-			return $r2;
-		}
 		return null;
 	}
 }
