@@ -101,7 +101,7 @@ class Model_Nonbdd
 				}
 				elseif($this->fields[$field]['type'] == 'int')
 				{
-					$value = preg_replace('#[^0-9]*#','',$value);
+					$value = preg_replace('#[^0-9\-]*#','',$value);
 					
 					if($this->fields[$field]['null'] === true && $value === '')
 					{
@@ -110,7 +110,7 @@ class Model_Nonbdd
 				}
 				elseif($this->fields[$field]['type'] == 'float')
 				{
-					$value = preg_replace('#[^0-9\.\,]*#','',$value);
+					$value = preg_replace('#[^0-9\.\,\-]*#','',$value);
 					
 					if($this->fields[$field]['null'] === true && $value === '')
 					{
