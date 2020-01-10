@@ -296,6 +296,34 @@ class Requester implements Iterator
 		return $this;
 	}
 
+	public function wherein($field,$vars=array(),$notin = false)
+	{
+		$condition = $field . ' ' . ($notin ? 'NOT ' : '') . 'IN (';
+		$params = [];
+		$tabcondition = [];
+
+		if(!empty($vars))
+		{
+			foreach($vars as $k => $v)
+			{
+				$tabcondition[] = ':' . $field.'__'.$k;
+				$params[$field.'__'.$k] = $v;
+			}
+
+			$condition .= implode(',',$tabcondition);
+		}
+		else
+		{
+			$condition .= 'NULL';
+		}
+		$condition .= ')';
+
+		$this->query_elements->where[] = $condition;
+		$this->set_param($params);
+
+		return $this;
+	}
+
 	public function whereor($condition,$vars=array())
 	{
 		if ($condition == '')

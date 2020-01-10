@@ -46,7 +46,7 @@ class HttpException extends \Exception
 		foreach($array as $item)
 		{
 			$ret .= '<li>';
-			$ret .= (is_array($item) ? '<ul>' . $this->array2HtmlList($item) . '</ul>' : (is_string($item) ? $item : serialize($item)));
+			$ret .= (is_array($item) ? '<ul>' . $this->array2HtmlList($item) . '</ul>' : (is_string($item) ? $item : print_r($item,true)));
 			$ret .= '</li>';
 		}
 

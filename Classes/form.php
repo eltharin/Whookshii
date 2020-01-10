@@ -270,21 +270,31 @@ class Form
 				$ret .= "\t" . '<option ';
 
 				if ($params['withkey'])
-					$ret .= 'value="' . $key . '" ';
+				{
+					$ret .= 'value="' . ($val['key']??$key) . '" ';
+				}
 
-				if (((string)$key == $params['value']))
+				if ((($val['key']??$key) == $params['value']))
 				{
 					$ret .= " selected ";
 				}
-				
+
 				if (isset($val['class']))
 				{
 					$ret .= ' class="' . $val['class'] . '" ';
-				}		
-				
+				}
+
 				if (isset($val['options']))
 				{
 					$ret .= ' ' . $val['options'] . ' ';
+				}
+
+				if (isset($val['data']))
+				{
+					foreach($val['data'] as $dataKey => $data)
+					{
+						$ret .= ' data-' . $dataKey . '="' . $data . '" ';
+					}
 				}
 				
 				$ret .= '>' . $val['val'] . '</option>' . "\r\n";
@@ -353,7 +363,12 @@ class Form
 		}
 		
 		$ret .= '<input type="checkbox" name="' . $params['name'] . '" id="' . $params['id'] . '" class="'.$params['class'].'" value="' . $params['value'] . '"  ' . $params['options'];
-		
+
+		if(isset($params['checked']) && $params['checked'] == true)
+		{
+			$ret .= ' checked=checked ';
+		}
+
 		foreach($params['attr'] as $k => $v)
 		{
 			$ret .= ' ' . $k . ' ="' . $v . '" ';
