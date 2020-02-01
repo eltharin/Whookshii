@@ -11,7 +11,7 @@ class Providers extends ConfigElementAbstract
 		{
 			return reset($this->config);
 		}
-		return null;
+		return $this->config['default'] ?? null;
 	}
 
 }
