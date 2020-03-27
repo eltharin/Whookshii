@@ -26,28 +26,8 @@ class Templater extends MiddlewareAbstract
 			return $response;
 		}
 
-		$buffer = $this->render($response->getBody(), \Config::get('HTMLTemplate')->getTemplate());
+		//$buffer = $this->render($response->getBody(), );
 
-		return $response->withBody(stream_for($buffer));
-	}
-	
-	private function render(string $content,?String $file)
-	{
-		if(\Config::get('HTMLTemplate')->getNoTemplate() === false)
-		{
-			$template = \Core\App\Loader::SearchFile($file ,'.php','Templates',true);
-
-
-			if($template === null)
-			{
-				throw new HttpException('Le template ' . $file . ' est inconnu',404);
-			}
-
-			ob_start();
-			require $template['file'];
-			$content = ob_get_clean();
-		}
-
-		return $content;
+		return \Config::get('HTMLTemplate')->render($response);
 	}
 }

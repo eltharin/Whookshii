@@ -1,7 +1,7 @@
 <?php
 namespace Core\App\Config;
 
-class ConfigElementAbstract
+class AbstractConfigElement
 {
 	protected const AUTOFILECONFIG = null;
 
