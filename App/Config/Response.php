@@ -1,7 +1,7 @@
 <?php
 namespace Core\App\Config;
 
-class Response extends ConfigElementAbstract
+class Response extends AbstractConfigElement
 {
 	private $response;
 	
