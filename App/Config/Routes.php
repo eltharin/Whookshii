@@ -3,7 +3,7 @@ namespace Core\App\Config;
 
 use Core\App\Router\Route;
 
-class Routes extends ConfigElementAbstract
+class Routes extends AbstractConfigElement
 {
 	const AUTOFILECONFIG = 'auto.routes';
 
