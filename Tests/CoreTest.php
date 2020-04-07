@@ -71,7 +71,7 @@ class CoreTest extends TestCase
 
 		$request = new ServerRequest('GET' , '/test/methodequinexistepas');
 		$response = $this->app->run($request);
-		$this->assertStringContainsString('Method Not Found',(string)$response->getBody());
+		$this->assertStringContainsString('Method methodequinexistepas Not Found in test',(string)$response->getBody());
 		$this->assertEquals(404,$response->getStatusCode());
 	}
 
@@ -87,7 +87,7 @@ class CoreTest extends TestCase
 		$this->assertEquals(200,$response->getStatusCode());
 		$this->assertStringContainsString('action de test fonctionne',(string)$response->getBody());
 
-
+/*
 		$request = new ServerRequest('GET','/test2');
 		$response = $this->app->run($request);
 		$this->assertEquals(200,$response->getStatusCode());
@@ -102,7 +102,7 @@ class CoreTest extends TestCase
 		$request = new ServerRequest('GET','/test3/salut-46');
 		$response = $this->app->run($request);
 		$this->assertEquals(200,$response->getStatusCode());
-		$this->assertStringContainsString('Les params sont salut et 46.',(string)$response->getBody());
+		$this->assertStringContainsString('Les params sont salut et 46.',(string)$response->getBody());*/
 
 	}
 }

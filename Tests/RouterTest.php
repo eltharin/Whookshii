@@ -1,11 +1,10 @@
 <?php
-namespace Tests\Core;
+namespace Core\Tests;
 
 use Core\Core;
 use GuzzleHttp\Psr7\ServerRequest;
 use PHPUnit\Framework\TestCase;
 use Core\App\Middleware\Router;
-ob_start ();
 
 class RouterTest extends TestCase
 {
@@ -16,6 +15,7 @@ class RouterTest extends TestCase
 
 	public function testGoodMethod()
 	{
+		\Config::get('Routes')->setConfig('automaticsRoutes',false);
 		\Config::get('Routes')->addRoute('/test','*',function(){return 'hello';},'test1');
 		\Config::get('Routes')->addRoute('/test2','GET',function(){return 'bonjour';},'test2');
 		\Config::get('Routes')->addRoute('/test3',['POST','PUT'],function(){return 'salut';},'test3');
@@ -28,17 +28,17 @@ class RouterTest extends TestCase
 		$request = new ServerRequest('GET','/test');
 		$route = $router->match($request);
 		$this->assertEquals('test1',$route->getName());
-		$this->assertEquals('hello',call_user_func_array($route->getCallback(),[$request]));
+		$this->assertEquals('hello',$route->getCallback()->exec($request));
 
 		$request = new ServerRequest('GET','/test2');
 		$route = $router->match($request);
 		$this->assertEquals('test2',$route->getName());
-		$this->assertEquals('bonjour',call_user_func_array($route->getCallback(),[$request]));
+		$this->assertEquals('bonjour',$route->getCallback()->exec($request));
 
 		$request = new ServerRequest('POST','/test3');
 		$route = $router->match($request);
 		$this->assertEquals('test3',$route->getName());
-		$this->assertEquals('salut',call_user_func_array($route->getCallback(),[$request]));
+		$this->assertEquals('salut',$route->getCallback()->exec($request));
 
 
 		$request = new ServerRequest('GET','/test4');
@@ -64,6 +64,7 @@ class RouterTest extends TestCase
 
 	public function testGetMethodIfNotExist()
 	{
+		\Config::get('Routes')->setConfig('automaticsRoutes',false);
 		\Config::get('Routes')->addRoute('/testqsdqsd','*',function(){return 'hello';},'test1');
 		\Config::get('Routes')->addRoute('/test','POST',function(){return 'salut';},'test2');
 		\Config::get('Routes')->addRoute('/test',['POST','PUT'],function(){return 'bonjour';},'test3');
@@ -77,6 +78,7 @@ class RouterTest extends TestCase
 
 	public function testGetMethodWithParams()
 	{
+		\Config::get('Routes')->setConfig('automaticsRoutes',false);
 		$request = new ServerRequest('GET','/test/mon-slug-8');
 
 		\Config::get('Routes')->addRoute('/test','*',function(){return 'qsdsqd';},'posts');
@@ -86,7 +88,7 @@ class RouterTest extends TestCase
 
 		$route = $router->match($request);
 		$this->assertEquals('post.show', $route->getName());
-		$this->assertEquals('hello',call_user_func_array($route->getCallback(),[$request]));
+		$this->assertEquals('hello',$route->getCallback()->exec($request));
 		$this->assertEquals(['slug' => 'mon-slug','id' => '8'],$route->getParams());
 
 		$route = $router->match(new ServerRequest('GET','/test/mon_test-189'));
@@ -101,16 +103,17 @@ class RouterTest extends TestCase
 
 		$request = new ServerRequest('GET','/test/actionautomatiquedetest/toto');
 		$route = $router->match($request);
+
 		$this->assertNotNull($route);
 		$this->assertEquals('automatic',$route->getName());
 		$this->assertEquals(['0' => 'toto'],$route->getParams());
-		//$this->assertEquals('les routes automatiques fonctionnent et le param est toto',call_user_func_array($route->getCallback(),$route->getParams()));
+		//$this->assertEquals('les routes automatiques fonctionnent et le param est toto',$route->getCallback()->exec($route->getParams()));
 
 		$request = new ServerRequest('GET','/test/actionautomatiquedetest/tutu');
 		$route = $router->match($request);
 		$this->assertNotNull($route);
 		$this->assertEquals('automatic',$route->getName());
 		$this->assertEquals(['0' => 'tutu'],$route->getParams());
-		//$this->assertEquals('les routes automatiques fonctionnent et le param est tutu',call_user_func_array($route->getCallback(),$route->getParams()));
+		//$this->assertEquals('les routes automatiques fonctionnent et le param est tutu',$route->getCallback()->exec($route->getParams()));
 	}
 }
