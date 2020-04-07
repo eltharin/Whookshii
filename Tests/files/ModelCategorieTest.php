@@ -1,9 +1,9 @@
 <?php
 namespace Core\Tests\files;
 
-use Core\App\Mvc\Model;
+use Core\App\Mvc\NewModel;
 
-class ModelCategorieTest extends Model
+class ModelCategorieTest extends NewModel
 {
 	protected $provider = 'UnitTests';
 	protected $table = 'categorie';
