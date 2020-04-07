@@ -6,7 +6,7 @@ use Core\Tests\files\EntityCompteTest;
 use Core\Tests\files\ModelCategorieTest;
 use PHPUnit\Framework\TestCase;
 
-class ModelTest extends TestCase
+abstract class ModelTest extends TestCase
 {
 	public function setUp(): void
 	{
@@ -14,7 +14,7 @@ class ModelTest extends TestCase
 
 		$_ENV['test'] = true;
 		\Config::get('Providers')->add('UnitTests',new \Core\Classes\DB\SqliteMemory());
-		\Config::get('Providers')->getConfig('UnitTests')->execFile('files/testDb.sql');
+		\Config::get('Providers')->getConfig('UnitTests')->execFile(__DIR__ . DS . 'files/testDb.sql');
 	}
 
 	function testSimpleGet()
