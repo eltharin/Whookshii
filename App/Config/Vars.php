@@ -1,7 +1,7 @@
 <?php
 namespace Core\App\Config;
 
-class Vars extends AbstractConfigElement
+class Vars extends ConfigElementAbstract
 {
 	protected const AUTOFILECONFIG = 'auto.vars';
 

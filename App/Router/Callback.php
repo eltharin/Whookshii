@@ -5,8 +5,9 @@ use Core\App\Exception\HttpException;
 
 class Callback
 {
-	private $controller;
-	private $action;
+	private $controller = null;
+	private $action = null;
+	private $callable = null;
 	
 	public function __construct($data = '')
 	{
@@ -14,6 +15,10 @@ class Callback
 		{
 			$this->controller = $data['controller']??'index';
 			$this->action = $data['action']??'index';
+		}
+		elseif(is_callable($data))
+		{
+			$this->callable = $data;
 		}
 		else
 		{
@@ -56,5 +61,12 @@ class Callback
 		$this->action = $action;
 	}
 
-
+	public function exec(...$params)
+	{
+		if($this->callable !== null)
+		{
+			return call_user_func_array($this->callable,$params);
+		}
+		return null;
+	}
 }

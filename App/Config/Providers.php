@@ -1,7 +1,7 @@
 <?php
 namespace Core\App\Config;
 
-class Providers extends AbstractConfigElement
+class Providers extends ConfigElementAbstract
 {
 	protected const AUTOFILECONFIG = 'auto.providers';
 
@@ -14,4 +14,15 @@ class Providers extends AbstractConfigElement
 		return $this->config['default'] ?? null;
 	}
 
+	public function add($key, $value, $params=[])
+	{
+		parent::add($key, $value, $params);
+
+		if(isset($params['default']) && $params['default'] === true)
+		{
+			$this->config['default'] = $this->config[$key];
+		}
+
+		return $this->config[$key];
+	}
 }

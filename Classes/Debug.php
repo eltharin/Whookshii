@@ -165,6 +165,23 @@ class Debug
 				$ret .= 'array()';
 			}
 		}
+		elseif(is_object($arr) && $arr instanceof \Core\App\Mvc\Entity)
+		{
+			$arr = $arr->getAllProperties();
+			if (!empty($arr))
+			{
+				$ret .= '<table class=\'debugtable\'><tr><th>key</th><th></th><th>val</th></tr>';
+				foreach($arr as $k => $v)
+				{
+					$ret .= '<tr><td>' . $k . '</td><td> => </td><td>' . self::print_array($v) . '</td></tr>';
+				}
+				$ret .= '</table>';
+			}
+			else
+			{
+				$ret .= 'array()';
+			}
+		}
 		else
 		{
 			$ret .= $arr;

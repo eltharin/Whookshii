@@ -1,7 +1,7 @@
 <?php
 namespace Core\App\Config;
 
-class Middlewares extends AbstractConfigElement
+class Middlewares extends ConfigElementAbstract
 {
 	protected const AUTOFILECONFIG = 'auto.middlewares';
 
