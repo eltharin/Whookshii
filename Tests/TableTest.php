@@ -2,8 +2,8 @@
 namespace Core\Tests;
 
 use Core\App\Mvc\Entity;
-use Core\Classes\DB\QueryBuilder;
-use Core\Classes\DB\QueryResult;
+use Core\Classes\Providers\DB\QueryBuilder;
+use Core\Classes\Providers\DB\QueryResult;
 use Core\Classes\Providers\DB\Sqlite;
 use Core\Core;
 use Core\Tests\files\Entities\Voiture;
@@ -140,7 +140,7 @@ class TableTest extends TestCase
 	public function testFindWithRelationsWithRelations()
 	{
 		$table = new VoitureTable(new Sqlite( $this->dbFile));
-		$qb = $table->find(['with' => ['Marque.Pays']]);
+		$qb = $table->find(['with' => ['Marque','Marque.Pays']]);
 
 		$this->assertInstanceOf(QueryBuilder::class,$qb);
 
@@ -161,23 +161,5 @@ class TableTest extends TestCase
 
 		$this->assertInstanceOf(Entity::class,$res[0]->marque->pays);
 		$this->assertEquals('JAPON', $res[0]->marque->pays->libelle);
-	}
-
-	public function testUpdateOnlyUpdatedValues()
-	{
-		$table = new VoitureTable(new Sqlite( $this->dbFile));
-		$voiture = $table->get(['id' => 2]);
-
-		$voiture->immat = '777-TT-888';
-		$queryResult = $table->DBUpdate($voiture);
-
-		$this->assertInstanceOf(QueryResult::class, $queryResult);
-		$this->assertEquals(false, $queryResult->getError());
-		$this->assertEquals(1, $queryResult->getNbLigne());
-
-		$voiture2 = $table->get(['id' => 2]);
-		$this->assertEquals('777-TT-888', $voiture2->immat);
-
-		$this->assertTrue(false);
 	}
 }

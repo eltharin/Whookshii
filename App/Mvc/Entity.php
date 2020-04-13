@@ -11,6 +11,8 @@ class Entity
 	protected $properties = [];
 	protected $oldProperties = [];
 
+	protected $errors = [];
+
 	public function __construct($data = null)
 	{
 		$this->init();
@@ -26,7 +28,13 @@ class Entity
 		}
 	}
 
-	public function __debugInfo() {
+	public function __debugInfo()
+	{
+		return $this->properties;
+	}
+
+	public function getAllProperties()
+	{
 		return $this->properties;
 	}
 
@@ -35,28 +43,48 @@ class Entity
 
 	public function __get($key)
 	{
-		return $this->properties[$key];
+		return $this->properties[$key] ?? null;
 	}
 
 	public function __set($key, $val)
 	{
-		$this->properties[$key] = $val;
+		if(!isset($this->properties[$key]) || $this->properties[$key] != $key)
+		{
+			$this->properties[$key] = $val;
+			$this->modified = true;
+		}
+	}
+
+	public function __isset($key)
+	{
+		return isset($this->properties[$key]);
 	}
 
 	public function clearModif() : void
 	{
 		$this->modified = false;
-		$this->oldProperties = $this->properties;
+		$this->oldProperties = [];
 	}
 
 	public function getOldValue($key)
 	{
-		return $this->oldProperties[$key];
+		return isset($this->oldProperties[$key]) ? $this->oldProperties[$key] : (isset($this->properties[$key]) ? $this->properties[$key] : null);
 	}
 
+	public function isModified()
+	{
+		return $this->modified;
+	}
 
+	public function getErrors()
+	{
+		return $this->errors;
+	}
 
-
+	public function addError($errorType, $error)
+	{
+		$this->errors[$errorType][] = $error;
+	}
 
 
 	/*protected function _setValue($key, $val, $options = [])

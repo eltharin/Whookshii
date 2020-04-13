@@ -1,5 +1,5 @@
 <?php
-namespace Core\Classes\DB;
+namespace Core\Classes\Providers\DB;
 
 class QueryBuilder implements \Iterator
 {
@@ -7,6 +7,9 @@ class QueryBuilder implements \Iterator
 	private $type = 'select';
 	private $params = array();
 	private $queryElements;
+	/**
+	 * @var PDO | null
+	 */
 	private $provider = null;
 	private $fetchMode = null;
 	private $callback = null;
@@ -339,12 +342,14 @@ class QueryBuilder implements \Iterator
 		return $this;
 	}
 
-	/*public function fetchMode($mode)
+	public function fetchMode($mode)
 	{
-		$this->fetchMode = function($stmt) use ($mode) {$stmt->setFetchMode( $mode);};
+		$this->fetchMode = $mode;
+		$this->callback = null;
         return $this;
 	}
 
+	/*
 	public function fetchClass($className , $args = [])
     {
     	$this->fetchMode = function($stmt) use ($className, $args) {$stmt->setFetchMode( \PDO::FETCH_CLASS, $className, $args);};
@@ -359,7 +364,14 @@ class QueryBuilder implements \Iterator
 
 	public function all()
 	{
-		$stmt = $this->provider->execute($this);
+		$result = $this->provider->execute($this);
+
+		$stmt = $result->getStmt();
+
+		if($this->fetchMode !== null)
+		{
+			$stmt->setFetchMode( $this->fetchMode);
+		}
 		if($this->callback == null)
 		{
 			return $stmt->fetchAll();
@@ -368,21 +380,31 @@ class QueryBuilder implements \Iterator
 		return array_map($this->callback, $stmt->fetchAll());
 	}
 
-	public function first()
+	protected function fetch($stmt)
 	{
-		$stmt = $this->provider->execute($this);
-		if($this->callback == null)
+		$next = $stmt->fetch();
+		if($next === false)
 		{
-			return $stmt->fetch();
+			return false;
 		}
 
-		return call_user_func($this->callback, $stmt->fetch());
+		if($this->callback == null)
+		{
+			return $next;
+		}
+
+		return call_user_func($this->callback, $next);
 	}
 
-	public function exec() : QueryResult
+	public function first()
 	{
-		$stmt = $this->provider->execute($this);
-		return new QueryResult(['qb' => $this, 'errorCode' => $stmt->errorCode??null, 'errorInfo' => $stmt->errorInfo??null , 'nbLigne' => $stmt->rowCount()]);
+		$this->rewind();
+		return $this->iteratorResult;
+	}
+
+	public function exec() : \Core\Classes\Providers\DB\QueryResult
+	{
+		return $this->provider->execute($this);
 	}
 
     public function setCallback(?Callable $callback)
@@ -407,12 +429,13 @@ class QueryBuilder implements \Iterator
     public function next()
     {
         $this->iteratorKey++;
-        $this->iteratorResult = $this->iteratorStmt->fetch();
+        $this->iteratorResult = $this->fetch($this->iteratorStmt);
         if (false === $this->iteratorResult)
         {
             $this->iteratorValid = false;
             return null;
         }
+        return $this->iteratorResult;
     }
 
     public function key()
@@ -429,10 +452,11 @@ class QueryBuilder implements \Iterator
     {
 		if(!$this->iteratorValid)
 		{
-			$this->makeQuery();
-			$this->iteratorStmt = $this->provider->execute($this);
-			$this->iteratorResult = $this->iteratorStmt->fetch();
-			$this->iteratorValid = true;
+			$this->buildQuery();
+			$result = $this->provider->execute($this);
+			$this->iteratorStmt = $result->getStmt();
+			$this->iteratorResult = $this->fetch($this->iteratorStmt);
+			$this->iteratorValid = $this->iteratorResult === false ? false : true;
 		}
         $this->iteratorKey = 0;
     }
