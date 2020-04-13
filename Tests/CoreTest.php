@@ -64,15 +64,14 @@ class CoreTest extends TestCase
 	{
 		$request = new ServerRequest('GET' , '/urlquinexistepas');
 		$response = $this->app->run($request);
-		$this->assertStringContainsString('Controller urlquinexistepas Not Found',(string)$response->getBody());
 		$this->assertEquals(404,$response->getStatusCode());
-
+		$this->assertStringContainsString('Controller urlquinexistepas Not Found',(string)$response->getBody());
 
 
 		$request = new ServerRequest('GET' , '/test/methodequinexistepas');
 		$response = $this->app->run($request);
-		$this->assertStringContainsString('Method methodequinexistepas Not Found in test',(string)$response->getBody());
 		$this->assertEquals(404,$response->getStatusCode());
+		$this->assertStringContainsString('Method methodequinexistepas Not Found in test',(string)$response->getBody());
 	}
 
 

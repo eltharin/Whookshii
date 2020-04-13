@@ -3,7 +3,7 @@ namespace Core\Tests;
 
 use Core\Core;
 use PHPUnit\Framework\TestCase;
-use Core\Classes\DB\QueryBuilder;
+use Core\Classes\Providers\DB\QueryBuilder;
 
 class QueryBuilderTest extends TestCase
 {
