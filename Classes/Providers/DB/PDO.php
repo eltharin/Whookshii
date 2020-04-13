@@ -1,7 +1,7 @@
 <?php
 namespace Core\Classes\Providers\DB;
 
-use Core\Classes\DB\QueryBuilder;
+use Core\Classes\Providers\DB\QueryBuilder;
 use Core\Classes\Timer;
 
 abstract class PDO
@@ -41,28 +41,41 @@ abstract class PDO
 		$this->_connected = true;
 	}
 
-	public function execute(QueryBuilder $qb)
+	public function execute(QueryBuilder $qb) : QueryResult
 	{
 		if (!($this->_connected))
 		{
 			$this->connect();
 		}
 
-			Timer::start();
-			$stmt = $this->dbh->prepare($qb->getQuery());
-			if(!$stmt)
-			{
-				\Debug::sql($qb->getQuery(),Timer::gettime(),$this->dbh->errorInfo(),$qb->getParams());
-				return null;
-			}
-			$stmt->execute($qb->getParams());
-			\Debug::sql($qb->getQuery(),Timer::gettime(),'',$qb->getParams());
-			return $stmt;
-	}
+		Timer::start();
+		$stmt = $this->dbh->prepare($qb->getQuery());
 
-	public function fetchAll($mode)
-	{
-		return $stmt->fetchAll($mode);
+		if(!$stmt)
+		{
+			return new QueryResult(['qb' => $qb,
+								   'stmt' => null,
+								   'time' => Timer::gettime(),
+								   'errorInfo' => $this->dbh->errorInfo(),
+								   'nbLigne' => 0]);
+		}
+
+		if($stmt->execute($qb->getParams()))
+		{
+			return new QueryResult(['qb' => $qb,
+								   'stmt' => $stmt,
+									'time' => Timer::gettime(),
+								   'errorInfo' => null,
+								   'nbLigne' => $stmt->rowCount()]);
+		}
+		else
+		{
+			return new QueryResult(['qb' => $qb,
+								    'stmt' => $stmt,
+									'time' => Timer::gettime(),
+								    'errorInfo' => $stmt->errorInfo(),
+								    'nbLigne' => $stmt->rowCount()]);
+		}
 	}
 
 	public function lastInsertId()
