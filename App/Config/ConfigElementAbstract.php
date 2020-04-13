@@ -1,7 +1,7 @@
 <?php
 namespace Core\App\Config;
 
-class AbstractConfigElement
+class ConfigElementAbstract
 {
 	protected const AUTOFILECONFIG = null;
 
@@ -57,7 +57,7 @@ class AbstractConfigElement
 		return null;
 	}
 
-	public function add($key, $value)
+	public function add($key, $value, $params=[])
 	{
 		if(isset($this->config[$key]))
 		{

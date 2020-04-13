@@ -86,10 +86,14 @@ class HTML
 		$ret .= '>';
 		return $ret;
 	}
-	
-	public static function print_r($tab)
+
+	public static function pr($tab)
 	{
 		echo '<pre>' . print_r($tab,1) . '</pre>';
+	}
+	public static function print_r($tab)
+	{
+		self::pr($tab);
 	}
 	
 	public static function var_dump($tab)

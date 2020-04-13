@@ -2,7 +2,7 @@
 
 namespace Core\App\Config;
 
-class HTMLTemplate extends AbstractTemplate
+class HTMLTemplate extends ConfigElementAbstract
 {
 	protected $noTemplate = false;
 	protected $css = [];
