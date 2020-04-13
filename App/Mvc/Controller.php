@@ -38,14 +38,15 @@ class Controller
 		$classArray[$this->classInfos->folderTypePosition] = 'Models';
 
 		
-		$modelName = '\\' . implode('\\', $classArray);
+		/*
+		 * $modelName = '\\' . implode('\\', $classArray);
 
 		if(class_exists($modelName))
 		{
 			$modelVarName = lcfirst(implode('',array_map('ucfirst',array_slice($this->classInfos->namespace, -1))));
 			$this->$modelVarName = new $modelName();
 		}
-
+*/
 		$this->_init();
 	}
 
@@ -55,11 +56,6 @@ class Controller
 		$classArray[$this->classInfos->folderTypePosition] = 'Views';
 		return implode(DS, $classArray) . DS;
 	}
-
-	/*function getLink($link='')
-	{
-		return $this->url . '/' . $link;
-	}*/
 
 	function getLink($link='')
 	{

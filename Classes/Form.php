@@ -259,9 +259,10 @@ class Form
 		foreach ($tab as $cat => $tab2)
 		{
 			if ($params['optgroup'] === true) {$ret .= "\t" . '<optgroup label="' . $cat . '">';}
-			
+
 			foreach ($tab2 as $key => $val)
 			{
+
 				if (!is_array($val))
 				{
 					$val = array('val'=>$val);

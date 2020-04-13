@@ -87,7 +87,7 @@ class Router extends MiddlewareAbstract
 							function ($matches){
 								return '(?<' . $matches[1]. '>' . str_replace('.','[^/]',$matches[2]). ')';
 							},
-							$route->getPath()),'/') . '#';
+							$route->getPath()),'/') . '$#';
 
 		if($route->getPath() == $request->getUri()->getPath())
 		{
