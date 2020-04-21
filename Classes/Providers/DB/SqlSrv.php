@@ -1,7 +1,7 @@
 <?php
 namespace Core\Classes\Providers\DB;
 
-class SQLite extends PDO
+class SqlSrv extends PDO
 {
 	function createPdo() : \PDO
 	{

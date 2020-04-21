@@ -29,9 +29,9 @@ class Table
 	{
 		$rfl = new \ReflectionClass($this);
 
-		$this->provider = $provider ?? \Config::get('Providers')->getConfig('default');
+		$this->provider = $provider ?? \Config::get('Providers')->getConfig('db.default');
 		$this->queryPrefixe  = $rfl->getShortName();
-		$this->table = $rfl->getShortName();
+		$this->table = strtolower($rfl->getShortName());
 		$this->init();
 
 		foreach($this->fields as $key => $field)
@@ -240,7 +240,7 @@ class Table
 	{
 		$qb = $this->newQueryBuilder();
 		$qb->select($this->getAllFields())
-		   ->from($this->table);
+		   ->from($this->getTable(true));
 
 		if(!is_array($pks))
 		{
