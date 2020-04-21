@@ -20,7 +20,12 @@ class Providers extends ConfigElementAbstract
 
 		if(isset($params['default']) && $params['default'] === true)
 		{
-			$this->config['default'] = $this->config[$key];
+			$default = 'default';
+			if(($pos = strrpos( $key, '.')) !== false)
+			{
+				$default = substr($key,0,$pos+1) . $default;
+			}
+			$this->config[$default] = $this->config[$key];
 		}
 
 		return $this->config[$key];
