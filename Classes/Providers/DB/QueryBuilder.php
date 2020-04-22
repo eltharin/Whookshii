@@ -91,6 +91,11 @@ class QueryBuilder implements \Iterator
 			$query  .= ' ' . implode(' ', $this->queryElements->join);
 		}
 
+		if (isset($this->queryElements->crossApply))
+		{
+			$query .= ' CROSS APPLY ' . $this->queryElements->crossApply;
+		}
+
 		if (isset($this->queryElements->set))
 		{
 			$query .= ' SET ' . implode(', ', array_map(function ($a) {return $a['champ'] . ' = ' . $a['key'];}, $this->queryElements->set) );
@@ -118,17 +123,17 @@ class QueryBuilder implements \Iterator
 
 		if (isset($this->queryElements->limit))
 		{
-			$query  .= ' LIMIT ' . $this->queryElements->limit . ' ';
+			$query  .= ' LIMIT ' . $this->queryElements->limit;
 
 			if (isset($this->queryElements->offset))
 			{
-				$query  .= ' OFFSET ' . $this->queryElements->offset . ' ';
+				$query  .= ' OFFSET ' . $this->queryElements->offset;
 			}
 		}
 
 		if (isset($this->queryElements->free))
 		{
-			$query  .= $this->queryElements->free . ' ';
+			$query  .= ' ' . $this->queryElements->free;
 		}
 
 		$this->query = $query;
@@ -250,6 +255,12 @@ class QueryBuilder implements \Iterator
 		return $this;
 	}
 
+	public function crossApply($param)
+	{
+		$this->queryElements->crossApply = $param;
+		return $this;
+	}
+
 	public function where($condition,array $vars=array())
 	{
 		if(is_array($condition))
@@ -361,8 +372,7 @@ class QueryBuilder implements \Iterator
     	$this->fetchMode = function($stmt) use ($objet) {$stmt->setFetchMode( \PDO::FETCH_INTO, $objet);};
         return $this;
     }*/
-
-	public function all()
+	protected function execute()
 	{
 		$result = $this->provider->execute($this);
 
@@ -372,6 +382,14 @@ class QueryBuilder implements \Iterator
 		{
 			$stmt->setFetchMode( $this->fetchMode);
 		}
+
+		return $stmt;
+	}
+
+	public function all()
+	{
+		$stmt = $this->execute();
+
 		if($this->callback == null)
 		{
 			return $stmt->fetchAll();
@@ -453,8 +471,7 @@ class QueryBuilder implements \Iterator
 		if(!$this->iteratorValid)
 		{
 			$this->buildQuery();
-			$result = $this->provider->execute($this);
-			$this->iteratorStmt = $result->getStmt();
+			$this->iteratorStmt = $this->execute();
 			$this->iteratorResult = $this->fetch($this->iteratorStmt);
 			$this->iteratorValid = $this->iteratorResult === false ? false : true;
 		}

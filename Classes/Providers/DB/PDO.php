@@ -41,6 +41,11 @@ abstract class PDO
 		$this->_connected = true;
 	}
 
+	public function setAttribute($key, $val)
+	{
+		$this->dbh->setAttribute($key, $val);
+	}
+
 	public function execute(QueryBuilder $qb) : QueryResult
 	{
 		if (!($this->_connected))
