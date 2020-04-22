@@ -210,7 +210,20 @@ class Table
 					}
 				}
 
-				$joinOn = $this->getPrefixe() . '.' . $myRel['joinOn']['FK'] . ' = ' . $tmpClass->getPrefixe() . '.' . $myRel['joinOn']['PK'];
+				if(is_array($myRel['joinOn']['FK']))
+				{
+					$joinArr = [];
+					foreach($myRel['joinOn']['FK'] as $k => $v)
+					{
+						$joinArr[] = $this->getPrefixe() . '.' . $v . ' = ' . $tmpClass->getPrefixe() . '.' . $myRel['joinOn']['PK'][$k];
+					}
+					$joinOn = implode(' AND ', $joinArr);
+				}
+				else
+				{
+					$joinOn = $this->getPrefixe() . '.' . $myRel['joinOn']['FK'] . ' = ' . $tmpClass->getPrefixe() . '.' . $myRel['joinOn']['PK'];
+				}
+
 
 
 				if($myRel['join']??'left' == 'inner')
@@ -236,11 +249,9 @@ class Table
 		}
 	}
 
-	public function get($pks)
+	public function get($pks, $params = [])
 	{
-		$qb = $this->newQueryBuilder();
-		$qb->select($this->getAllFields())
-		   ->from($this->getTable(true));
+		$qb = $this->find($params);
 
 		if(!is_array($pks))
 		{
@@ -289,7 +300,8 @@ class Table
 		foreach($this->fields as $key => $val)
 		{
 			$prefixedKey = $this->getPrefixedField($key);
-			if(isset($data->$prefixedKey))
+
+			if(property_exists($data, $prefixedKey))
 			{
 				if(isset($val['entityField']))
 				{
@@ -305,9 +317,16 @@ class Table
 
 		foreach($this->rel as $rel)
 		{
-			$oldVal = $data->{$this->getPropertyFromField($rel['FK'])};
-			$data->{$this->getPropertyFromField($rel['FK'])} = $rel['object']->hydrateEntity($rel['data']);
-			$data->{$this->getPropertyFromField($rel['FK'])}->__id = $oldVal;
+			if(is_array($rel['FK']))
+			{
+				$data->{$rel['relation']} = $rel['object']->hydrateEntity($rel['data']);
+			}
+			else
+			{
+				$oldVal = $data->{$this->getPropertyFromField($rel['FK'])};
+				$data->{$this->getPropertyFromField($rel['FK'])} = $rel['object']->hydrateEntity($rel['data']);
+				$data->{$this->getPropertyFromField($rel['FK'])}->__id = $oldVal;
+			}
 		}
 
 		$entityClass = $this->entityClassName ?? Entity::class;
