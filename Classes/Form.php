@@ -94,7 +94,7 @@ class Form
 			
 			if($param['noDivRow'] === false && static::$iteminline['max'] == static::$iteminline['nb'])
 			{
-				$string =  '<div class="form-row">' . $string;
+				$string =  '<div class="form-row ' . ($param['classRowItem']?:'') . '">' . $string;
 			}
 			
 			static::$iteminline['nb']--;
@@ -116,7 +116,7 @@ class Form
 			}
 			if($param['noDivRow'] === false)
 			{
-				$string =  '<div class="form-row">' . $string . '</div>';
+				$string =  '<div class="form-row ' . ($param['classRowItem']?:'') . '">' . $string . '</div>';
 			}
 		}
 		return $string;
@@ -509,6 +509,7 @@ class Form
 		$params['noDivItem']	 		= false;
 		$params['divclass'] 			= 'grid1';
 		$params['classDivItem']			= '';
+		$params['classRowItem']			= '';
 		$params['after']				= '';
 		$params['div']					= false;
 		$params['options']				= null;
