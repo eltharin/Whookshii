@@ -353,7 +353,7 @@ class QueryBuilder implements \Iterator
 		return $this;
 	}
 
-	public function fetchMode($mode)
+	public function fetchMode(...$mode)
 	{
 		$this->fetchMode = $mode;
 		$this->callback = null;
@@ -380,7 +380,7 @@ class QueryBuilder implements \Iterator
 
 		if($this->fetchMode !== null)
 		{
-			$stmt->setFetchMode( $this->fetchMode);
+			call_user_func_array([$stmt,'setFetchMode'], $this->fetchMode);
 		}
 
 		return $stmt;
