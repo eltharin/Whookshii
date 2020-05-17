@@ -356,10 +356,13 @@ class QueryBuilder implements \Iterator
 	public function fetchMode(...$mode)
 	{
 		$this->fetchMode = $mode;
-		$this->callback = null;
         return $this;
 	}
 
+	public function getFetchMode()
+	{
+		return $this->fetchMode[0];
+	}
 	/*
 	public function fetchClass($className , $args = [])
     {
@@ -390,9 +393,20 @@ class QueryBuilder implements \Iterator
 	{
 		$stmt = $this->execute();
 
+		$all = call_user_func_array([$stmt,'fetchAll'], $this->fetchMode);
+
 		if($this->callback == null)
 		{
-			return $stmt->fetchAll();
+			return $all;
+		}
+
+		if($this->fetchMode !== null && ($this->fetchMode[0] & \PDO::FETCH_GROUP) > 0)
+		{
+			return array_map(function($group)
+								{
+									return array_map(function($elem) {return call_user_func($this->callback, $elem);},$group);
+								}
+							, $all);
 		}
 
 		return array_map($this->callback, $stmt->fetchAll());
@@ -407,6 +421,11 @@ class QueryBuilder implements \Iterator
 		}
 
 		if($this->callback == null)
+		{
+			return $next;
+		}
+
+		if($this->fetchMode !== null && ($this->fetchMode[0] & \PDO::FETCH_OBJ) == 0)
 		{
 			return $next;
 		}
@@ -428,6 +447,7 @@ class QueryBuilder implements \Iterator
     public function setCallback(?Callable $callback)
 	{
 		$this->callback = $callback;
+		return $this;
 	}
 
 	public function lastInsertId()

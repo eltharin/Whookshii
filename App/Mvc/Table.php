@@ -36,11 +36,6 @@ class Table
 
 		foreach($this->fields as $key => $field)
 		{
-			if(!isset($field['entityField']))
-			{
-				$field['entityField'] = $key;
-			}
-
 			$this->fieldsToProperties[$key] = $field['entityField'];
 			$this->propertiesToFields[$field['entityField']] = $key;
 		}
@@ -55,6 +50,11 @@ class Table
 	public function getTable($forSQL = false)
 	{
 		return $this->table . ' as ' . $this->queryPrefixe;
+	}
+
+	public function getFields()
+	{
+		return $this->fields;
 	}
 
 	public function setPrefixe($prefixe)
@@ -102,7 +102,7 @@ class Table
 			{
 				if($this->fieldForce == 'Camel')
 				{
-					$entityField = lcfirst(ucwords(strtolower($entityField)));
+					$entityField = preg_replace_callback('#\_([a-z]{1})#',function($m){return ucfirst($m[1]);}, strtolower($entityField));
 				}
 				elseif(is_callable($this->fieldForce))
 				{
@@ -321,7 +321,7 @@ class Table
 			{
 				$data->{$rel['relation']} = $rel['object']->hydrateEntity($rel['data']);
 			}
-			else
+			elseif(isset($data->{$this->getPropertyFromField($rel['FK'])}))
 			{
 				$oldVal = $data->{$this->getPropertyFromField($rel['FK'])};
 				$data->{$this->getPropertyFromField($rel['FK'])} = $rel['object']->hydrateEntity($rel['data']);
@@ -335,15 +335,11 @@ class Table
 
 	public function createEmpty()
 	{
-		$data = [];
+		$data = new \stdClass();
 
 		foreach($this->fields as $key => $field)
 		{
-			if(!isset($field['entityField']))
-			{
-				$field['entityField'] = $key;
-			}
-			$data[$field['entityField']] = $field['defaultValue'] ?? '';
+			$data->{$this->fieldsToProperties[$key]} = $field['defaultValue'] ?? '';
 		}
 
 		return $this->hydrateEntity($data);
