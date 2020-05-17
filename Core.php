@@ -54,10 +54,9 @@ class Core
 		\Config::get('Middlewares')->LoadConfig();
 		\Config::get('Routes')->LoadConfig();
 
-		$response = new Response();
-
 		$response = (new \Core\App\Dispatcher())
 				->handle($request);
+
 
 		return $response;
 	}
