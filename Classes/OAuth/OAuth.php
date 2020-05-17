@@ -15,7 +15,7 @@ abstract class OAuth
 	{
 		if($this->configFile === '' || !is_file($this->configFile))
 		{
-			throw new Stop('Config File not found in ' . (new \ReflectionClass($this))->getFileName());
+			\HTTP::errorPage(500, 'Config File not found in ' . (new \ReflectionClass($this))->getFileName());
 		}
 		$this->config = include($this->configFile);
 	}
