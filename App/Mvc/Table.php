@@ -90,7 +90,7 @@ class Table
 
 		if($this->fieldPrefixe == '')
 		{
-			$this->fields[$fieldName] = $params;
+			$this->fields[$fieldName] =  array_merge(['entityField' => $fieldName], $params);
 			return;
 		}
 
@@ -113,7 +113,7 @@ class Table
 			return;
 		}
 
-		$this->fields[$fieldName] = $params;
+		$this->fields[$fieldName] = array_merge(['entityField' => $fieldName], $params);
 		return;
 	}
 
