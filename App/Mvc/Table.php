@@ -329,13 +329,18 @@ class Table
 			}
 		}
 
+		return $this->createNewEntity($data);
+	}
+
+	public function createNewEntity($data = [])
+	{
 		$entityClass = $this->entityClassName ?? Entity::class;
 		return new $entityClass($data);
 	}
 
 	public function createEmpty()
 	{
-		$data = new \stdClass();
+		$data = $this->createNewEntity();
 
 		foreach($this->fields as $key => $field)
 		{
@@ -385,7 +390,7 @@ class Table
 		return $result;
 	}
 
-	public function DBUpdate(Entity $entity) : QueryResult
+	public function DBUpdate(Entity $entity, ?Callable $qbCallback = null) : QueryResult
 	{
 		$qb = $this->newQueryBuilder()
 				   ->update($this->table);
@@ -411,6 +416,11 @@ class Table
 		foreach($this->PKs as $key)
 		{
 			$qb->where([$key => $entity->getOldValue($this->getPropertyFromField($key))]);
+		}
+
+		if($qbCallback !== null)
+		{
+			$qbCallback($qb);
 		}
 
 		return $qb->exec();

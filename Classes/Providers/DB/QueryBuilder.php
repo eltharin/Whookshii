@@ -393,7 +393,14 @@ class QueryBuilder implements \Iterator
 	{
 		$stmt = $this->execute();
 
-		$all = call_user_func_array([$stmt,'fetchAll'], $this->fetchMode);
+		if($this->fetchMode !== null)
+		{
+			$all = call_user_func_array([$stmt, 'fetchAll'], $this->fetchMode);
+		}
+		else
+		{
+			$all = $stmt->fetchAll();
+		}
 
 		if($this->callback == null)
 		{
@@ -409,7 +416,7 @@ class QueryBuilder implements \Iterator
 							, $all);
 		}
 
-		return array_map($this->callback, $stmt->fetchAll());
+		return array_map($this->callback, $all);
 	}
 
 	protected function fetch($stmt)
