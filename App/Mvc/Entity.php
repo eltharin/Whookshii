@@ -3,7 +3,7 @@ namespace Core\App\Mvc;
 
 use Core\App\Mvc\EntityField;
 
-class Entity
+class Entity implements \JsonSerializable
 {
 
 	protected $modified = false;
@@ -29,6 +29,11 @@ class Entity
 	}
 
 	public function __debugInfo()
+	{
+		return $this->properties;
+	}
+
+	public function jsonSerialize()
 	{
 		return $this->properties;
 	}

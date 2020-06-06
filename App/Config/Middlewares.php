@@ -14,6 +14,7 @@ class Middlewares extends ConfigElementAbstract
 
 								\Core\App\Middleware\Templater::class,
 
+								\Core\App\Middleware\ShutdownSession::class,
 
 							];
 
