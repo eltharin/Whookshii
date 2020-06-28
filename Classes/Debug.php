@@ -1,5 +1,5 @@
 <?php
-namespace core\classes;
+namespace Core\Classes;
 
 class Debug
 {
@@ -19,7 +19,7 @@ class Debug
 			echo \DEBUG::print_sql();
 			\DEBUG::print_msg();
 
-			echo '<h1>SESSION</h1>' . \DEBUG::print_array($_SESSION);
+			echo '<h1>SESSION</h1>' . \DEBUG::print_array(array_filter($_SESSION, function($a){ return !(substr($a,0,12) == '__internal__');}, ARRAY_FILTER_USE_KEY));
 			echo '<h1>POST</h1>' . \DEBUG::print_array($_POST);
 			echo '<h1>GET</h1>' . \DEBUG::print_array($_GET);
 

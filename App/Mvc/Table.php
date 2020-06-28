@@ -52,6 +52,11 @@ class Table
 		return $this->table . ' as ' . $this->queryPrefixe;
 	}
 
+	public function getTableName()
+	{
+		return $this->table;
+	}
+
 	public function getFields()
 	{
 		return $this->fields;
@@ -79,10 +84,10 @@ class Table
 
 	public function addField($fieldName, $params=[])
 	{
-		if(in_array('PK',$params))
+		if(isset($params['PK']))
 		{
 			$this->PKs[] = $fieldName;
-			if(in_array('AI',$params))
+			if($params['PK'] == 'AI')
 			{
 				$this->PKAI = $fieldName;
 			}
@@ -122,7 +127,7 @@ class Table
 		$this->links[$linkNAme] = $params;
 	}
 
-	protected function newQueryBuilder()
+	public function newQueryBuilder()
 	{
 		$qb = new QueryBuilder($this->provider);
 		$qb->setCallback([$this, 'hydrateEntity']);
@@ -224,8 +229,6 @@ class Table
 					$joinOn = $this->getPrefixe() . '.' . $myRel['joinOn']['FK'] . ' = ' . $tmpClass->getPrefixe() . '.' . $myRel['joinOn']['PK'];
 				}
 
-
-
 				if($myRel['join']??'left' == 'inner')
 				{
 					$qb->ijoin($tmpClass->getTable(true), $joinOn);
@@ -264,6 +267,11 @@ class Table
 		}
 
 		return $qb->first();
+	}
+
+	public function getWithRel($pks)
+	{
+		return $this->get($pks, ['with' => $this->getRelationNames()]);
 	}
 
 	public function getAllFields()
@@ -321,7 +329,7 @@ class Table
 			{
 				$data->{$rel['relation']} = $rel['object']->hydrateEntity($rel['data']);
 			}
-			elseif(isset($data->{$this->getPropertyFromField($rel['FK'])}))
+			elseif(property_exists($data, $this->getPropertyFromField($rel['FK'])))
 			{
 				$oldVal = $data->{$this->getPropertyFromField($rel['FK'])};
 				$data->{$this->getPropertyFromField($rel['FK'])} = $rel['object']->hydrateEntity($rel['data']);
@@ -338,7 +346,7 @@ class Table
 		return new $entityClass($data);
 	}
 
-	public function createEmpty()
+	public function createEmpty($values=[])
 	{
 		$data = $this->createNewEntity();
 
@@ -347,7 +355,12 @@ class Table
 			$data->{$this->fieldsToProperties[$key]} = $field['defaultValue'] ?? '';
 		}
 
-		return $this->hydrateEntity($data);
+		foreach($values as $k => $v)
+		{
+			$data->$k = $v;
+		}
+
+		return $data;
 	}
 
 	public function checkInsert(Entity $entity)
@@ -370,14 +383,22 @@ class Table
 		$qb = $this->newQueryBuilder()
 					->insert($this->table);
 
-		foreach($this->fields as $key => $val)
+		foreach($this->fields as $fieldName => $val)
 		{
-			if($key == $this->PKAI)
+			if($fieldName == $this->PKAI)
 			{
 				continue;
 			}
 
-			$qb->set($key, $entity->{$this->getPropertyFromField($key)});
+			if(isset($entity->{$this->getPropertyFromField($fieldName)}))
+			{
+				$qb->set($fieldName, $entity->{$this->getPropertyFromField($fieldName)});
+			}
+			elseif(isset($val['defaultValue']))
+			{
+				$qb->set($fieldName, $val['defaultValue']);
+			}
+
 		}
 
 		$result = $qb->exec();

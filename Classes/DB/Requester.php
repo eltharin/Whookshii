@@ -459,8 +459,11 @@ class Requester implements Iterator
 			$this->make_query();
 			$this->parent->set_vars($this->query,$this->params);
 			$this->iteratorStmt = $this->parent->prepare_and_execute();
-			$this->iteratorResult = $this->iteratorStmt->fetch( \PDO::FETCH_ASSOC );
-			$this->iteratorValid = true;
+			if($this->iteratorStmt !== null)
+			{
+				$this->iteratorResult = $this->iteratorStmt->fetch( \PDO::FETCH_ASSOC ) ;
+				$this->iteratorValid = true;
+			}
 		}
         $this->iteratorKey = 0;
     }

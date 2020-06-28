@@ -25,6 +25,11 @@ class QueryBuilder implements \Iterator
 		$this->provider = $provider;
 	}
 
+	public function __clone()
+	{
+		$this->queryElements = clone $this->queryElements;
+	}
+
 	function setParam($array)
 	{
 		$this->params = array_merge($this->params,$array);
