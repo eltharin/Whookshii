@@ -53,7 +53,7 @@ class Entity implements \JsonSerializable
 
 	public function __set($key, $val)
 	{
-		if(!isset($this->properties[$key]) || $this->properties[$key] != $key)
+		if(!isset($this->properties[$key]) || $this->properties[$key] != $val)
 		{
 			$this->properties[$key] = $val;
 			$this->modified = true;
