@@ -22,6 +22,7 @@ class Table
 
 	protected $fieldsToProperties = [];
 	protected $propertiesToFields = [];
+	protected $hydratationColumns = [];
 
 	protected $rel = [];
 
@@ -31,7 +32,8 @@ class Table
 
 		$this->provider = $provider ?? \Config::get('Providers')->getConfig('db.default');
 		$this->queryPrefixe  = $rfl->getShortName();
-		$this->table = strtolower($rfl->getShortName());
+
+		$this->table = strtolower(preg_replace('#([\w])([A-Z]+)#','${1}_${2}',$rfl->getShortName()));
 		$this->init();
 
 		foreach($this->fields as $key => $field)
@@ -65,6 +67,11 @@ class Table
 	public function setPrefixe($prefixe)
 	{
 		$this->queryPrefixe = $prefixe;
+	}
+
+	public function getProvider()
+	{
+		return $this->provider;
 	}
 
 	public function getPrefixe()
@@ -122,15 +129,16 @@ class Table
 		return;
 	}
 
-	protected function addLink($linkNAme, $params)
+	protected function addLink($linkNAme, \Core\App\Mvc\TableLink\TableLinkInterface $params)
 	{
+		$params->setName($linkNAme);
 		$this->links[$linkNAme] = $params;
 	}
 
 	public function newQueryBuilder()
 	{
 		$qb = new QueryBuilder($this->provider);
-		$qb->setCallback([$this, 'hydrateEntity']);
+		$qb->setCallback([$this, 'getArrayDataHydrated']);
 
 		return $qb;
 	}
@@ -139,6 +147,8 @@ class Table
 	{
 		$qb = $this->newQueryBuilder();
 		$qb->select($this->getAllFields())->from($this->getTable(true));
+
+		$hydratationColumns = $this->getHydratationColumns();
 
 		if(isset($params['with']))
 		{
@@ -158,7 +168,14 @@ class Table
 					$container = &$container[$a]['data'];
 				}
 			}
-			$this->getJoins($arrWith, $qb);
+			$this->getJoins($arrWith, $qb, $hydratationColumns);
+		}
+
+		$this->hydratationColumns = $hydratationColumns;
+
+		if(isset($params['addQuery']))
+		{
+			call_user_func($params['addQuery'], $qb);
 		}
 
 		return $qb;
@@ -178,14 +195,22 @@ class Table
 			{
 				$name = $parent . '.' . $name;
 			}
+
 			$ret[] = $name;
-			$ret = array_merge($ret, (new $link['table'])->getRelationNames($name));
+
+			if($link->hasRelations())
+			{
+				$linkCls = $link->getTable();
+				$ret = array_merge($ret, (new $linkCls)->getRelationNames($name));
+			}
 		}
 		return $ret;
 	}
 
-	public function getJoins(array $relation, QueryBuilder $qb)
+	public function getJoins(array $relation, QueryBuilder $qb, &$hydratationColumns, $parentsArray=[] )
 	{
+		$parentsArray[] = $this->getPrefixe();
+
 		foreach($relation as $relName => $rel)
 		{
 			if(!isset($this->links[$relName]))
@@ -193,62 +218,11 @@ class Table
 				throw new \Exception('Relation ' . $relName . ' inconnue');
 			}
 
-			$myRel = $this->links[$relName];
+			$this->links[$relName]->getJoins($this,$relName,$rel,$qb,$hydratationColumns,$parentsArray);
 
-			if($myRel['type'] == 'rel')
-			{
-				$tmpClass = new $myRel['table']($this->provider);
-				$tmpClass->setPrefixe($this->queryPrefixe . '__' . $relName);
+			$hydratationColumns = array_merge($hydratationColumns,$this->links[$relName]->getHydratationColumns($parentsArray));
 
-				if($rel['show'] == true)
-				{
-					if(!isset($myRel['fields']))
-					{
-						$qb->select($tmpClass->getAllFields());
-					}
-					else
-					{
-						foreach($myRel['fields'] as $f)
-						{
-							$qb->select($this->queryPrefixe . '.' . $f . ' ' . $this->getPrefixedField($f));
-						}
-					}
-				}
-
-				if(is_array($myRel['joinOn']['FK']))
-				{
-					$joinArr = [];
-					foreach($myRel['joinOn']['FK'] as $k => $v)
-					{
-						$joinArr[] = $this->getPrefixe() . '.' . $v . ' = ' . $tmpClass->getPrefixe() . '.' . $myRel['joinOn']['PK'][$k];
-					}
-					$joinOn = implode(' AND ', $joinArr);
-				}
-				else
-				{
-					$joinOn = $this->getPrefixe() . '.' . $myRel['joinOn']['FK'] . ' = ' . $tmpClass->getPrefixe() . '.' . $myRel['joinOn']['PK'];
-				}
-
-				if($myRel['join']??'left' == 'inner')
-				{
-					$qb->ijoin($tmpClass->getTable(true), $joinOn);
-				}
-				else
-				{
-					$qb->ljoin($tmpClass->getTable(true), $joinOn);
-				}
-
-				unset($joinOn);
-
-				$this->rel[$tmpClass->getPrefixedField('')] = [
-					'relation' => $relName,
-					'object' => $tmpClass,
-					'FK' => $myRel['joinOn']['FK'],
-					'data' => new \stdClass()
-				];
-				$tmpClass->getJoins($rel['data'],$qb);
-				unset($tmpClass);
-			}
+			$this->addRel($this->getPrefixedField($relName).'__',['relation' => $relName]);
 		}
 	}
 
@@ -263,15 +237,15 @@ class Table
 
 		foreach(array_combine($this->PKs,$pks) as $key => $val)
 		{
-			$qb->where([$key => $val]);
+			$qb->where([($this->getPrefixe().'.'.$key) => $val]);
 		}
 
 		return $qb->first();
 	}
 
-	public function getWithRel($pks)
+	public function getWithRel($pks, $params = [])
 	{
-		return $this->get($pks, ['with' => $this->getRelationNames()]);
+		return $this->get($pks, array_merge($params, ['with' => $this->getRelationNames()]));
 	}
 
 	public function getAllFields()
@@ -284,6 +258,17 @@ class Table
 		return implode(', ', $ret);
 	}
 
+	public function getHydratationColumns($prefixes = [])
+	{
+		$ret = [];
+		foreach($this->fields as $key => $val)
+		{
+			$ret[$this->getPrefixedField($key)] = [array_merge($prefixes,[$this->getPrefixe()]), $key];
+		}
+
+		return $ret;
+	}
+
 	public function getFieldFromProperty($property) : string
 	{
 		return $this->propertiesToFields[$property];
@@ -294,51 +279,83 @@ class Table
 		return $this->fieldsToProperties[$field];
 	}
 
+	public function addRel($name, $val)
+	{
+		$this->rel[$name] = $val;
+	}
+
+
 	public function hydrateEntity($data)
 	{
-		foreach($data as $k => $v)
-		{
-			if(substr($k,0,strlen($this->getPrefixe())) == $this->getPrefixe() && isset($this->rel[substr($k,0,strpos($k,'__',strlen($this->getPrefixe())+3)+2)]))
-			{
-				$this->rel[substr($k,0,strpos($k,'__',strlen($this->getPrefixe())+3)+2)]['data']->$k = $v;
-				unset($data->$k);
-			}
-		}
+		$values = [];
 
-		foreach($this->fields as $key => $val)
+		if(isset($data['data']))
 		{
-			$prefixedKey = $this->getPrefixedField($key);
-
-			if(property_exists($data, $prefixedKey))
+			foreach($data['data'] as $k => $v)
 			{
-				if(isset($val['entityField']))
+				if(isset($this->fields[$k]))
 				{
-					$data->{$val['entityField']} = $data->$prefixedKey;
+					$values[$this->fields[$k]['entityField']] = $v;
 				}
 				else
 				{
-					$data->{$key} = $data->$prefixedKey;
+					$values[$k] = $v;
 				}
-				unset($data->$prefixedKey);
 			}
 		}
 
-		foreach($this->rel as $rel)
+		if(isset($data['rel']))
 		{
-			if(is_array($rel['FK']))
+			foreach($data['rel'] as $k => $v)
 			{
-				$data->{$rel['relation']} = $rel['object']->hydrateEntity($rel['data']);
-			}
-			elseif(property_exists($data, $this->getPropertyFromField($rel['FK'])))
-			{
-				$oldVal = $data->{$this->getPropertyFromField($rel['FK'])};
-				$data->{$this->getPropertyFromField($rel['FK'])} = $rel['object']->hydrateEntity($rel['data']);
-				$data->{$this->getPropertyFromField($rel['FK'])}->__id = $oldVal;
+				$myLink = $this->links[$this->rel[$k . '__']['relation']];
+				$subEntity = $myLink->hydrateEntity($v);
+
+				if(($linkTo = $myLink->getLinkTo()) !== null)
+				{
+					$values[$linkTo] = $subEntity;
+				}
+				elseif(isset($this->fieldsToProperties[$myLink->getFK()]) && array_key_exists($this->getPropertyFromField($myLink->getFK()),$values))
+				{
+					$oldVal = $values[$this->getPropertyFromField($myLink->getFK())];
+					$values[$this->getPropertyFromField($myLink->getFK())] = $subEntity;
+					$values[$this->getPropertyFromField($myLink->getFK())]->__id = $oldVal;
+				}
+				else
+				{
+					$values[$this->links[$this->rel[$k . '__']['relation']]->getFK()] = $subEntity;
+				}
 			}
 		}
 
-		return $this->createNewEntity($data);
+		return $this->createNewEntity($values);
 	}
+
+	public function getArrayDataHydrated($data)
+	{
+		$ret = ['rel' => [$this->getPrefixe()]];
+
+		foreach($data as $k => $v)
+		{
+			if(isset($this->hydratationColumns[$k]))
+			{
+				$adr = &$ret;
+
+				foreach($this->hydratationColumns[$k][0] as $v1)
+				{
+					$adr = &$adr['rel'][$v1];
+				}
+				$adr['data'][$this->hydratationColumns[$k][1]] = $v;
+			}
+			else
+			{
+				$ret['rel'][$this->getPrefixe()]['data'][$k] = $v;
+			}
+		}
+
+		return $this->hydrateEntity($ret['rel'][$this->getPrefixe()]);
+	}
+
 
 	public function createNewEntity($data = [])
 	{
@@ -381,7 +398,7 @@ class Table
 	public function DBInsert(Entity $entity) : QueryResult
 	{
 		$qb = $this->newQueryBuilder()
-					->insert($this->table);
+				   ->insert($this->table);
 
 		foreach($this->fields as $fieldName => $val)
 		{
@@ -445,5 +462,33 @@ class Table
 		}
 
 		return $qb->exec();
+	}
+
+	public function DBReplace(Entity $entity) : QueryResult
+	{
+		$qb = $this->newQueryBuilder()
+				   ->replace($this->table);
+
+		foreach($this->fields as $fieldName => $val)
+		{
+			if(isset($entity->{$this->getPropertyFromField($fieldName)}))
+			{
+				$qb->set($fieldName, $entity->{$this->getPropertyFromField($fieldName)});
+			}
+			elseif(isset($val['defaultValue']))
+			{
+				$qb->set($fieldName, $val['defaultValue']);
+			}
+
+		}
+
+		$result = $qb->exec();
+
+		if($this->PKAI !== null)
+		{
+			$entity->{$this->getPropertyFromField($this->PKAI)} = $qb->lastInsertId();
+		}
+
+		return $result;
 	}
 }

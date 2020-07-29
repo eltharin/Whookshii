@@ -52,19 +52,17 @@ class Launcher extends MiddlewareAbstract
 
 					$attributes = $request->getAttribute('__actionParams');
 
-					/*if($controller instanceof \Core\App\Mvc\Controller)
-					{
-						echo 'new';
-						return new Response(200,[],'new');
-					}
-					elseif($controller instanceof \Core\App\Mvc\Oldcontroller)
-					{*/
-
 					ob_start();
 					if($controller instanceof \Core\App\Mvc\Controller)
 					{
-						$actionReturn = call_user_func_array([$controller,'Action_' . $action],$attributes);
-						//TODO : Laisser comme ca ou pas
+						if(count($attributes) == 1 /*&& isset($attributes['_params'])*/)
+						{
+							$actionReturn = call_user_func_array([$controller,'Action_' . $action],$attributes['_params'] ?? $attributes);
+						}
+						else
+						{
+							$actionReturn = call_user_func([$controller,'Action_' . $action],$attributes);
+						}
 					}
 					elseif($controller instanceof \Core\App\Mvc\Oldcontroller)
 					{

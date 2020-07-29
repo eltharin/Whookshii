@@ -33,6 +33,11 @@ class Entity implements \JsonSerializable
 		return $this->properties;
 	}
 
+	public function __toString()
+	{
+		return $this->properties['__id'];
+	}
+
 	public function jsonSerialize()
 	{
 		return $this->properties;
@@ -48,6 +53,16 @@ class Entity implements \JsonSerializable
 
 	public function __get($key)
 	{
+		if(array_key_exists($key, $this->properties))
+		{
+			return $this->properties[$key];
+		}
+		elseif(method_exists($this, 'get' . ucfirst($key)))
+		{
+			return call_user_func([$this, 'get' . ucfirst($key)]);
+		}
+		$d = debug_backtrace();
+		trigger_error('Tentative d\'acces a une propriété innexistante : ' . $key . ' dans le fichier ' . $d[0]['file'] . ' à la ligne ' . $d[0]['line'] . RN  ,E_USER_NOTICE);
 		return $this->properties[$key] ?? null;
 	}
 

@@ -14,7 +14,7 @@ class Templater extends MiddlewareAbstract
 {
 	public function afterProcess(ServerRequestInterface $request, ResponseInterface $response) : ResponseInterface
 	{
-		if(\Config::get('HTMLTemplate') === null || \Config::get('HTMLTemplate')->getTemplate() === null || \Config::get('HTMLTemplate')->getNoTemplate() === true || \Config::get('Vars')->getConfig('modeAjax') || $request->getAttribute('SAPI')=='CLI')
+		if($this->hasNoTemplate($request))
 		{
 			return $response;
 		}
@@ -22,7 +22,16 @@ class Templater extends MiddlewareAbstract
 		$buffer = $this->render($response->getBody(), \Config::get('HTMLTemplate')->getTemplate());
 		return $response->withBody(stream_for($buffer));
 	}
-	
+
+	private function hasNoTemplate(ServerRequestInterface $request)
+	{
+		return \Config::get('HTMLTemplate') === null
+			|| \Config::get('HTMLTemplate')->getTemplate() === null
+			|| \Config::get('HTMLTemplate')->getNoTemplate() === true
+			|| \Config::get('Vars')->getConfig('modeAjax')
+			|| $request->getAttribute('SAPI')=='CLI';
+	}
+
 	private function render(string $content, ?String $file)
 	{
 		$template = \Core\App\Loader::SearchFile($file ,'.php','Templates',true);
