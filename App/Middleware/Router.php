@@ -49,14 +49,14 @@ class Router extends MiddlewareAbstract
 		//-- gestion des routes automatiques
 		if($config['automaticsRoutes'])
 		{
-			$request = explode('/', trim($request->getUri()->getPath(),'/'));
-			$controller = array_shift($request);
-			$action = array_shift($request);
+			$requestUri = explode('/', trim($request->getUri()->getPath(),'/'));
+			$controller = array_shift($requestUri);
+			$action = array_shift($requestUri);
 
 			return new Route([
 						'name' => 'automatic',
 						'callback' => ['controller' => $controller, 'action' => ($action??'index')],
-						'params' => $request
+						'params' => ['_params' => $requestUri]
 						]);
 		}
 

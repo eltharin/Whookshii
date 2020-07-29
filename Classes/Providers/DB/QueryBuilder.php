@@ -14,6 +14,8 @@ class QueryBuilder implements \Iterator
 	private $fetchMode = null;
 	private $callback = null;
 
+	private $lastError = null;
+
     private $iteratorStmt = null;
 	private $iteratorResult = null;
 	private $iteratorKey = null;
@@ -154,17 +156,21 @@ class QueryBuilder implements \Iterator
 		$this->type = 'select';
 		if ($str === null)
 		{
-			$this->queryElements->select = array();
+			$this->queryElements->select = [];
 		}
 		else
 		{
+			if(!isset($this->queryElements->select))
+			{
+				$this->queryElements->select = [];
+			}
 			if ($clearBefore == true)
 			{
-				$this->queryElements->select = array();
+				$this->queryElements->select = [];
 			}
 			if($placeFirst == false)
 			{
-				$this->queryElements->select[] = $str;
+				$this->queryElements->select = array_merge($this->queryElements->select,array_map('trim', explode(',',$str)));
 			}
 			else
 			{
@@ -172,6 +178,11 @@ class QueryBuilder implements \Iterator
 			}
 		}
 		return $this;
+	}
+
+	public function getSelect()
+	{
+		return $this->queryElements->select;
 	}
 
 	public function insert($table = null)
@@ -272,7 +283,8 @@ class QueryBuilder implements \Iterator
         {
 			foreach ($condition as $k => $v)
 			{
-				$this->where($k . ' = :' . $k,array($k => $v));
+				$k2 = str_replace('.','_', $k);
+				$this->where($k . ' = :' . $k2,array($k2 => $v));
 			}
         }
 		else
@@ -398,6 +410,11 @@ class QueryBuilder implements \Iterator
 	{
 		$stmt = $this->execute();
 
+		if($stmt === null)
+		{
+			return false;
+		}
+
 		if($this->fetchMode !== null)
 		{
 			$all = call_user_func_array([$stmt, 'fetchAll'], $this->fetchMode);
@@ -411,6 +428,12 @@ class QueryBuilder implements \Iterator
 		{
 			return $all;
 		}
+
+		if($this->fetchMode !== null && ($this->fetchMode[0] != \PDO::FETCH_OBJ && $this->fetchMode[0] != (\PDO::FETCH_OBJ || \PDO::FETCH_GROUP)))
+		{
+			return $all;
+		}
+
 
 		if($this->fetchMode !== null && ($this->fetchMode[0] & \PDO::FETCH_GROUP) > 0)
 		{
@@ -426,10 +449,15 @@ class QueryBuilder implements \Iterator
 
 	protected function fetch($stmt)
 	{
+		if($stmt === null)
+		{
+			return false;
+		}
+
 		$next = $stmt->fetch();
 		if($next === false)
 		{
-			return false;
+			return null;
 		}
 
 		if($this->callback == null)
@@ -437,7 +465,7 @@ class QueryBuilder implements \Iterator
 			return $next;
 		}
 
-		if($this->fetchMode !== null && ($this->fetchMode[0] & \PDO::FETCH_OBJ) == 0)
+		if($this->fetchMode !== null && ($this->fetchMode[0] != \PDO::FETCH_OBJ))
 		{
 			return $next;
 		}
@@ -480,7 +508,7 @@ class QueryBuilder implements \Iterator
     {
         $this->iteratorKey++;
         $this->iteratorResult = $this->fetch($this->iteratorStmt);
-        if (false === $this->iteratorResult)
+        if (null == $this->iteratorResult)
         {
             $this->iteratorValid = false;
             return null;
@@ -505,7 +533,7 @@ class QueryBuilder implements \Iterator
 			$this->buildQuery();
 			$this->iteratorStmt = $this->execute();
 			$this->iteratorResult = $this->fetch($this->iteratorStmt);
-			$this->iteratorValid = $this->iteratorResult === false ? false : true;
+			$this->iteratorValid = $this->iteratorResult != false;
 		}
         $this->iteratorKey = 0;
     }

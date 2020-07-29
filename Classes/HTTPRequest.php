@@ -1,7 +1,7 @@
 <?php
-namespace core\classes;
+namespace Core\Classes;
 
-class httprequest
+class HTTPRequest
 {
     private $url;
 	private $http = array();
