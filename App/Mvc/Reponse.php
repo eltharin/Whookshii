@@ -9,6 +9,11 @@ class Reponse
 	protected $errors = [];
 	protected $data = [];
 
+	public function __construct($data = [])
+	{
+		$this->data = $data;
+	}
+
 	public function __get($key)
 	{
 		return $this->data[$key];
