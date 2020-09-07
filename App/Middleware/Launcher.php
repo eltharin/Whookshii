@@ -66,7 +66,7 @@ class Launcher extends MiddlewareAbstract
 					}
 					elseif($controller instanceof \Core\App\Mvc\Oldcontroller)
 					{
-						$actionReturn = call_user_func_array([$controller,'Action_' . $action],$attributes);
+						$actionReturn = call_user_func_array([$controller,'Action_' . $action],$attributes['_params'] ?? $attributes);
 					}
 				}
 				catch(RenderResponseException $e)
