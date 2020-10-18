@@ -294,7 +294,7 @@ class QueryBuilder implements \Iterator
                 $conditionArray = [];
                 foreach ($vars as $k => $v)
                 {
-                    $conditionArray[] = $k . ' = :' . $k;
+                    $conditionArray[] = $k . ' = :' . str_replace('.','_', $k);
                 }
                 $condition = implode(' AND ', $conditionArray);
             }
@@ -315,6 +315,7 @@ class QueryBuilder implements \Iterator
 		{
 			foreach($vars as $k => $v)
 			{
+				$field = str_replace('.','_', $field);
 				$tabcondition[] = ':' . $field.'__'.$k;
 				$params[$field.'__'.$k] = $v;
 			}

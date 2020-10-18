@@ -204,6 +204,10 @@ class Http
 			self::downloadHeader(basename($filename),$type,filesize($filename));
 			readfile($filename);
 		}
+		else
+		{
+			echo 'le fichier n\'existe pas';
+		}
 	}
 
 	public static function downloadHeader($name,$type='application/octet-stream',$size=0)
