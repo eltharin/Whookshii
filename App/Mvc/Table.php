@@ -191,17 +191,20 @@ class Table
 		$ret = [];
 		foreach($this->links as $name => $link)
 		{
-			if($parent != '')
+			if($link->getAutomaticWith())
 			{
-				$name = $parent . '.' . $name;
-			}
+				if($parent != '')
+				{
+					$name = $parent . '.' . $name;
+				}
 
-			$ret[] = $name;
+				$ret[] = $name;
 
-			if($link->hasRelations())
-			{
-				$linkCls = $link->getTable();
-				$ret = array_merge($ret, (new $linkCls)->getRelationNames($name));
+				if($link->hasRelations())
+				{
+					$linkCls = $link->getTable();
+					$ret = array_merge($ret, (new $linkCls)->getRelationNames($name));
+				}
 			}
 		}
 		return $ret;

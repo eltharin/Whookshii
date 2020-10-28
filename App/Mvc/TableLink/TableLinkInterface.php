@@ -72,4 +72,9 @@ abstract class TableLinkInterface
 	{
 		return  $this->properties['linkTo'] ?? null;
 	}
+
+	public function getAutomaticWith()
+	{
+		return  $this->properties['automaticWith'] ?? true;
+	}
 }
