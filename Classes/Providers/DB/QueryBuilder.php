@@ -429,14 +429,12 @@ class QueryBuilder implements \Iterator
 		{
 			return $all;
 		}
-
-		if($this->fetchMode !== null && ($this->fetchMode[0] != \PDO::FETCH_OBJ && $this->fetchMode[0] != (\PDO::FETCH_OBJ | \PDO::FETCH_GROUP)))
+		if($this->fetchMode !== null && ($this->fetchMode[0] != \PDO::FETCH_OBJ && $this->fetchMode[0] & (\PDO::FETCH_OBJ | \PDO::FETCH_GROUP) == 0))
 		{
 			return $all;
 		}
 
-
-		if($this->fetchMode !== null && ($this->fetchMode[0] & \PDO::FETCH_GROUP) > 0)
+		if($this->fetchMode !== null && ($this->fetchMode[0] & \PDO::FETCH_GROUP) > 0 && ($this->fetchMode[0] & \PDO::FETCH_UNIQUE) != \PDO::FETCH_UNIQUE)
 		{
 			return array_map(function($group)
 								{
@@ -444,7 +442,6 @@ class QueryBuilder implements \Iterator
 								}
 							, $all);
 		}
-
 		return array_map($this->callback, $all);
 	}
 
