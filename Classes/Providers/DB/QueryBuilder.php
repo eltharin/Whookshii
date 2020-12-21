@@ -429,7 +429,7 @@ class QueryBuilder implements \Iterator
 		{
 			return $all;
 		}
-		if($this->fetchMode !== null && ($this->fetchMode[0] != \PDO::FETCH_OBJ && $this->fetchMode[0] & (\PDO::FETCH_OBJ | \PDO::FETCH_GROUP) == 0))
+		if($this->fetchMode !== null && ($this->fetchMode[0] == \PDO::FETCH_KEY_PAIR || $this->fetchMode[0] != \PDO::FETCH_OBJ && $this->fetchMode[0] & (\PDO::FETCH_OBJ | \PDO::FETCH_GROUP) == 0))
 		{
 			return $all;
 		}
