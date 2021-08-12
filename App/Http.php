@@ -233,4 +233,21 @@ class Http
 		}
 		return $_SERVER["REQUEST_SCHEME"] . '://' . $_SERVER["SERVER_NAME"] . BASE_URL . '/';
 	}
+
+	public static function downloadResponse($name, $type='application/octet-stream',$size=0) : Response
+	{
+		\Config::get('HTMLTemplate')->setNoTemplate(true);
+		ob_clean();
+
+		$reponse = (new Response())
+						->withHeader('Content-disposition','attachment; filename="' . $name . '"')
+						->withHeader('Content-type','application/force-download')
+						->withHeader('Content-Transfer-Encoding',$type . "\n");
+
+		if ($size > 0)
+		{
+			$reponse = $reponse->withHeader('Content-Length',$size);
+		}
+		return $reponse;
+	}
 }

@@ -70,9 +70,14 @@ class auth
 		}
 	}
 
+	public static function getInfos()
+	{
+		return static::$infos['data'];
+	}
+
 	public static function set_infos($data)
 	{
-		static::$infos = array_merge(static::$infos,$data);
+		static::$infos['data'] = $data;
 	}
 
 	public static function disconnect()
@@ -84,9 +89,9 @@ class auth
 	
 	public static function get($k)
 	{
-		if(in_array($k,array_keys(static::$infos)))
+		if(in_array($k,array_keys(static::$infos['data'])))
 		{
-			return static::$infos[$k];
+			return static::$infos['data'][$k];
 		}
 		else
 		{

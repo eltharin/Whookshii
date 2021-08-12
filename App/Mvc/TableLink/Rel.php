@@ -63,19 +63,25 @@ class Rel extends TableLinkInterface
 			}
 		}
 
+		$joinArr = [];
 		if(is_array($this->properties['joinOn']['FK']))
 		{
-			$joinArr = [];
 			foreach($this->properties['joinOn']['FK'] as $k => $v)
 			{
 				$joinArr[] = $table->getPrefixe() . '.' . $v . ' = ' . $tmpClass->getPrefixe() . '.' . $this->properties['joinOn']['PK'][$k];
 			}
-			$joinOn = implode(' AND ', $joinArr);
 		}
 		else
 		{
-			$joinOn = $table->getPrefixe() . '.' . $this->properties['joinOn']['FK'] . ' = ' . $tmpClass->getPrefixe() . '.' . $this->properties['joinOn']['PK'];
+			$joinArr[] = $table->getPrefixe() . '.' . $this->properties['joinOn']['FK'] . ' = ' . $tmpClass->getPrefixe() . '.' . $this->properties['joinOn']['PK'];
 		}
+
+		if(isset($this->properties['joinOn']['addJoin']))
+		{
+			$joinArr[] = str_replace(['#LOCAL_PREFIXE#','#FOREIGN_PREFIXE#'],[$table->getPrefixe(), $tmpClass->getPrefixe()],$this->properties['joinOn']['addJoin']);
+		}
+
+		$joinOn = implode(' AND ', $joinArr);
 
 		if($this->properties['join']??'left' == 'inner')
 		{

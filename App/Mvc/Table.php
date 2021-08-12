@@ -224,7 +224,6 @@ class Table
 			$this->links[$relName]->getJoins($this,$relName,$rel,$qb,$hydratationColumns,$parentsArray);
 
 			$hydratationColumns = array_merge($hydratationColumns,$this->links[$relName]->getHydratationColumns($parentsArray));
-
 			$this->addRel($this->getPrefixedField($relName).'__',['relation' => $relName]);
 		}
 	}
@@ -494,4 +493,22 @@ class Table
 
 		return $result;
 	}
+
+    public function DBDelete(Entity $entity)
+    {
+        $qb = $this->newQueryBuilder()
+                    ->delete($this->table);
+
+        foreach($this->fields as $fieldName => $val)
+        {
+            if(isset($entity->{$this->getPropertyFromField($fieldName)}))
+            {
+                $qb->where([$fieldName => (string)$entity->{$this->getPropertyFromField($fieldName)}]);
+            }
+        }
+
+        $result = $qb->exec();
+
+        return $result;
+    }
 }

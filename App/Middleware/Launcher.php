@@ -57,7 +57,7 @@ class Launcher extends MiddlewareAbstract
 					{
 						if(count($attributes) == 1 /*&& isset($attributes['_params'])*/)
 						{
-							$actionReturn = call_user_func_array([$controller,'Action_' . $action],$attributes['_params'] ?? $attributes);
+							$actionReturn = call_user_func_array([$controller,'Action_' . $action],array_values($attributes['_params'] ?? $attributes));
 						}
 						else
 						{

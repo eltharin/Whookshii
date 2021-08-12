@@ -68,8 +68,8 @@ class QueryBuilder implements \Iterator
 				break;
 			case 'insert' :
 					$this->query  = 'INSERT ' . (($this->queryElements->options->ignore??false) ? 'IGNORE ' : '' ) . 'INTO ' . $this->queryElements->from[0] .
-								' (' . implode(', ',array_column($this->queryElements->set, 'champ')) .
-								') VALUES (' . implode(', ',array_column($this->queryElements->set, 'key')) . ')';
+								' (' . implode(', ',array_column($this->queryElements->set??[], 'champ')) .
+								') VALUES (' . implode(', ',array_column($this->queryElements->set??[], 'key')) . ')';
 					return true;
 				break;
 			case 'update' :
@@ -493,6 +493,12 @@ class QueryBuilder implements \Iterator
 		return $this->provider->lastInsertId();
 	}
 
+	public function groupRetBy($col)
+	{
+		$this->select($col, false, true);
+		$this->fetchMode(\PDO::FETCH_GROUP | \PDO::FETCH_UNIQUE | \PDO::FETCH_OBJ );
+		return $this;
+	}
     //-----------------------------------------------------------------------------------------------------------------
     //-- Iterator Elements
     //-----------------------------------------------------------------------------------------------------------------

@@ -68,6 +68,7 @@ class Entity implements \JsonSerializable
 
 	public function __set($key, $val)
 	{
+		//--TODO:ajout fonction set
 		if(!array_key_exists($key, $this->properties) || $this->properties[$key] != $val)
 		{
 			if(!isset($this->oldProperties[$key]))
@@ -83,6 +84,11 @@ class Entity implements \JsonSerializable
 	public function __isset($key)
 	{
 		return isset($this->properties[$key]);
+	}
+
+	public function __unset($key)
+	{
+		unset($this->properties[$key]);
 	}
 
 	public function clearModif() : void

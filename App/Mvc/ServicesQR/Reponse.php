@@ -6,7 +6,7 @@ namespace Core\App\Mvc\ServicesQR;
 
 class Reponse
 {
-	protected $errors = [];
+	protected $errors = null;
 	protected $data = [];
 
 	public function __construct($data = [])
