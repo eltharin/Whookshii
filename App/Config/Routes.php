@@ -25,7 +25,7 @@ class Routes extends ConfigElementAbstract
 				{
 					foreach($config as $routeName => $route)
 					{
-						$this->addRoute($route[0], $route[1], $route[2], $routeName);
+						$this->addRoute($route[0], $route[1], $route[2], $routeName, $route[3] ?? false);
 					}
 				}
 				else
@@ -43,9 +43,9 @@ class Routes extends ConfigElementAbstract
 	 * @param callable|string $callback
 	 * @param string   $name
 	 */
-	public function addRoute(string $path, $method, $callback, string $name)
+	public function addRoute(string $path, $method, $callback, string $name, bool $withParam)
 	{
-		$this->config['routes'][$name] = new Route(['path' => $path,'method' => $method,'callback' => $callback,'name' => $name]);
+		$this->config['routes'][$name] = new Route(['path' => $path,'method' => $method,'callback' => $callback,'name' => $name,'withParam' => $withParam]);
 	}
 
 	public function setDefaultRoute($route)

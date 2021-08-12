@@ -87,7 +87,7 @@ class Router extends MiddlewareAbstract
 							function ($matches){
 								return '(?<' . $matches[1]. '>' . str_replace('.','[^/]',$matches[2]). ')';
 							},
-							$route->getPath()),'/') . '$#';
+							$route->getPath()),'/') . ($route->getWithParam() == true ? '' : '$') . '#';
 
 		if($route->getPath() == $request->getUri()->getPath())
 		{
@@ -115,10 +115,12 @@ class Router extends MiddlewareAbstract
 
 			if($request->getUri()->getPath() !== $matches[0])
 			{
+				$params = [];
 				foreach(explode('/',trim(substr($request->getUri()->getPath(),strlen($matches[0])),'/')) as $k => $p)
 				{
-					$route->addParam('_params'.$k, $p);
+					$params[] = $p;
 				}
+				$route->addParam('_params', $params);
 			}
 
 			return true;

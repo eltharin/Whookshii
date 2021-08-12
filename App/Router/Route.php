@@ -11,6 +11,7 @@ class Route
 	private $action;
 	private $name;
 	private $callback;
+	private $withParam;
 	private $params;
 
 
@@ -21,6 +22,7 @@ class Route
 		$this->callback = new Callback($data['callback']??'');
 		$this->name = $data['name']??'';
 		$this->params = $data['params']??[];
+		$this->withParam = $data['withParam']??false;
 	}
 
 	public function setCallback($callback)
@@ -71,5 +73,13 @@ class Route
 	public function getParams(): array
 	{
 		return $this->params;
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function getWithParam(): bool
+	{
+		return $this->withParam;
 	}
 }

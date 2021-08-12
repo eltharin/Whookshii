@@ -13,4 +13,19 @@ class Question
 			$this->$k = $v;
 		}
 	}
+
+	public function checkParams(array $params)
+	{
+		$paramsNeeded = [];
+
+		foreach($params as $p)
+		{
+			if(!property_exists($this, $p))
+			{
+				$paramsNeeded[] = $p;
+			}
+		}
+
+		return $paramsNeeded;
+	}
 }
