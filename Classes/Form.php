@@ -4,7 +4,7 @@ namespace Core\Classes;
 class Form
 {
 	static $defaultsize = 25;
-	static $defaultlength = 50;
+	static $defaultlength = '';
 	static $default = array();
 	private static $iteminline = null;
 	
@@ -196,7 +196,7 @@ class Form
 											'cotelabel' => 'r',
 											'noDivRow' => true,
 											'before'=>'',
-											'checked' => ($params['value'] == $k?'checked':''),
+											'checked' => ($params['value'] !== null && $params['value'] == $k?'checked':''),
 											'after'=>''));
 		}
 
@@ -213,8 +213,16 @@ class Form
 		$ret = '';
 		$i=0;
 
-		if (!is_array($params['value'])) {$params['value'] = array($params['value']);}
-			
+		if($params['value'] === null)
+        {
+            $params['value'] = [];
+        }
+
+		if (!is_array($params['value']))
+		{
+		    $params['value'] = array($params['value']);
+		}
+
 		foreach($tab as $k => $v)
 		{
 			$ret .= form::item_checkbox(array('label'=>$v,
@@ -540,6 +548,7 @@ class Form
 			case 'textarea' :
 				$params['rows']		 = 4;
 				$params['cols']		 = 50;
+				$params['paramsCKeditor'] = [];
 				break;
 			case 'radio' : 
 				$params['checked']  = '';

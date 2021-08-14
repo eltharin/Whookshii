@@ -499,6 +499,16 @@ class QueryBuilder implements \Iterator
 		$this->fetchMode(\PDO::FETCH_GROUP | \PDO::FETCH_UNIQUE | \PDO::FETCH_OBJ );
 		return $this;
 	}
+
+
+	public function getKeyPair(string $key, string $val)
+	{
+		$this->select($key,  true);
+		$this->select($val);
+
+		$this->fetchMode(\PDO::FETCH_KEY_PAIR );
+		return $this;
+	}
     //-----------------------------------------------------------------------------------------------------------------
     //-- Iterator Elements
     //-----------------------------------------------------------------------------------------------------------------
