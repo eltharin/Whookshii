@@ -116,4 +116,21 @@ class RouterTest extends TestCase
 		$this->assertEquals(['0' => 'tutu'],$route->getParams());
 		//$this->assertEquals('les routes automatiques fonctionnent et le param est tutu',$route->getCallback()->exec($route->getParams()));
 	}
+
+
+	public function testComplexeRule()
+	{
+		\Config::get('Routes')->addRoute('/admin/{ctrl:.*}/{action:.*}','*',['controller' => 'admin/{controller}', 'action' => '{action}'],'admin');
+
+		$router = new Router();
+
+		$request = new ServerRequest('GET','/admin/machin/truc');
+		$route = $router->match($request);
+
+		$this->assertNotNull($route);
+		$this->assertEquals('admin',$route->getName());
+		$this->assertEquals(['0' => 'toto'],$route->getParams());
+		//$this->assertEquals('les routes automatiques fonctionnent et le param est toto',$route->getCallback()->exec($route->getParams()));
+
+	}
 }

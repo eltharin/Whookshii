@@ -118,6 +118,13 @@ class Entity implements \JsonSerializable
 	}
 
 
+	public function affect(array $data)
+	{
+		foreach($data as $k => $v)
+		{
+			$this->__set($k,$v);
+		}
+	}
 	/*protected function _setValue($key, $val, $options = [])
 	{
 		if(isset($this->fields[$key]))
