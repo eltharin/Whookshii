@@ -190,7 +190,7 @@ class Form
 			$ret .= form::item_radio(array('label'=>$v['label'],
 											'id'=>$params['name'] . $k,
 											'name'=>$params['name'],
-											'value'=>$k,
+											'valueon'=>$k,
 											'classlabel' => 'radio_label ' . $params['classlabel'],
 											'options' => $v['options']??'',
 											'cotelabel' => 'r',
@@ -229,7 +229,7 @@ class Form
 													'classlabel' => 'radio_label ' . $params['classlabel'],
 													'id'=>$params['name'] . $k,
 													'name'=>$params['name'] . '[]',
-													'value'=>$k,
+													'valueon'=>$k,
 													'before'=>'',
 													'cotelabel' => 'r',
 													'noDivRow' => true,
@@ -275,7 +275,7 @@ class Form
 				{
 					$val = array('val'=>$val);
 				}
-				
+
 				$ret .= "\t" . '<option ';
 
 				if ($params['withkey'])
@@ -371,9 +371,14 @@ class Form
 			$ret .= self::hidden($params['name'],$params['valueoff'],$params['id'].'val0');
 		}
 		
-		$ret .= '<input type="checkbox" name="' . $params['name'] . '" id="' . $params['id'] . '" class="'.$params['class'].'" value="' . $params['value'] . '"  ' . $params['options'];
+		$ret .= '<input type="checkbox" name="' . $params['name'] . '" id="' . $params['id'] . '" class="'.$params['class'].'" value="' . $params['valueon'] . '"  ' . $params['options'];
 
 		if(isset($params['checked']) && $params['checked'] == true)
+		{
+			$ret .= ' checked=checked ';
+		}
+
+		if(isset($params['value']) && $params['value'] == $params['valueon'])
 		{
 			$ret .= ' checked=checked ';
 		}
@@ -394,7 +399,7 @@ class Form
 		$params	 = self::get_params('radio', $params);
 		$options = self::write_params($params,'radio');
 		
-		$ret = '<input type="radio" name="' . $params['name'] . '" id="' . $params['id'] . '" value="' . $params['value'] . '"  ' . $params['options'] . ' ' . $params['checked'] . '>';
+		$ret = '<input type="radio" name="' . $params['name'] . '" id="' . $params['id'] . '" value="' . $params['valueon'] . '"  ' . $params['options'] . ' ' . $params['checked'] . '>';
 		
 		$params['divclass'] .= ' form-multielement ';
 		return self::write($ret,$params);
@@ -440,13 +445,13 @@ class Form
 		{
 			if ($params['name'] == null)
 			{
-				$params['id'] =  $type . '_' . \func\uniqid();
+				$params['id'] =  $type . '_' . uniqid();
 			}
 			else
 			{
 				if (substr($params['name'],-2) == '[]')
 				{
-					$params['id'] = substr($params['name'],0,-2) . '_' . \uniqid();
+					$params['id'] = substr($params['name'],0,-2) . '_' . uniqid();
 				}
 				else
 				{
@@ -553,13 +558,14 @@ class Form
 			case 'radio' : 
 				$params['checked']  = '';
 				$params['cotelabel']	 = 'r';
+				$params['valueon']	 = '1';
 				break;
 			case 'checkbox' : 
 				$params['checked']  = '';
 				$params['cotelabel']	 = 'r';
 				$params['valueoff'] = 0;
 				
-				$params['value']  = 1;
+				$params['valueon']  = 1;
 				break;
 			case 'date' : 
 				$params['format'] = "dd/mm/yy";
