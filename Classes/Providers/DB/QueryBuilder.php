@@ -507,7 +507,7 @@ class QueryBuilder implements \Iterator
 		$this->select($val);
 
 		$this->fetchMode(\PDO::FETCH_KEY_PAIR );
-		return $this;
+		return $this->all();
 	}
     //-----------------------------------------------------------------------------------------------------------------
     //-- Iterator Elements

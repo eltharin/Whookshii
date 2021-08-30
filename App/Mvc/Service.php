@@ -27,6 +27,28 @@ class Service
 		return (new $this->tableClass)->findWithRel();
 	}
 
+	public function expects($args, $cond) : \Core\App\Mvc\ServicesQR\Reponse2
+	{
+		$reponse = (new \Core\App\Mvc\ServicesQR\Reponse2);
+
+		foreach($cond as $key => $list)
+		{
+			foreach($list as $l)
+			{
+				switch($l)
+				{
+					case 'required' : if(!array_key_exists($key, $args)) {$reponse->addError ($key . ' est requis');};break;
+					case 'float'    : if(!is_numeric($args[$key] ?? null)) {$reponse->addError ($key . ' n\'est pas un nombre');};break;
+					case 'int'      : if(!is_int($args[$key] ?? null)) {$reponse->addError ($key . ' n\'est pas un entier');};break;
+					case 'int'      : if(!is_string($args[$key] ?? null)) {$reponse->addError ($key . ' n\'est pas une chaine de caractères');};break;
+					case 'notEmpty' : if(empty($args[$key] ?? null)) {$reponse->addError ($key . ' est vide');};break;
+					default : throw new \Exception ($l . ' is not a valid condition');
+				}
+			}
+		}
+
+		return $reponse;
+	}
 	/*public function add(Array $data)
 	{
 		$entite = new Entity();
