@@ -68,6 +68,10 @@ class Launcher extends MiddlewareAbstract
 					{
 						$actionReturn = call_user_func_array([$controller,'Action_' . $action],$attributes['_params'] ?? $attributes);
 					}
+					else
+					{
+						throw new HTTPException('Controller invalide', 404);
+					}
 				}
 				catch(RenderResponseException $e)
 				{
