@@ -100,6 +100,11 @@ class Table
 			}
 		}
 
+		if(!isset($params['defaultValue']) && isset($params['type']) && $params['type'] == 'int')
+		{
+			$params['defaultValue'] = 0;
+		}
+
 		if($this->fieldPrefixe == '')
 		{
 			$this->fields[$fieldName] =  array_merge(['entityField' => $fieldName], $params);

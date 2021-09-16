@@ -13,4 +13,19 @@ class Date
 
 		return date($format, $timestamp);
 	}
+
+	static function fromFormat($format, $str)
+	{
+		if ($str == '')
+		{
+			return '';
+		}
+
+		return date_create_from_format($format, $str)->format('U');
+	}
+
+	public static function fromSemaine($semaine, $annee, $jour = 1)
+	{
+		return date_isodate_set (date_create ("00/00/0000"), $annee, $semaine, $jour)->format ('U');
+	}
 }

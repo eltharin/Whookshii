@@ -192,7 +192,7 @@ class Form
 											'name'=>$params['name'],
 											'valueon'=>$k,
 											'classlabel' => 'radio_label ' . $params['classlabel'],
-											'options' => $v['options']??'',
+											'options' => $params['optionsForAll'] . ' ' . ($v['options']??''),
 											'cotelabel' => 'r',
 											'noDivRow' => true,
 											'before'=>'',
@@ -574,6 +574,7 @@ class Form
 			case 'multiradio' : 
 			case 'multicheckbox' : 	
 				$params['gotoline']  = 10;
+				$params['optionsForAll']  = '';
 				break;
 			default:
 				break;
