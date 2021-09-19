@@ -17,6 +17,11 @@ class Rel extends TableLinkInterface
 	 */
 	protected $obj = null;
 
+	public function getOfficalName() : string
+	{
+		return $this->name;
+	}
+
 	public function getName() : string
 	{
 		return $this->properties['table'];
@@ -36,32 +41,24 @@ class Rel extends TableLinkInterface
 		return $this->properties['joinOn']['FK'];
 	}
 
-
 	public function getCompleteName()
 	{
 		return $this->obj->getPrefixedField('');
 	}
 
-	public function getJoins(Table $table, String $relName, $rel, QueryBuilder $qb, array &$hydrationColumns, $parentArray)
+	public function getSubJoins(Table $table, $rel, QueryBuilder $qb)
 	{
-		$tmpClassNAme = $this->getTable();
-		$tmpClass = new $tmpClassNAme($table->getProvider());
-		$tmpClass->setPrefixe($table->getPrefixedField($relName));
+		$tmpClassName = $this->getTable();
+		$tmpClass = new $tmpClassName($table->getProvider());
+		$tmpClass->setPrefixe($table->getPrefixedField($this->name));
 
 		if($rel['show'] == true)
 		{
-			if(!isset($this->properties['fields']))
-			{
-				$qb->select($tmpClass->getAllFields());
-			}
-			else
-			{
-				foreach($this->properties['fields'] as $f)
-				{
-					$qb->select($table->getPrefixe() . '.' . $f . ' ' . $table->getPrefixedField($f));
-				}
-			}
+			$tmpClass->addFieldToQb($qb, $this->properties['fields'] ?? null);
 		}
+
+		$qb->getHydrator()->addEtage($tmpClass->getPrefixe(), $tmpClass->getEntityClassName(), $table->getPrefixe (), $this->getLinkTo() ?? $table->getPropertyFromField($this->properties['joinOn']['FK']));
+
 
 		$joinArr = [];
 		if(is_array($this->properties['joinOn']['FK']))
@@ -94,28 +91,6 @@ class Rel extends TableLinkInterface
 
 		unset($joinOn);
 
-		$tmpClass->getJoins($rel['data'],$qb,$hydrationColumns,$parentArray);
-		$this->obj = $tmpClass;
-/*
- * 		$table->addRel($tmpClass->getPrefixedField(''),[
-			'relation' => $relName,
-			'object' => $tmpClass,
-			'FK' => $this->properties['joinOn']['FK'],
-			'data' => new \stdClass()
-		]);
- */
-
-
-
-	}
-
-	public function hydrateEntity(array $data)
-	{
-		return $this->obj->hydrateEntity($data);
-	}
-
-	public function getHydratationColumns(array $prefixes = []) : array
-	{
-		return $this->obj->getHydratationColumns($prefixes);
+		$tmpClass->addRelationsToQB($qb,$rel['subRels']);
 	}
 }

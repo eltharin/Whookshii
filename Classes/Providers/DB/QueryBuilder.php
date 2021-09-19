@@ -1,6 +1,8 @@
 <?php
 namespace Core\Classes\Providers\DB;
 
+use Core\App\Mvc\Hydrator;
+
 class QueryBuilder implements \Iterator
 {
 	private $query = '';
@@ -13,6 +15,7 @@ class QueryBuilder implements \Iterator
 	private $provider = null;
 	private $fetchMode = null;
 	private $callback = null;
+	private $hydrator = null;
 
 	private $lastError = null;
 
@@ -25,6 +28,7 @@ class QueryBuilder implements \Iterator
 	{
 		$this->queryElements = new \stdClass();
 		$this->provider = $provider;
+		$this->hydrator = new Hydrator();
 	}
 
 	public function __clone()
@@ -47,6 +51,11 @@ class QueryBuilder implements \Iterator
 	function getParams()
 	{
 		return $this->params;
+	}
+
+	function getHydrator()
+	{
+		return $this->hydrator;
 	}
 
 	private function buildQuery()
@@ -151,7 +160,7 @@ class QueryBuilder implements \Iterator
 	//-- SQL Query Elements
     //-----------------------------------------------------------------------------------------------------------------
 
-	public function select($str,$clearBefore=false,$placeFirst=false)
+	public function select($str = null,$clearBefore=false,$placeFirst=false)
 	{
 		$this->type = 'select';
 		if ($str === null)
@@ -425,10 +434,10 @@ class QueryBuilder implements \Iterator
 			$all = $stmt->fetchAll();
 		}
 
-		if($this->callback == null)
+		/*if($this->callback == null)
 		{
 			return $all;
-		}
+		}*/
 		if($this->fetchMode !== null && ($this->fetchMode[0] == \PDO::FETCH_KEY_PAIR || $this->fetchMode[0] != \PDO::FETCH_OBJ && $this->fetchMode[0] & (\PDO::FETCH_OBJ | \PDO::FETCH_GROUP) == 0))
 		{
 			return $all;
@@ -438,11 +447,11 @@ class QueryBuilder implements \Iterator
 		{
 			return array_map(function($group)
 								{
-									return array_map(function($elem) {return call_user_func($this->callback, $elem);},$group);
+									return array_map(function($elem) {return call_user_func([$this->hydrator, 'hydrate'], $elem);},$group);
 								}
 							, $all);
 		}
-		return array_map($this->callback, $all);
+		return array_map([$this->hydrator, 'hydrate'], $all);
 	}
 
 	protected function fetch($stmt)
@@ -458,17 +467,17 @@ class QueryBuilder implements \Iterator
 			return null;
 		}
 
-		if($this->callback == null)
+		/*if($this->callback == null)
 		{
 			return $next;
-		}
+		}*/
 
 		if($this->fetchMode !== null && ($this->fetchMode[0] != \PDO::FETCH_OBJ))
 		{
 			return $next;
 		}
 
-		return call_user_func($this->callback, $next);
+		return $this->hydrator->hydrate($next);//call_user_func($this->callback, $next);
 	}
 
 	public function first()

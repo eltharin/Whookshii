@@ -47,21 +47,10 @@ abstract class TableLinkInterface
 		return $this->hasRel;
 	}
 
-	public function getJoins(Table $table, String $relName, $rel, QueryBuilder $qb, array &$hydrationColumns, $parentArray)
+	public function getSubJoins(Table $table, $rel, QueryBuilder $qb)
 	{
 
 	}
-
-	public function hydrateEntity(array $data)
-	{
-
-	}
-
-	public function getHydratationColumns(array $prefixes = []) : array
-	{
-		return [];
-	}
-
 
 	public function getFK() : string
 	{

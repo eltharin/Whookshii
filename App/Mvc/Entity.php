@@ -11,6 +11,8 @@ class Entity implements \JsonSerializable
 	protected $properties = [];
 	protected $oldProperties = [];
 
+	protected $remplacementValue = '';
+
 	protected $errors = [];
 
 	public function __construct($data = null)
@@ -35,7 +37,17 @@ class Entity implements \JsonSerializable
 
 	public function __toString()
 	{
-		return $this->properties['__id'];
+		return $this->getRemplacementValue();
+	}
+
+	public function getRemplacementValue()
+	{
+		return $this->remplacementValue;
+	}
+
+	public function setRemplacementValue($val)
+	{
+		$this->remplacementValue = $val;
 	}
 
 	public function jsonSerialize()
