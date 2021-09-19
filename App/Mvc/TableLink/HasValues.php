@@ -14,17 +14,14 @@ class HasValues extends TableLinkInterface
 		return $this->properties['joinOn']['PK'];
 	}
 
-	public function getJoins(Table $table, String $relName, $rel, QueryBuilder $qb, array &$hydrationColumns, $parentArray)
+	public function getSubJoins(Table $table, $rel, QueryBuilder $qb)
 	{
 		$relObj = new ($this->properties['table']);
+		$relObj->setPrefixe($table->getPrefixe ());
+
 		foreach($relObj->getAllValueFields(['type' => $table->getTableName()]) as $champId => $champName)
 		{
-			$relObj->addValueField($table, $qb, $champId, $champName, $this, $hydrationColumns,$parentArray);
+			$relObj->addValueField($table, $qb, $champId, $champName, $this);
 		}
-	}
-
-	public function getHydratationColumns(array $prefixes = []) : array
-	{
-		return $this->hydrationColumns;
 	}
 }

@@ -16,12 +16,12 @@ class HasMany extends TableLinkInterface
 	 */
 	protected $obj = null;
 
-	public function getJoins(Table $table, String $relName, $rel, QueryBuilder $qb, array &$hydrationColumns, $parentArray)
+	public function getSubJoins(Table $table, $rel, QueryBuilder $qb)
 	{
 		$tmpClassNAme = $this->getTable();
 		$tmpClass = new $tmpClassNAme($table->getProvider());
 
-		$this->prefixe = $table->getPrefixedField($relName);
+		$this->prefixe = $table->getPrefixedField($this->name);
 
 		$qb2 = $tmpClass->findWithRel();
 
@@ -59,9 +59,8 @@ class HasMany extends TableLinkInterface
 		$qb->select($tmpClass->getPrefixe().'.json as '  . $tmpClass->getPrefixedField('json'));
 		$qb->ljoin('(' . $qb2->getQuery() . ') as ' . $tmpClass->getPrefixe(), $joinOn);
 
-		$this->fieldName = $tmpClass->getPrefixedField('json');
+		$qb->getHydrator()->addField($tmpClass->getPrefixedField('json'),$this->properties['linkTo'], $table->getPrefixe(), function ($a) use ($qb2) {$ret = [] ; foreach(json_decode($a) as $val){ $ret[] = call_user_func ([$qb2->getHydrator(), 'hydrate'], $val);} return $ret;});
 
-		$this->obj = $tmpClass;
 	}
 
 
@@ -69,26 +68,5 @@ class HasMany extends TableLinkInterface
 	{
 		return $this->properties['table'];
 	}
-
-	public function hydrateEntity(array $data)
-	{
-		if($data['data']['json'] == null)
-		{
-			return [];
-		}
-
-		$ret = [];
-		foreach(json_decode($data['data']['json']) as $data)
-		{
-			$ret[] = $this->obj->getArrayDataHydrated($data);
-		}
-		return $ret;
-	}
-
-	public function getHydratationColumns(array $prefixes = []) : array
-	{
-		return [$this->fieldName => [array_merge($prefixes,[$this->prefixe]), 'json']];
-	}
-
 
 }
