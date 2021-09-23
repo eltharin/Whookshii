@@ -251,7 +251,7 @@ class Table
 		foreach($fields as $fieldName)
 		{
 			$qb->select($this->queryPrefixe . '.' . $fieldName . ' ' . $this->getPrefixedField($fieldName));
-			$qb->getHydrator()->addField($this->getPrefixedField($fieldName),$this->fields[$fieldName]['entityField'], $this->getPrefixe());
+			$qb->getHydrator()->addField($this->getPrefixedField($fieldName),$this->fields[$fieldName]['entityField'], $this->getPrefixe(), null, $this->fields[$fieldName]['defaultValue'] ?? null);
 		}
 		return null;
 	}
@@ -339,7 +339,6 @@ class Table
 			{
 				$qb->set($fieldName, $val['defaultValue']);
 			}
-
 		}
 
 		$result = $qb->exec();

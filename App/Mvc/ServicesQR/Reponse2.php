@@ -18,9 +18,29 @@ class Reponse2
 		}
 	}
 
+	public function hasSomething()
+	{
+		return $this->hasErrors() || $this->hasWarnings() || $this->hasMessages() ;
+	}
+
+	public function hasAttention()
+	{
+		return $this->hasErrors() || $this->hasWarnings();
+	}
+
 	public function hasErrors()
 	{
 		return !empty($this->errors);
+	}
+
+	public function hasWarnings()
+	{
+		return !empty($this->warnings);
+	}
+
+	public function hasMessages()
+	{
+		return !empty($this->messages);
 	}
 
 	public function addMessage($message)
