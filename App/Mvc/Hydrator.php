@@ -20,7 +20,7 @@ class Hydrator
 		return $this;
 	}
 
-	public function addField($field, $propertyName = null, $parent = '', callable $callback = null)
+	public function addField($field, $propertyName = null, $parent = '', callable $callback = null, ?string $defaultValue = '')
 	{
 		if(is_array($field))
 		{
@@ -28,7 +28,7 @@ class Hydrator
 		}
 		else
 		{
-			$this->fields[$field] = ['propertyName' => $propertyName, 'parent' => $parent, 'callback' => $callback];
+			$this->fields[$field] = ['propertyName' => $propertyName, 'parent' => $parent, 'callback' => $callback, 'defaultValue' => $defaultValue];
 		}
 		return $this;
 	}
@@ -118,5 +118,10 @@ class Hydrator
 	{
 		$this->addEtage ($getPrefixe, $classObj, '');
 		$this->racine = $getPrefixe;
+	}
+
+	public function createEmpty() : Entity
+	{
+		return $this->hydrate(array_map(function ($a) {return $a['defaultValue'];}, $this->fields));
 	}
 }

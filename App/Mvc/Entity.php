@@ -94,7 +94,7 @@ class Entity implements \JsonSerializable
 
 	public function __isset($key)
 	{
-		return isset($this->properties[$key]);
+		return array_key_exists($key, $this->properties);
 	}
 
 	public function __unset($key)
@@ -110,7 +110,7 @@ class Entity implements \JsonSerializable
 
 	public function getOldValue($key)
 	{
-		return isset($this->oldProperties[$key]) ? $this->oldProperties[$key] : (isset($this->properties[$key]) ? $this->properties[$key] : null);
+		return array_key_exists($key , $this->oldProperties) ? $this->oldProperties[$key] : (array_key_exists($key , $this->properties) ? $this->properties[$key] : null);
 	}
 
 	public function isModified()
