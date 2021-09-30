@@ -1,7 +1,7 @@
 <?php
 namespace Core\App\Config;
 
-class Providers extends ConfigElementAbstract
+class Providers extends AbstractConfigElement
 {
 	protected const AUTOFILECONFIG = 'auto.providers';
 

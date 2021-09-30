@@ -1,7 +1,7 @@
 <?php
 namespace Core\App\Config;
 
-class Middlewares extends ConfigElementAbstract
+class Middlewares extends AbstractConfigElement
 {
 	protected const AUTOFILECONFIG = 'auto.middlewares';
 
@@ -13,7 +13,7 @@ class Middlewares extends ConfigElementAbstract
 								\Core\App\Middleware\Router::class,
 
 								\Core\App\Middleware\Templater::class,
-
+								\Core\App\Middleware\ErrorCatcher::class,
 								\Core\App\Middleware\ShutdownSession::class,
 
 							];
