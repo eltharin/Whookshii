@@ -425,7 +425,7 @@ class Form
 		$ret .= ' <script>
 					$(function() 
 					{
-						$( "#' . $params['id'] . '" ).datepicker( {dateFormat: "' . $params['format'] . '" '.$params['date_options'].'});
+						$( "#' . $params['id'] . '" ).datepicker( {dateFormat: "' . $params['format'] . '",changeMonth: "' . $params['changeMonth'] . '",  changeYear: "' . $params['changeYear'] . '" '.$params['date_options'].'});
 					});			
 					</script>';
 		
@@ -569,6 +569,8 @@ class Form
 				break;
 			case 'date' : 
 				$params['format'] = "dd/mm/yy";
+				$params['changeMonth'] = true;
+				$params['changeYear'] = true;
 				$params['date_options'] = "";
 				break;
 			case 'multiradio' : 
