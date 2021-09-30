@@ -1,6 +1,8 @@
 <?php
 namespace Core\App;
 
+use Core\App\Exception\HttpException;
+
 class Acl
 {
 	protected static $roles = array();
@@ -39,7 +41,7 @@ class Acl
 			return true;
 		}
 		
-		\HTTP::errorPage('403','Vous n\'avez pas acces à cette partie');
+		throw new HttpException('Vous n\'avez pas acces à cette partie', '403');
 		
 	}
 		

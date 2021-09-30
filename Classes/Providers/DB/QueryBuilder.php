@@ -9,6 +9,8 @@ class QueryBuilder implements \Iterator
 	private $type = 'select';
 	private $params = array();
 	private $queryElements;
+
+	private $isQueryBuiled = false;
 	/**
 	 * @var PDO | null
 	 */
@@ -24,11 +26,16 @@ class QueryBuilder implements \Iterator
 	private $iteratorKey = null;
 	private $iteratorValid = false;
 
-	public function __construct($provider = null)
+	public function __construct($provider = null, ?string $query = null, array $params = [])
 	{
 		$this->queryElements = new \stdClass();
 		$this->provider = $provider;
 		$this->hydrator = new Hydrator();
+
+		if($query !== null)
+		{
+			$this->setQuery ($query, $params);
+		}
 	}
 
 	public function __clone()
@@ -44,8 +51,21 @@ class QueryBuilder implements \Iterator
 
 	function getQuery()
 	{
-		$this->buildQuery();
+		if(!$this->isQueryBuiled)
+		{
+			$this->buildQuery();
+		}
+
 		return $this->query;
+	}
+
+	function setQuery($query, $params = []) : QueryBuilder
+	{
+		$this->query = $query;
+		$this->params = $params;
+		$this->isQueryBuiled = true;
+
+		return $this;
 	}
 
 	function getParams()
@@ -153,6 +173,7 @@ class QueryBuilder implements \Iterator
 		}
 
 		$this->query = $query;
+		$this->isQueryBuiled = true;
 		return $this->query;
 	}
 
@@ -163,6 +184,8 @@ class QueryBuilder implements \Iterator
 	public function select($str = null,$clearBefore=false,$placeFirst=false)
 	{
 		$this->type = 'select';
+		$this->isQueryBuiled = false;
+
 		if ($str === null)
 		{
 			$this->queryElements->select = [];
@@ -196,6 +219,8 @@ class QueryBuilder implements \Iterator
 
 	public function insert($table = null)
 	{
+		$this->isQueryBuiled = false;
+
 		$this->type = 'insert';
 		if($table !== null)
 		{
@@ -206,6 +231,8 @@ class QueryBuilder implements \Iterator
 
 	public function update($table = null)
 	{
+		$this->isQueryBuiled = false;
+
 		$this->type = 'update';
 		if($table !== null)
 		{
@@ -216,6 +243,8 @@ class QueryBuilder implements \Iterator
 
 	public function delete($table = null)
 	{
+		$this->isQueryBuiled = false;
+
 		$this->type = 'delete';
 		if($table !== null)
 		{
@@ -226,6 +255,8 @@ class QueryBuilder implements \Iterator
 
 	public function replace($table = null)
 	{
+		$this->isQueryBuiled = false;
+
 		$this->type = 'replace';
 		if($table !== null)
 		{
@@ -236,6 +267,8 @@ class QueryBuilder implements \Iterator
 
 	public function set($params, $val=null)
 	{
+		$this->isQueryBuiled = false;
+
 		if(!is_array($params))
 		{
 			$this->queryElements->set[] = ['champ' => $params, 'key' => ':set_' . $params];
@@ -252,42 +285,56 @@ class QueryBuilder implements \Iterator
 
 	public function from($table)
 	{
+		$this->isQueryBuiled = false;
+
 		$this->queryElements->from[] = $table;
 		return $this;
 	}
 
 	public function join($table, $param)
 	{
+		$this->isQueryBuiled = false;
+
 		$this->queryElements->join[] = 'JOIN ' . $table . ' ON ' . $param;
 		return $this;
 	}
 
 	public function ijoin($table, $param)
 	{
+		$this->isQueryBuiled = false;
+
 		$this->queryElements->join[] = 'INNER JOIN ' . $table . ' ON ' . $param;
 		return $this;
 	}
 
 	public function ljoin($table, $param)
 	{
+		$this->isQueryBuiled = false;
+
 		$this->queryElements->join[] = 'LEFT JOIN ' . $table . ' ON ' . $param;
 		return $this;
 	}
 
 	public function rjoin($table, $param)
 	{
+		$this->isQueryBuiled = false;
+
 		$this->queryElements->join[] = 'RIGHT JOIN ' . $table . ' ON ' . $param;
 		return $this;
 	}
 
 	public function crossApply($param)
 	{
+		$this->isQueryBuiled = false;
+
 		$this->queryElements->crossApply = $param;
 		return $this;
 	}
 
 	public function where($condition,array $vars=array())
 	{
+		$this->isQueryBuiled = false;
+
 		if(is_array($condition))
         {
 			foreach ($condition as $k => $v)
@@ -316,6 +363,8 @@ class QueryBuilder implements \Iterator
 
 	public function wherein($field,$vars=array(),$notin = false)
 	{
+		$this->isQueryBuiled = false;
+
 		$condition = $field . ' ' . ($notin ? 'NOT ' : '') . 'IN (';
 		$params = [];
 		$tabcondition = [];
@@ -345,6 +394,8 @@ class QueryBuilder implements \Iterator
 
 	public function having($condition,$vars=array())
 	{
+		$this->isQueryBuiled = false;
+
 		$this->queryElements->having[] = $condition;
 		$this->setParam($vars);
 		return $this;
@@ -352,36 +403,48 @@ class QueryBuilder implements \Iterator
 
 	public function groupby($str)
 	{
+		$this->isQueryBuiled = false;
+
 		$this->queryElements->groupby[] = $str;
 		return $this;
 	}
 
 	public function order($str)
 	{
+		$this->isQueryBuiled = false;
+
 		$this->queryElements->order[] = $str;
 		return $this;
 	}
 
 	public function limit($str)
 	{
+		$this->isQueryBuiled = false;
+
 		$this->queryElements->limit = $str;
 		return $this;
 	}
 
 	public function offset($str)
 	{
+		$this->isQueryBuiled = false;
+
 		$this->queryElements->offset = $str;
 		return $this;
 	}
 
 	public function free($str)
 	{
+		$this->isQueryBuiled = false;
+
 		$this->queryElements->free = $str;
 		return $this;
 	}
 
 	public function fetchMode(...$mode)
 	{
+		$this->isQueryBuiled = false;
+
 		$this->fetchMode = $mode;
         return $this;
 	}
