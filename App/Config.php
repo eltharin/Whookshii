@@ -1,6 +1,14 @@
 <?php
 namespace Core\App;
 
+use Core\App\Config\AbstractConfigElement;
+use Core\App\Config\Errors;
+use Core\App\Config\Middlewares;
+use Core\App\Config\Providers;
+use Core\App\Config\Response;
+use Core\App\Config\Routes;
+use Core\App\Config\Vars;
+
 class Config
 {
 	private static $elements;
@@ -9,11 +17,12 @@ class Config
 	{
 		self::$elements = new \stdClass;
 		
-		self::createElement('Vars',\Core\App\Config\Vars::class);
-		self::createElement('Middlewares',\Core\App\Config\Middlewares::class);
-		self::createElement('Routes',\Core\App\Config\Routes::class);
-		self::createElement('Providers',\Core\App\Config\Providers::class);
-		self::createElement('Response',\Core\App\Config\Response::class);
+		self::createElement('Vars', Vars::class);
+		self::createElement('Errors', Errors::class);
+		self::createElement('Middlewares', Middlewares::class);
+		self::createElement('Routes', Routes::class);
+		self::createElement('Providers', Providers::class);
+		self::createElement('Response', Response::class);
 	}
 
 	public static function createElement($name, $class)
@@ -26,7 +35,7 @@ class Config
 		self::$elements->$configName = $value;
 	}
 
-	public static function get($configName)
+	public static function get($configName) : ?AbstractConfigElement
 	{
 		if(isset(self::$elements->$configName))
 		{
@@ -34,12 +43,40 @@ class Config
 		}
 		return null;
 	}
-	
+
+	public static function getVars() : Vars
+	{
+		return self::get('Vars');
+	}
+
+	public static function getErrors() : Errors
+	{
+		return self::get('Errors');
+	}
+
+	public static function getMiddlewares() : Middlewares
+	{
+		return self::get('Middlewares');
+	}
+
+	public static function getRoutes() : Routes
+	{
+		return self::get('Routes');
+	}
+
+	public static function getProviders() : Providers
+	{
+		return self::get('Providers');
+	}
+
+	public static function getResponse() : Response
+	{
+		return self::get('Response');
+	}
 	
 	public static function noLimit()
 	{
 		ini_set('memory_limit',-1);
 		set_time_limit(-1);
-		
 	}
 }
