@@ -132,9 +132,13 @@ class Table
 		$this->links[$linkName] = $linkObject;
 	}
 
-	public function newQueryBuilder() : QueryBuilder
+	public function newQueryBuilder($withTable = false) : QueryBuilder
 	{
 		$qb = new QueryBuilder($this->provider);
+		if($withTable)
+		{
+			$qb->from($this->getTableName ());
+		}
 		$qb->getHydrator()->setRacine($this->getPrefixe(), $this->getEntityClassName());
 
 		return $qb;
@@ -288,7 +292,7 @@ class Table
 		return new $entityClass($data);
 	}
 
-	public function createEmpty($values=[])
+	public function createEmpty($values=[]) : Entity
 	{
 		$data = $this->createNewEntity();
 

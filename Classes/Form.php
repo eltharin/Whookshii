@@ -283,7 +283,7 @@ class Form
 					$ret .= 'value="' . ($val['key']??$key) . '" ';
 				}
 
-				if ((($val['key']??$key) == $params['value']))
+				if ((($val['key']??$key) == $params['value']) || ($params['value'] === null && ($val['defaut']??0) == 1))
 				{
 					$ret .= " selected ";
 				}

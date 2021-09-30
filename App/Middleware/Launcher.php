@@ -88,7 +88,8 @@ class Launcher extends MiddlewareAbstract
 			}
 			catch(HTTPException $e)
 			{
-				return new Response($e->getCode(),[],$e->getMessage());
+				$content = ob_get_clean();
+				return new Response($e->getCode()?:500,[],$content . $e->getMessage());
 			}
 			catch(RedirectException $e)
 			{
