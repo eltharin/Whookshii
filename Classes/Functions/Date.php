@@ -26,6 +26,6 @@ class Date
 
 	public static function fromSemaine($semaine, $annee, $jour = 1)
 	{
-		return date_isodate_set (date_create ("00/00/0000"), $annee, $semaine, $jour)->format ('U');
+		return date_isodate_set (date_create ('@-62169984000'), $annee, $semaine, $jour)->format ('U');
 	}
 }
