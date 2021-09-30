@@ -91,6 +91,7 @@ class Http
 	
 	public static function errorPage($errno, $message = null)
 	{
+		trigger_error('Deprecated Function', E_USER_DEPRECATED);
 		$val = array_slice(debug_backtrace(),0,2);
 		unset($val[1]['object']);
 		throw new HttpException($message,$errno,null,json_encode($val));

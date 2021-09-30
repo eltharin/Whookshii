@@ -60,7 +60,27 @@ class Debug
 	
 	static function error ($errno, $errstr, $errfile, $errline,$errcontext)
 	{
-		$taberr = array('errno' => $errno,'errstr' => $errstr, 'errfile' => $errfile, 'errline' => $errline);
+		switch($errno)
+		{
+			case E_ERROR : $errnoLibelle='ERROR';break;
+			case E_WARNING : $errnoLibelle='WARNING';break;
+			case E_PARSE : $errnoLibelle='PARSE';break;
+			case E_NOTICE : $errnoLibelle='NOTICE';break;
+			case E_CORE_ERROR : $errnoLibelle='CORE_ERROR';break;
+			case E_CORE_WARNING : $errnoLibelle='CORE_WARNING';break;
+			case E_COMPILE_ERROR : $errnoLibelle='COMPILE_ERROR';break;
+			case E_COMPILE_WARNING : $errnoLibelle='COMPILE_WARNING';break;
+			case E_USER_ERROR : $errnoLibelle='USER_ERROR';break;
+			case E_USER_WARNING : $errnoLibelle='USER_WARNING';break;
+			case E_USER_NOTICE : $errnoLibelle='USER_NOTICE';break;
+			case E_STRICT : $errnoLibelle='STRICT';break;
+			case E_RECOVERABLE_ERROR : $errnoLibelle='RECOVERABLE_ERROR';break;
+			case E_DEPRECATED : $errnoLibelle='DEPRECATED';break;
+			case E_USER_DEPRECATED : $errnoLibelle='USER_DEPRECATED';break;
+			default : $errnoLibelle = $errno;break;
+		}
+
+		$taberr = array('errno' => $errnoLibelle,'errstr' => $errstr, 'errfile' => $errfile, 'errline' => $errline, 'errcontext' => $errcontext);
 		if(!isset(self::$val['error'])) {self::$val['error'] = array();}
 		if(!in_array($taberr,self::$val['error']))
 		{
@@ -115,35 +135,14 @@ class Debug
 
 		if (!empty(self::$val['error']))
 		{
-			
-			$ret .= '<h1>Errors</h1>';
 			$ret .= '<table class="debugtable"><tr><th>type</th><th>fichier</th><th>ligne</th><th>erreur</th></tr>';
 			foreach(self::$val['error'] as $err)
 			{
-				switch($err['errno'])
-				{
-					case E_ERROR : $type='ERROR';break;
-					case E_WARNING : $type='WARNING';break;
-					case E_PARSE : $type='PARSE';break;
-					case E_NOTICE : $type='NOTICE';break;
-					case E_CORE_ERROR : $type='CORE_ERROR';break;
-					case E_CORE_WARNING : $type='CORE_WARNING';break;
-					case E_COMPILE_ERROR : $type='COMPILE_ERROR';break;
-					case E_COMPILE_WARNING : $type='COMPILE_WARNING';break;
-					case E_USER_ERROR : $type='USER_ERROR';break;
-					case E_USER_WARNING : $type='USER_WARNING';break;
-					case E_USER_NOTICE : $type='USER_NOTICE';break;
-					case E_STRICT : $type='STRICT';break;
-					case E_RECOVERABLE_ERROR : $type='RECOVERABLE_ERROR';break;
-					case E_DEPRECATED : $type='DEPRECATED';break;
-					case E_USER_DEPRECATED : $type='USER_DEPRECATED';break;
-					default : $type = $err['errno'];break;
-				}
-				$ret .= '<tr><td>' . $type . '</td><td>' . $err['errfile'] . '</td><td>' . $err['errline'] . '</td><td>' . $err['errstr'] . '</td></tr>';
+				$ret .= '<tr><td>' . $err['errno'] . '</td><td>' . $err['errfile'] . '</td><td>' . $err['errline'] . '</td><td>' . $err['errstr'] . '</td></tr>';
 			}
 			$ret .= '</table>';
 		}
-		echo $ret;
+		return $ret;
 	}
 	
 	static function print_array($arr,$ret = '')

@@ -2,6 +2,7 @@
 
 namespace Core\App\Mvc;
 
+use Core\App\Exception\HttpException;
 use Core\App\Mvc\TableLink\Query;
 use Core\Classes\Providers\DB\QueryBuilder;
 use Core\Classes\Providers\DB\QueryResult;
@@ -319,7 +320,7 @@ class Table
 		return true;
 	}
 
-	public function DBInsert(Entity $entity) : QueryResult
+	public function DBInsert(Entity $entity, bool $withException = true) : QueryResult
 	{
 		$qb = $this->newQueryBuilder()
 				   ->insert($this->table);
@@ -343,6 +344,11 @@ class Table
 
 		$result = $qb->exec();
 
+		if($withException && $result->hasError ())
+		{
+			throw new HTTPException (implode(BRN, $result->getError ()), 500);
+		}
+
 		if($this->PKAI !== null)
 		{
 			$entity->{$this->getPropertyFromField($this->PKAI)} = $qb->lastInsertId();
@@ -351,7 +357,7 @@ class Table
 		return $result;
 	}
 
-	public function DBUpdate(Entity $entity, ?Callable $qbCallback = null) : QueryResult
+	public function DBUpdate(Entity $entity, bool $withException = true) : QueryResult
 	{
 		$qb = $this->newQueryBuilder()
 				   ->update($this->table);
@@ -380,15 +386,17 @@ class Table
 			$qb->where([$key => $entity->getOldValue($this->getPropertyFromField($key))]);
 		}
 
-		if($qbCallback !== null)
+		$result = $qb->exec();
+
+		if($withException && $result->hasError ())
 		{
-			$qbCallback($qb);
+			throw new HTTPException (implode(BRN, $result->getError ()), 500);
 		}
 
-		return $qb->exec();
+		return $result;
 	}
 
-	public function DBReplace(Entity $entity) : QueryResult
+	public function DBReplace(Entity $entity, bool $withException = true) : QueryResult
 	{
 		$qb = $this->newQueryBuilder()
 				   ->replace($this->table);
@@ -408,6 +416,11 @@ class Table
 
 		$result = $qb->exec();
 
+		if($withException && $result->hasError ())
+		{
+			throw new HTTPException (implode(BRN, $result->getError ()), 500);
+		}
+
 		if($this->PKAI !== null)
 		{
 			$entity->{$this->getPropertyFromField($this->PKAI)} = $qb->lastInsertId();
@@ -416,7 +429,7 @@ class Table
 		return $result;
 	}
 
-    public function DBDelete(Entity $entity)
+    public function DBDelete(Entity $entity, bool $withException = true) : QueryResult
     {
         $qb = $this->newQueryBuilder()
                     ->delete($this->table);
@@ -430,6 +443,11 @@ class Table
         }
 
         $result = $qb->exec();
+
+		if($withException && $result->hasError ())
+		{
+			throw new HTTPException (implode(BRN, $result->getError ()), 500);
+		}
 
         return $result;
     }

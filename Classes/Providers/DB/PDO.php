@@ -46,11 +46,16 @@ abstract class PDO
 		$this->dbh->setAttribute($key, $val);
 	}
 
-	public function execute(QueryBuilder $qb) : QueryResult
+	public function execute(QueryBuilder|string $qb,array $params = []) : QueryResult
 	{
 		if (!($this->_connected))
 		{
 			$this->connect();
+		}
+
+		if(is_string($qb))
+		{
+			$qb = new QueryBuilder($this, $qb, $params);
 		}
 
 		Timer::start();
@@ -86,5 +91,26 @@ abstract class PDO
 	public function lastInsertId()
 	{
 		return $this->dbh->lastInsertId();
+	}
+
+	public function importFile(string $filename)
+	{
+		$ret = [];
+		$op_data = '';
+		$lines = file($filename);
+		foreach ($lines as $line)
+		{
+			if (substr($line, 0, 2) == '--' || $line == '')
+			{
+				continue;
+			}
+			$op_data .= $line;
+			if (substr(trim($line), -1, 1) == ';')//Breack Line Upto ';' NEW QUERY
+			{
+				$ret[] = $this->execute ($op_data);
+
+				$op_data = '';
+			}
+		}
 	}
 }
