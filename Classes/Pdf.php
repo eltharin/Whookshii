@@ -1,7 +1,7 @@
 <?php
 namespace Core\Classes;
 
-class Pdf extends \setasign\Fpdi\TcpdfFpdi
+class Pdf extends \setasign\Fpdi\Tcpdf\Fpdi
 {
 	private $FunctionHeader = null;
 	private $FunctionFooter = null;
