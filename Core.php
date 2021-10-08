@@ -32,6 +32,11 @@ class Core
 
 		require_once APP . 'Require.php';
 
+		if(file_exists (CONFIG . 'env.php'))
+		{
+			$_ENV = include(CONFIG . 'env.php');
+		}
+
 		\Config::init();
 		\Auth::init();
 		
