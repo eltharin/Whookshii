@@ -471,7 +471,7 @@ class QueryBuilder implements \Iterator
 
 		$stmt = $result->getStmt();
 
-		if($this->fetchMode !== null)
+		if($this->fetchMode !== null && $stmt !== null)
 		{
 			call_user_func_array([$stmt,'setFetchMode'], $this->fetchMode);
 		}

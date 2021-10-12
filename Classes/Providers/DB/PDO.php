@@ -112,5 +112,7 @@ abstract class PDO
 				$op_data = '';
 			}
 		}
+
+		return $ret;
 	}
 }
