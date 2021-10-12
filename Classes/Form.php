@@ -362,6 +362,14 @@ class Form
 	static function item_checkbox($params)
 	{
 		$params	 = self::get_params('checkbox', $params);
+
+		$params['type'] = 'checkbox';
+		if(isset($params['value']) && $params['value'] == $params['valueon'])
+		{
+			$params['checked'] = true;
+		}
+		$params['value'] = $params['valueon'];
+
 		$options = self::write_params($params,'checkbox');
 		
 		$ret = '';
@@ -370,18 +378,15 @@ class Form
 		{
 			$ret .= self::hidden($params['name'],$params['valueoff'],$params['id'].'val0');
 		}
-		
-		$ret .= '<input type="checkbox" name="' . $params['name'] . '" id="' . $params['id'] . '" class="'.$params['class'].'" value="' . $params['valueon'] . '"  ' . $params['options'];
+
+		$ret .= '<input ' . $options;
 
 		if(isset($params['checked']) && $params['checked'] == true)
 		{
 			$ret .= ' checked=checked ';
 		}
 
-		if(isset($params['value']) && $params['value'] == $params['valueon'])
-		{
-			$ret .= ' checked=checked ';
-		}
+
 
 		foreach($params['attr'] as $k => $v)
 		{
@@ -502,6 +507,14 @@ class Form
 		
 		if ((isset($params['options'])) && ($params['options'] != ''))
 			$ret .= ' ' . $params['options'] . ' ';
+
+		if (isset($params['data']))
+		{
+			foreach($params['data'] as $dataKey => $data)
+			{
+				$ret .= ' data-' . $dataKey . '="' . $data . '" ';
+			}
+		}
 
 		return $ret;
 	}
