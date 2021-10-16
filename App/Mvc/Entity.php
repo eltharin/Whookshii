@@ -136,6 +136,14 @@ class Entity implements \JsonSerializable
 			$this->__set($k,$v);
 		}
 	}
+
+	/**
+	 * @return null or array null if not specified, array for Form::select specifications
+	 */
+	public function getDataSelect()
+	{
+		return null;
+	}
 	/*protected function _setValue($key, $val, $options = [])
 	{
 		if(isset($this->fields[$key]))

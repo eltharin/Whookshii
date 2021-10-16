@@ -270,9 +270,23 @@ class Form
 
 			foreach ($tab2 as $key => $val)
 			{
-
-				if (!is_array($val))
+				if($val instanceof Entity)
 				{
+					$dataSelect = $val->getDataSelect();
+					if($dataSelect !== null)
+					{
+						$val = $dataSelect;
+					}
+					elseif($val->id !== null && $val->libelle !== null)
+					{
+						$val = ['key' => $val->id, 'val' => $val->libelle];
+					}
+					else
+					{
+						throw new Exception ('Impossible de convertir Entity en Array', 500);
+					}
+				}
+				elseif (!is_array($val))
 					$val = array('val'=>$val);
 				}
 
