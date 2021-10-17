@@ -66,4 +66,9 @@ abstract class TableLinkInterface
 	{
 		return  $this->properties['automaticWith'] ?? true;
 	}
+
+	public function getTypeOfListe()
+	{
+		return  $this->properties['typeOfListe'] ?? null;
+	}
 }

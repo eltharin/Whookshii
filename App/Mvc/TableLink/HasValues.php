@@ -19,7 +19,7 @@ class HasValues extends TableLinkInterface
 		$relObj = new ($this->properties['table']);
 		$relObj->setPrefixe($table->getPrefixe ());
 
-		foreach($relObj->getAllValueFields(['type' => $table->getTableName()]) as $champId => $champName)
+		foreach($relObj->getAllValueFields(['type' => $table->getTableName(), 'rel' => $this]) as $champId => $champName)
 		{
 			$relObj->addValueField($table, $qb, $champId, $champName, $this);
 		}
