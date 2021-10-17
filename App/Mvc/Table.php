@@ -187,7 +187,7 @@ class Table
 		return $qb;
 	}
 
-	public function findWithRel()
+	public function findWithRel() : QueryBuilder
 	{
 		return $this->find(['with' => $this->getRelationNames()]);
 	}
