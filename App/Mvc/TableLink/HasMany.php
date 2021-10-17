@@ -21,7 +21,7 @@ class HasMany extends TableLinkInterface
 		$tmpClassNAme = $this->getTable();
 		$tmpClass = new $tmpClassNAme($table->getProvider());
 
-		$this->prefixe = $table->getPrefixedField($this->name);
+		$this->prefixe = $table->getPrefixedFieldAlias($this->name);
 
 		$qb2 = $tmpClass->findWithRel();
 
@@ -42,24 +42,24 @@ class HasMany extends TableLinkInterface
 			$joinArr = [];
 			foreach($this->properties['joinOn']['FK'] as $k => $v)
 			{
-				$qb2->select($tmpClass->getPrefixe() . '.' . $v . ' as ' . $tmpClass->getPrefixedField($v));
-				$joinArr[] = $table->getPrefixe() . '.' . $this->properties['joinOn']['PK'][$k] . ' = ' . $tmpClass->getPrefixe() . '.' . $v;
+				$qb2->select($tmpClass->getPrefixedFieldName($v) . ' as ' . $tmpClass->getPrefixedFieldAlias($v));
+				$joinArr[] = $table->getPrefixedFieldName($this->properties['joinOn']['PK'][$k]) . ' = ' . $tmpClass->getPrefixedFieldAlias($v);
 			}
 			$joinOn = implode(' AND ', $joinArr);
 		}
 		else
 		{
-			$qb2->select($tmpClass->getPrefixe() . '.' . $this->properties['joinOn']['FK'] . ' as ' . $tmpClass->getPrefixedField($this->properties['joinOn']['FK']));
-			$qb2->groupby($tmpClass->getPrefixe() . '.' . $this->properties['joinOn']['FK']);
+			$qb2->select($tmpClass->getPrefixedFieldName($this->properties['joinOn']['FK']) . ' as ' . $tmpClass->getPrefixedFieldAlias($this->properties['joinOn']['FK']));
+			$qb2->groupby($tmpClass->getPrefixedFieldName($this->properties['joinOn']['FK']));
 
-			$joinOn = $table->getPrefixe() . '.' . $this->properties['joinOn']['PK'] . ' = ' . $tmpClass->getPrefixe() . '.' . $tmpClass->getPrefixedField($this->properties['joinOn']['FK']);
+			$joinOn = $table->getPrefixedFieldName($this->properties['joinOn']['PK']) . ' = ' . $tmpClass->getPrefixedFieldName($tmpClass->getPrefixedFieldAlias($this->properties['joinOn']['FK']));
 		}
 
 
-		$qb->select($tmpClass->getPrefixe().'.json as '  . $tmpClass->getPrefixedField('json'));
+		$qb->select($tmpClass->getPrefixedFieldName('json') . ' as '  . $tmpClass->getPrefixedFieldAlias('json'));
 		$qb->ljoin('(' . $qb2->getQuery() . ') as ' . $tmpClass->getPrefixe(), $joinOn);
 
-		$qb->getHydrator()->addField($tmpClass->getPrefixedField('json'),$this->properties['linkTo'], $table->getPrefixe(), function ($a) use ($qb2) {$ret = [] ; foreach(json_decode($a) as $val){ $ret[] = call_user_func ([$qb2->getHydrator(), 'hydrate'], $val);} return $ret;});
+		$qb->getHydrator()->addField($tmpClass->getPrefixedFieldAlias('json'),$this->properties['linkTo'], $table->getPrefixe(), function ($a) use ($qb2) {$ret = [] ; foreach(json_decode($a) as $val){ $ret[] = call_user_func ([$qb2->getHydrator(), 'hydrate'], $val);} return $ret;});
 
 	}
 
