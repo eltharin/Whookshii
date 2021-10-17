@@ -75,9 +75,14 @@ class Table
 		return $this->queryPrefixe;
 	}
 
-	public function getPrefixedField($field)
+	public function getPrefixedFieldAlias($field)
 	{
-		return $this->queryPrefixe . '__' . $field;
+		return $this->queryPrefixe != '' ? $this->queryPrefixe . '__' . $field : $field;
+	}
+
+	public function getPrefixedFieldName($field)
+	{
+		return $this->queryPrefixe != '' ? $this->queryPrefixe . '.' . $field : $field;
 	}
 
 	public function getEntityClassName()
@@ -235,7 +240,7 @@ class Table
 
 		foreach(array_combine($this->PKs,$pks) as $key => $val)
 		{
-			$qb->where([($this->getPrefixe().'.'.$key) => $val]);
+			$qb->where([(getPrefixedFieldName($key)) => $val]);
 		}
 
 		return $qb->first();
@@ -255,8 +260,8 @@ class Table
 
 		foreach($fields as $fieldName)
 		{
-			$qb->select($this->queryPrefixe . '.' . $fieldName . ' ' . $this->getPrefixedField($fieldName));
-			$qb->getHydrator()->addField($this->getPrefixedField($fieldName),$this->fields[$fieldName]['entityField'], $this->getPrefixe(), null, $this->fields[$fieldName]['defaultValue'] ?? null);
+			$qb->select($this->getPrefixedFieldName ($fieldName) . ' ' . $this->getPrefixedFieldAlias($fieldName));
+			$qb->getHydrator()->addField($this->getPrefixedFieldAlias($fieldName),$this->fields[$fieldName]['entityField'], $this->getPrefixe(), null, $this->fields[$fieldName]['defaultValue'] ?? null);
 		}
 		return null;
 	}
@@ -266,7 +271,7 @@ class Table
 		$ret = [];
 		foreach($this->fields as $key => $val)
 		{
-			$ret[] = $this->queryPrefixe . '.' . $key . ' ' . $this->getPrefixedField($key);
+			$ret[] = $this->getPrefixedFieldName ($key) . ' ' . $this->getPrefixedFieldAlias($key);
 		}
 		return implode(', ', $ret);
 	}

@@ -24,7 +24,7 @@ class Query extends TableLinkInterface
 
 	public function getJoins(Table $table, String $relName, $rel, QueryBuilder $qb)
 	{
-		$prefixe = $table->getPrefixedField($this->getName());
+		$prefixe = $table->getPrefixedFieldAlias($this->getName());
 
 		foreach($this->properties['qb']->getSelect() as $select)
 		{
@@ -41,14 +41,14 @@ class Query extends TableLinkInterface
 			$joinArr = [];
 			foreach($this->properties['joinOn']['FK'] as $k => $v)
 			{
-				$joinArr[] = $table->getPrefixe() . '.' . $this->properties['joinOn']['PK'][$k] . ' = ' . $prefixe . '.' . $v;
+				$joinArr[] = $table->getPrefixedFieldName($this->properties['joinOn']['PK'][$k]) . ' = ' . $prefixe . '.' . $v;
 				$this->properties['qb']->select($v);
 			}
 			$joinOn = implode(' AND ', $joinArr);
 		}
 		else
 		{
-			$joinOn = $table->getPrefixe() . '.' . $this->properties['joinOn']['PK'] . ' = ' . $prefixe . '.' . $this->properties['joinOn']['FK'];
+			$joinOn = $table->getPrefixedFieldName($this->properties['joinOn']['PK']) . ' = ' . $prefixe . '.' . $this->properties['joinOn']['FK'];
 			$this->properties['qb']->select($this->properties['joinOn']['FK']);
 		}
 

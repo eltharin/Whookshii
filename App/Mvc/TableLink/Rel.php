@@ -43,14 +43,14 @@ class Rel extends TableLinkInterface
 
 	public function getCompleteName()
 	{
-		return $this->obj->getPrefixedField('');
+		return $this->obj->getPrefixedFieldAlias('');
 	}
 
 	public function getSubJoins(Table $table, $rel, QueryBuilder $qb)
 	{
 		$tmpClassName = $this->getTable();
 		$tmpClass = new $tmpClassName($table->getProvider());
-		$tmpClass->setPrefixe($table->getPrefixedField($this->name));
+		$tmpClass->setPrefixe($table->getPrefixedFieldAlias($this->name));
 
 		if($rel['show'] == true)
 		{
@@ -65,12 +65,12 @@ class Rel extends TableLinkInterface
 		{
 			foreach($this->properties['joinOn']['FK'] as $k => $v)
 			{
-				$joinArr[] = $table->getPrefixe() . '.' . $v . ' = ' . $tmpClass->getPrefixe() . '.' . $this->properties['joinOn']['PK'][$k];
+				$joinArr[] = $table->getPrefixedFieldName($v) . ' = ' . $tmpClass->getPrefixedFieldName($this->properties['joinOn']['PK'][$k]);
 			}
 		}
 		else
 		{
-			$joinArr[] = $table->getPrefixe() . '.' . $this->properties['joinOn']['FK'] . ' = ' . $tmpClass->getPrefixe() . '.' . $this->properties['joinOn']['PK'];
+			$joinArr[] = $table->getPrefixedFieldName($this->properties['joinOn']['FK']) . ' = ' . $tmpClass->getPrefixedFieldName($this->properties['joinOn']['PK']);
 		}
 
 		if(isset($this->properties['joinOn']['addJoin']))
