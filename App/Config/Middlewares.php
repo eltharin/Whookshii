@@ -9,7 +9,6 @@ class Middlewares extends AbstractConfigElement
 								\Core\App\Middleware\TraillingSlash::class,
 								\Core\App\Middleware\Subfolder::class,
 								\Core\App\Middleware\FileLoader::class,
-								\Core\App\Middleware\Config::class,
 								\Core\App\Middleware\Router::class,
 
 								\Core\App\Middleware\Templater::class,

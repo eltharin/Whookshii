@@ -34,7 +34,12 @@ class Core
 
 		if(file_exists (CONFIG . 'env.php'))
 		{
-			$_ENV = include(CONFIG . 'env.php');
+			$_ENV = array_merge($_ENV, include(CONFIG . 'env.php'));
+		}
+
+		if(session_status () == \PHP_SESSION_NONE )
+		{
+			session_start();
 		}
 
 		\Config::init();
@@ -48,16 +53,7 @@ class Core
 
 	public function run(\Psr\Http\Message\ServerRequestInterface $request) : \Psr\Http\Message\ResponseInterface
 	{
-		\Config::get('Vars')->LoadConfig();
-		if(file_exists(SPECS . 'config.inc.php'))
-		{
-			\Config::get('Vars')->addConfig(SPECS . 'config.inc.php',false);
-		}
-
 		\Config::get('Vars')->setConfig('modeAjax',(isset($request->getServerParams()['HTTP_X_REQUESTED_WITH']) && strtolower($request->getServerParams()['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest'));
-
-		\Config::get('Middlewares')->LoadConfig();
-		\Config::get('Routes')->LoadConfig();
 
 		$response = (new \Core\App\Dispatcher())
 				->handle($request);

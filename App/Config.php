@@ -23,6 +23,22 @@ class Config
 		self::createElement('Routes', Routes::class);
 		self::createElement('Providers', Providers::class);
 		self::createElement('Response', Response::class);
+
+
+		\Config::get('Vars')->LoadConfig();
+
+		if(file_exists(SPECS . 'config.php'))
+		{
+			require_once(SPECS . DS . 'config.php');
+		}
+
+		/*if(file_exists(SPECS . 'config.inc.php'))
+		{
+			\Config::get('Vars')->addConfig(SPECS . 'config.inc.php',false);
+		}*/
+
+		\Config::get('Middlewares')->LoadConfig();
+		\Config::get('Routes')->LoadConfig();
 	}
 
 	public static function createElement($name, $class)
