@@ -240,7 +240,7 @@ class Table
 
 		foreach(array_combine($this->PKs,$pks) as $key => $val)
 		{
-			$qb->where([(getPrefixedFieldName($key)) => $val]);
+			$qb->where([($this->getPrefixedFieldName($key)) => $val]);
 		}
 
 		return $qb->first();
