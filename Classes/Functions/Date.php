@@ -2,6 +2,8 @@
 
 namespace Core\Classes\Functions;
 
+use DateTimeZone;
+
 class Date
 {
 	static function date($format, $timestamp)
@@ -27,5 +29,10 @@ class Date
 	public static function fromSemaine($semaine, $annee, $jour = 1)
 	{
 		return date_isodate_set (date_create ('@-62169984000'), $annee, $semaine, $jour)->format ('U');
+	}
+
+	public static function timezone(string $string)
+	{
+		return new DateTimeZone($string);
 	}
 }
