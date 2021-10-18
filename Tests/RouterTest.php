@@ -16,12 +16,12 @@ class RouterTest extends TestCase
 	public function testGoodMethod()
 	{
 		\Config::get('Routes')->setConfig('automaticsRoutes',false);
-		\Config::get('Routes')->addRoute('/test','*',function(){return 'hello';},'test1');
-		\Config::get('Routes')->addRoute('/test2','GET',function(){return 'bonjour';},'test2');
-		\Config::get('Routes')->addRoute('/test3',['POST','PUT'],function(){return 'salut';},'test3');
-		\Config::get('Routes')->addRoute('/test4',['POST','GET'],'test/actiondetest','test4');
-		\Config::get('Routes')->addRoute('/test5',['POST','GET'],'testnamespace/test/actiondetestavecnamespace','test5');
-		\Config::get('Routes')->addRoute('/test6/{param1:.*}-{param2:\d*}','GET','test/actiondetestavecparams','test6');
+		\Config::get('Routes')->addRoute('/test','*',function(){return 'hello';},'test1', false);
+		\Config::get('Routes')->addRoute('/test2','GET',function(){return 'bonjour';},'test2', false);
+		\Config::get('Routes')->addRoute('/test3',['POST','PUT'],function(){return 'salut';},'test3', false);
+		\Config::get('Routes')->addRoute('/test4',['POST','GET'],'test/actiondetest','test4', false);
+		\Config::get('Routes')->addRoute('/test5',['POST','GET'],'testnamespace/test/actiondetestavecnamespace','test5', false);
+		\Config::get('Routes')->addRoute('/test6/{param1:.*}-{param2:\d*}','GET','test/actiondetestavecparams','test6', false);
 
 		$router = new Router();
 
@@ -65,9 +65,9 @@ class RouterTest extends TestCase
 	public function testGetMethodIfNotExist()
 	{
 		\Config::get('Routes')->setConfig('automaticsRoutes',false);
-		\Config::get('Routes')->addRoute('/testqsdqsd','*',function(){return 'hello';},'test1');
-		\Config::get('Routes')->addRoute('/test','POST',function(){return 'salut';},'test2');
-		\Config::get('Routes')->addRoute('/test',['POST','PUT'],function(){return 'bonjour';},'test3');
+		\Config::get('Routes')->addRoute('/testqsdqsd','*',function(){return 'hello';},'test1', false);
+		\Config::get('Routes')->addRoute('/test','POST',function(){return 'salut';},'test2', false);
+		\Config::get('Routes')->addRoute('/test',['POST','PUT'],function(){return 'bonjour';},'test3', false);
 
 		$router = new Router();
 		$request = new ServerRequest('GET','/test');
@@ -81,8 +81,8 @@ class RouterTest extends TestCase
 		\Config::get('Routes')->setConfig('automaticsRoutes',false);
 		$request = new ServerRequest('GET','/test/mon-slug-8');
 
-		\Config::get('Routes')->addRoute('/test','*',function(){return 'qsdsqd';},'posts');
-		\Config::get('Routes')->addRoute('/test/{slug:[a-z0-9\-]+}-{id:\d+}','*',function(){return 'hello';},'post.show');
+		\Config::get('Routes')->addRoute('/test','*',function(){return 'qsdsqd';},'posts', false);
+		\Config::get('Routes')->addRoute('/test/{slug:[a-z0-9\-]+}-{id:\d+}','*',function(){return 'hello';},'post.show', false);
 
 		$router = new Router();
 
@@ -106,30 +106,30 @@ class RouterTest extends TestCase
 
 		$this->assertNotNull($route);
 		$this->assertEquals('automatic',$route->getName());
-		$this->assertEquals(['0' => 'toto'],$route->getParams());
+		$this->assertEquals(['_params' => ['0' => 'toto']],$route->getParams());
 		//$this->assertEquals('les routes automatiques fonctionnent et le param est toto',$route->getCallback()->exec($route->getParams()));
 
 		$request = new ServerRequest('GET','/test/actionautomatiquedetest/tutu');
 		$route = $router->match($request);
 		$this->assertNotNull($route);
 		$this->assertEquals('automatic',$route->getName());
-		$this->assertEquals(['0' => 'tutu'],$route->getParams());
+		$this->assertEquals(['_params' => ['0' => 'tutu']],$route->getParams());
 		//$this->assertEquals('les routes automatiques fonctionnent et le param est tutu',$route->getCallback()->exec($route->getParams()));
 	}
 
 
 	public function testComplexeRule()
 	{
-		\Config::get('Routes')->addRoute('/admin/{ctrl:.*}/{action:.*}','*',['controller' => 'admin/{controller}', 'action' => '{action}'],'admin');
+		\Config::get('Routes')->addRoute('/admin/{controller:.*}/{action:.*}','*',['controller' => 'admin/{controller}', 'action' => '{action}'],'admin', true);
 
 		$router = new Router();
 
-		$request = new ServerRequest('GET','/admin/machin/truc');
+		$request = new ServerRequest('GET','/admin/machin/truc/toto');
 		$route = $router->match($request);
 
 		$this->assertNotNull($route);
 		$this->assertEquals('admin',$route->getName());
-		$this->assertEquals(['0' => 'toto'],$route->getParams());
+		$this->assertEquals(['_params' => ['0' => 'toto']],$route->getParams());
 		//$this->assertEquals('les routes automatiques fonctionnent et le param est toto',$route->getCallback()->exec($route->getParams()));
 
 	}

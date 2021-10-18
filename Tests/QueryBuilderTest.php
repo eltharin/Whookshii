@@ -26,7 +26,7 @@ class QueryBuilderTest extends TestCase
 			->where('champ7 = :var',['var'=>'tata']);
 
 		$this->assertInstanceOf(QueryBuilder::class, $qb);
-		$this->assertEquals('SELECT champ1, champ2 , champ3 FROM table1 t1 INNER JOIN table2 t2 ON t1.champ1 = t2.champ3 LEFT JOIN table3 t3 ON t1.champ2 = t3.champ4 WHERE champ5 = :champ5 AND champ6 = :champ6 AND champ10 = 2 AND champ7 = :var',$qb->getQuery());
+		$this->assertEquals('SELECT champ1 , champ2 , champ3 FROM table1 t1 INNER JOIN table2 t2 ON t1.champ1 = t2.champ3 LEFT JOIN table3 t3 ON t1.champ2 = t3.champ4 WHERE champ5 = :champ5 AND champ6 = :champ6 AND champ10 = 2 AND champ7 = :var',$qb->getQuery());
 		$this->assertEquals(['champ5' => '12', 'champ6' => 'toto','var' => 'tata'], $qb->getParams());
 	}
 

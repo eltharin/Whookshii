@@ -77,9 +77,9 @@ class CoreTest extends TestCase
 
 	function testGoodLaunch()
 	{
-		\Config::get('Routes')->addRoute('/test1',['POST','GET'],'test/actiondetest','test1');
-		\Config::get('Routes')->addRoute('/test2',['POST','GET'],'testnamespace/test/actiondetestavecnamespace','test2');
-		\Config::get('Routes')->addRoute('/test3/{param1:.*}-{param2:\d*}','GET','test/actiondetestavecparams','test3');
+		\Config::get('Routes')->addRoute('/test1',['POST','GET'],'test/actiondetest','test1', false);
+		\Config::get('Routes')->addRoute('/test2',['POST','GET'],'testnamespace/test/actiondetestavecnamespace','test2', false);
+		\Config::get('Routes')->addRoute('/test3/{param1:.*}-{param2:\d*}','GET','test/actiondetestavecparams','test3', false);
 
 		$request = new ServerRequest('GET','/test1');
 		$response = $this->app->run($request);
