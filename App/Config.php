@@ -18,7 +18,6 @@ class Config
 		self::$elements = new \stdClass;
 		
 		self::createElement('Vars', Vars::class);
-		self::createElement('Errors', Errors::class);
 		self::createElement('Middlewares', Middlewares::class);
 		self::createElement('Routes', Routes::class);
 		self::createElement('Providers', Providers::class);
