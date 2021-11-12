@@ -64,11 +64,6 @@ class Config
 		return self::get('Vars');
 	}
 
-	public static function getErrors() : Errors
-	{
-		return self::get('Errors');
-	}
-
 	public static function getMiddlewares() : Middlewares
 	{
 		return self::get('Middlewares');
