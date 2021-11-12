@@ -17,11 +17,12 @@ class ErrorCatcher extends MiddlewareAbstract
 		}
 		catch(\Throwable $t)
 		{
-			$errorHandler = \Config::getErrors()->getConfig ('fatalErrorHandler');
+			$errorHandler = \Config::getVars()->getConfig ('errors.fatalErrorHandler');
 			if($errorHandler !== null)
 			{
 				return 	$errorHandler($t);
 			}
+			throw $t;
 			return new Response(500, [], 'Une erreur est survenue.');
 		}
 	}
