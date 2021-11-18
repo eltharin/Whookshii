@@ -55,7 +55,7 @@ class Router extends MiddlewareAbstract
 
 			return new Route([
 						'name' => 'automatic',
-						'callback' => ['controller' => $controller, 'action' => ($action??'index')],
+						'callback' => ['controller' => $controller, 'action' => str_replace('-','_',$action??'index')],
 						'params' => ['_params' => $requestUri]
 						]);
 		}

@@ -42,8 +42,9 @@ class Core
 			session_start();
 		}
 
-		\Config::init();
 		\Auth::init();
+		\Config::init();
+
 		
 		if(isset($_SERVER['CONTENT_TYPE']) && $_SERVER['CONTENT_TYPE'] == 'application/json' && empty($_POST))
 		{

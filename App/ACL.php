@@ -9,7 +9,11 @@ class Acl
 	protected static $admin = false;
 	protected static $rights = array('allow' => array(),'deny' => array());
 	
-	
+	public static function debug()
+	{
+		return self::$roles;
+	}
+
 	public static function set($right,$bool=true)
 	{
 		self::$roles[$right] = $bool;
