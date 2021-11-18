@@ -15,8 +15,13 @@ class HTMLTemplate extends AbstractConfigElement
 
 	public function __construct()
 	{
-		$this->actualmessage = $_SESSION['__message']??null;
+		/*$this->actualmessage = $_SESSION['__message']??null;
 		$_SESSION['__message'] = [];
+		$this->message = &$_SESSION['__message'];*/
+		if(!isset($_SESSION['__message']))
+		{
+			$_SESSION['__message'] = [];
+		}
 		$this->message = &$_SESSION['__message'];
 	}
 
@@ -138,10 +143,10 @@ class HTMLTemplate extends AbstractConfigElement
 		$this->message[$options['position']][] = '<div class="' . $options['type'] . '">' . $message . '</div>';
 	}
 
-	public function getMessages(string $position) : string
+	public function getMessages(string $position) : array
 	{
-		$messages = implode('',$this->actualmessage[$position]??[]);
-		unset($this->actualmessage[$position]);
+		$messages = $this->message[$position]??[];
+		unset($this->message[$position]);
 		return $messages;
 	}
 	
