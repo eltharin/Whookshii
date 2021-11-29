@@ -124,4 +124,12 @@ class Hydrator
 	{
 		return $this->hydrate(array_map(function ($a) {return $a['defaultValue'];}, $this->fields));
 	}
+
+    public function clean()
+    {
+        $this->objectClass = null;
+        $this->fields = [];
+        $this->etages = [];
+        $this->racine = null;
+    }
 }
