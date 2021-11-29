@@ -623,4 +623,10 @@ class QueryBuilder implements \Iterator
 		}
         $this->iteratorKey = 0;
     }
+
+    public function cleanHydrator()
+    {
+        $this->getHydrator()->clean();
+        return $this;
+    }
 }
