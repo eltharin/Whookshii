@@ -478,7 +478,7 @@ class Form
 				}
 				else
 				{
-					$params['id'] = $params['name'];
+					$params['id'] = str_replace(['[',']'],['_','_'],$params['name']);
 				}
 			}
 		}
