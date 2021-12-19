@@ -265,14 +265,21 @@ class QueryBuilder implements \Iterator
 		return $this;
 	}
 
-	public function set($params, $val=null)
+	public function set($params, $val=null, $valSql = false)
 	{
 		$this->isQueryBuiled = false;
 
 		if(!is_array($params))
 		{
-			$this->queryElements->set[] = ['champ' => $params, 'key' => ':set_' . $params];
-			$this->setParam(['set_' . $params => $val]);
+			if($valSql === false)
+			{
+				$this->queryElements->set[] = ['champ' => $params, 'key' => ':set_' . $params];
+				$this->setParam(['set_' . $params => $val]);
+			}
+			else
+			{
+				$this->queryElements->set[] = ['champ' => $params, 'key' => $val];
+			}
 			return $this;
 		}
 
