@@ -111,51 +111,76 @@ trait Intervallaire
 
     }
 
-    public function moveItem(Entity $item, $parent)
-    {
+	public function moveItem(Entity $item, $parent)
+	{
 		if($parent == null)
 		{
 			$parent = $this->getMasterParent();
 		}
 		elseif(is_int($parent))
-        {
-            $parent = $this->get($parent);
-        }
+		{
+			$parent = $this->get($parent);
+		}
 
-        $qb1 = (new QueryBuilder())->update($this->table)
-                                    ->set($this->intervallaireFieldBorneMin, $this->intervallaireFieldBorneMin . ' + ' . ($item->borneMax - $item->borneMin + 1),true)
-                                    ->where($this->intervallaireFieldBorneMin . ' >= ' . $parent->borneMax);
+		return $this->moveTo($item, $parent->borneMax, $parent->niveau + 1);
+	}
 
-        $qb2 = (new QueryBuilder())->update($this->table)
-                                    ->set($this->intervallaireFieldBorneMax, $this->intervallaireFieldBorneMax . ' + ' . ($item->borneMax - $item->borneMin + 1),true)
-                                    ->where($this->intervallaireFieldBorneMax . ' >= ' . $parent->borneMax);
+	public function moveItemBefore(Entity $item, $itemBefore)
+	{
+		if(is_int($itemBefore))
+		{
+			$itemBefore = $this->get($itemBefore);
+		}
 
-        $decallage = ($item->borneMin >= $parent->borneMax ? ($item->borneMax - $item->borneMin + 1) : 0);
+		return $this->moveTo($item, $itemBefore->borneMin, $itemBefore->niveau);
+	}
 
-        $qb3 = (new QueryBuilder())->update($this->table)
-                                    ->set($this->intervallaireFieldBorneMin, $parent->borneMax . ' + ' . $this->intervallaireFieldBorneMin . ' - ' . ($item->borneMin + $decallage),true)
-                                    ->set($this->intervallaireFieldBorneMax, $parent->borneMax . ' + ' . $this->intervallaireFieldBorneMax . ' - ' . ($item->borneMin + $decallage),true)
-                                    ->set($this->intervallaireFieldNiveau  , $this->intervallaireFieldNiveau . ' + ' . ($parent->niveau - $item->niveau + 1),true)
-                                    ->where($this->intervallaireFieldBorneMin . ' >= ' . ($item->borneMin + $decallage))
-                                    ->where($this->intervallaireFieldBorneMax . ' <= ' . ($item->borneMax + $decallage));
+	public function moveItemAfter(Entity $item, $itemBefore)
+	{
+		if(is_int($itemBefore))
+		{
+			$itemBefore = $this->get($itemBefore);
+		}
+
+		return $this->moveTo($item, $itemBefore->borneMax+1, $itemBefore->niveau);
+	}
+
+	protected function moveTo(Entity $item, $newBorneMin, $newNiveau)
+	{
+		$qb1 = (new QueryBuilder())->update($this->table)
+			->set($this->intervallaireFieldBorneMin, $this->intervallaireFieldBorneMin . ' + ' . ($item->borneMax - $item->borneMin + 1),true)
+			->where($this->intervallaireFieldBorneMin . ' >= ' . $newBorneMin);
+
+		$qb2 = (new QueryBuilder())->update($this->table)
+			->set($this->intervallaireFieldBorneMax, $this->intervallaireFieldBorneMax . ' + ' . ($item->borneMax - $item->borneMin + 1),true)
+			->where($this->intervallaireFieldBorneMax . ' >= ' . $newBorneMin);
+
+		$decallage = ($item->borneMin >= $newBorneMin ? ($item->borneMax - $item->borneMin + 1) : 0);
+
+		$qb3 = (new QueryBuilder())->update($this->table)
+			->set($this->intervallaireFieldBorneMin, $newBorneMin . ' + ' . $this->intervallaireFieldBorneMin . ' - ' . ($item->borneMin + $decallage),true)
+			->set($this->intervallaireFieldBorneMax, $newBorneMin . ' + ' . $this->intervallaireFieldBorneMax . ' - ' . ($item->borneMin + $decallage),true)
+			->set($this->intervallaireFieldNiveau  , $this->intervallaireFieldNiveau . ' + ' . ($newNiveau - $item->niveau),true)
+			->where($this->intervallaireFieldBorneMin . ' >= ' . ($item->borneMin + $decallage))
+			->where($this->intervallaireFieldBorneMax . ' <= ' . ($item->borneMax + $decallage));
 
 
-        $qb4 = (new QueryBuilder())->update($this->table)
-                                    ->set($this->intervallaireFieldBorneMin, $this->intervallaireFieldBorneMin . ' - ' . ($item->borneMax - $item->borneMin + 1),true)
-                                    ->where($this->intervallaireFieldBorneMin . ' > ' . $item->borneMax);
+		$qb4 = (new QueryBuilder())->update($this->table)
+			->set($this->intervallaireFieldBorneMin, $this->intervallaireFieldBorneMin . ' - ' . ($item->borneMax - $item->borneMin + 1),true)
+			->where($this->intervallaireFieldBorneMin . ' > ' . $item->borneMax);
 
-        $qb5 = (new QueryBuilder())->update($this->table)
-                                    ->set($this->intervallaireFieldBorneMax, $this->intervallaireFieldBorneMax . ' - ' . ($item->borneMax - $item->borneMin + 1),true)
-                                    ->where($this->intervallaireFieldBorneMax . ' > ' . $item->borneMax);
+		$qb5 = (new QueryBuilder())->update($this->table)
+			->set($this->intervallaireFieldBorneMax, $this->intervallaireFieldBorneMax . ' - ' . ($item->borneMax - $item->borneMin + 1),true)
+			->where($this->intervallaireFieldBorneMax . ' > ' . $item->borneMax);
 
-        $this->executeQb($qb1);
-        $this->executeQb($qb2);
-        $this->executeQb($qb3);
-        $this->executeQb($qb4);
-        $this->executeQb($qb5);
+		$this->executeQb($qb1);
+		$this->executeQb($qb2);
+		$this->executeQb($qb3);
+		$this->executeQb($qb4);
+		$this->executeQb($qb5);
 
-        return true;
-    }
+		return true;
+	}
 
 	public function getItemWithChilds($item = null)
 	{
