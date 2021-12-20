@@ -286,7 +286,7 @@ class IntervallaireTest extends TestCase
 
 		$data = $inter->find()->all();
 
-		var_dump($data);
+		//var_dump($data);
 		//var_dump(\DEBUG::get_sql());
 
 		$this->assertEquals(1	,$data[0]->id);
@@ -329,7 +329,7 @@ class IntervallaireTest extends TestCase
 
 		$data = $inter->find()->all();
 
-		var_dump($data);
+		//var_dump($data);
 		//var_dump(\DEBUG::get_sql());
 
 		$this->assertEquals(1	,$data[0]->id);
@@ -363,32 +363,90 @@ class IntervallaireTest extends TestCase
 		$this->assertEquals(3	,$data[9]->niveau);
 	}
 
-    function testModifWithCompte()
-    {
-        $inter = new Intervallaire(\Config::get('Providers')->getConfig('UnitTests'));
+	function testModifWithCompte()
+	{
+		$inter = new Intervallaire(\Config::get('Providers')->getConfig('UnitTests'));
 
-        $inter->withCallback(function($qb) {$qb->where('TES_INT_COMPTE = 1');});
-        $inter->addItem(new Entity(['libelle'=>'Item 1.1.1','compte'=>'1']), 2);
-        $inter->moveItem($inter->get(7),3);
+		$inter->withCallback(function($qb) {$qb->where('TES_INT_COMPTE = 1');});
+		$inter->addItem(new Entity(['libelle'=>'Item 1.1.1','compte'=>'1']), 2);
+		$inter->moveItem($inter->get(7),3);
 
-        $data = $inter->find()->all();
+		$data = $inter->find()->all();
 
-        //var_dump($data);
-        //var_dump(\DEBUG::get_sql());
+		//var_dump($data);
+		//var_dump(\DEBUG::get_sql());
 
-        $this->assertEquals(3   ,$data[2]->id);
-        $this->assertEquals(6  ,$data[2]->borneMin);
-        $this->assertEquals(9  ,$data[2]->borneMax);
-        $this->assertEquals(1   ,$data[2]->niveau);
+		$this->assertEquals(3   ,$data[2]->id);
+		$this->assertEquals(6  ,$data[2]->borneMin);
+		$this->assertEquals(9  ,$data[2]->borneMax);
+		$this->assertEquals(1   ,$data[2]->niveau);
 
-        $this->assertEquals(7       ,$data[6]->id);
-        $this->assertEquals(7       ,$data[6]->borneMin);
-        $this->assertEquals(8      ,$data[6]->borneMax);
-        $this->assertEquals(2       ,$data[6]->niveau);
+		$this->assertEquals(7       ,$data[6]->id);
+		$this->assertEquals(7       ,$data[6]->borneMin);
+		$this->assertEquals(8      ,$data[6]->borneMax);
+		$this->assertEquals(2       ,$data[6]->niveau);
 
-        $this->assertEquals(8       ,$data[7]->id);
-        $this->assertEquals(1       ,$data[7]->borneMin);
-        $this->assertEquals(42      ,$data[7]->borneMax);
-        $this->assertEquals(1       ,$data[7]->niveau);
-    }
+		$this->assertEquals(8       ,$data[7]->id);
+		$this->assertEquals(1       ,$data[7]->borneMin);
+		$this->assertEquals(42      ,$data[7]->borneMax);
+		$this->assertEquals(1       ,$data[7]->niveau);
+	}
+
+	function testMoveBefore()
+	{
+		$inter = new Intervallaire(\Config::get('Providers')->getConfig('UnitTests'));
+
+		$inter->withCallback(function($qb) {$qb->where('TES_INT_COMPTE = 1');});
+
+		$inter->moveItemBefore($inter->get(4),2);
+
+		$data = $inter->find()->all();
+
+		var_dump($data);
+		//var_dump(\DEBUG::get_sql());
+
+		$this->assertEquals(2   ,$data[1]->id);
+		$this->assertEquals(4  	,$data[1]->borneMin);
+		$this->assertEquals(5  	,$data[1]->borneMax);
+		$this->assertEquals(1   ,$data[1]->niveau);
+
+		$this->assertEquals(3   ,$data[2]->id);
+		$this->assertEquals(6   ,$data[2]->borneMin);
+		$this->assertEquals(7   ,$data[2]->borneMax);
+		$this->assertEquals(1   ,$data[2]->niveau);
+
+		$this->assertEquals(4   ,$data[3]->id);
+		$this->assertEquals(2   ,$data[3]->borneMin);
+		$this->assertEquals(3  	,$data[3]->borneMax);
+		$this->assertEquals(1   ,$data[3]->niveau);
+	}
+
+	function testMoveAfter()
+	{
+		$inter = new Intervallaire(\Config::get('Providers')->getConfig('UnitTests'));
+
+		$inter->withCallback(function($qb) {$qb->where('TES_INT_COMPTE = 1');});
+
+		$inter->moveItemAfter($inter->get(4),2);
+
+		$data = $inter->find()->all();
+
+		var_dump($data);
+		//var_dump(\DEBUG::get_sql());
+
+		$this->assertEquals(2   ,$data[1]->id);
+		$this->assertEquals(2  	,$data[1]->borneMin);
+		$this->assertEquals(3  	,$data[1]->borneMax);
+		$this->assertEquals(1   ,$data[1]->niveau);
+
+		$this->assertEquals(3   ,$data[2]->id);
+		$this->assertEquals(6   ,$data[2]->borneMin);
+		$this->assertEquals(7   ,$data[2]->borneMax);
+		$this->assertEquals(1   ,$data[2]->niveau);
+
+		$this->assertEquals(4   ,$data[3]->id);
+		$this->assertEquals(4   ,$data[3]->borneMin);
+		$this->assertEquals(5  	,$data[3]->borneMax);
+		$this->assertEquals(1   ,$data[3]->niveau);
+	}
 }
