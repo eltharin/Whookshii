@@ -66,11 +66,11 @@ trait Intervallaire
 				$parent = $this->get($parent);
 			}
 
-			$qb1 = (new QueryBuilder())->update($this->table)
+			$qb1 = (new QueryBuilder())->update($this->getTable())
 										->set($this->intervallaireFieldBorneMin, $this->intervallaireFieldBorneMin . ' + 2',true)
 										->where($this->intervallaireFieldBorneMin . ' >= ' . $parent->borneMax);
 
-			$qb2 = (new QueryBuilder())->update($this->table)
+			$qb2 = (new QueryBuilder())->update($this->getTable())
 										->set($this->intervallaireFieldBorneMax, $this->intervallaireFieldBorneMax . ' + 2',true)
 										->where($this->intervallaireFieldBorneMax . ' >= ' . $parent->borneMax);
 
@@ -93,15 +93,15 @@ trait Intervallaire
             return false;
         }
 
-        $qb1 = (new QueryBuilder())->delete($this->table)
+        $qb1 = (new QueryBuilder())->delete($this->getTable())
                                     ->where($this->intervallaireFieldBorneMin . ' >= ' . $item->borneMin)
                                     ->where($this->intervallaireFieldBorneMax . ' <= ' . $item->borneMax);
 
-        $qb2 = (new QueryBuilder())->update($this->table)
+        $qb2 = (new QueryBuilder())->update($this->getTable())
                                     ->set($this->intervallaireFieldBorneMin, $this->intervallaireFieldBorneMin . ' - ' . ($item->borneMax - $item->borneMin + 1),true)
                                     ->where($this->intervallaireFieldBorneMin . ' >= ' . $item->borneMax);
 
-        $qb3 = (new QueryBuilder())->update($this->table)
+        $qb3 = (new QueryBuilder())->update($this->getTable())
                                     ->set($this->intervallaireFieldBorneMax, $this->intervallaireFieldBorneMax . ' - ' . ($item->borneMax - $item->borneMin + 1),true)
                                     ->where($this->intervallaireFieldBorneMax . ' > ' . $item->borneMax);
 
@@ -147,17 +147,17 @@ trait Intervallaire
 
 	protected function moveTo(Entity $item, $newBorneMin, $newNiveau)
 	{
-		$qb1 = (new QueryBuilder())->update($this->table)
+		$qb1 = (new QueryBuilder())->update($this->getTable())
 			->set($this->intervallaireFieldBorneMin, $this->intervallaireFieldBorneMin . ' + ' . ($item->borneMax - $item->borneMin + 1),true)
 			->where($this->intervallaireFieldBorneMin . ' >= ' . $newBorneMin);
 
-		$qb2 = (new QueryBuilder())->update($this->table)
+		$qb2 = (new QueryBuilder())->update($this->getTable())
 			->set($this->intervallaireFieldBorneMax, $this->intervallaireFieldBorneMax . ' + ' . ($item->borneMax - $item->borneMin + 1),true)
 			->where($this->intervallaireFieldBorneMax . ' >= ' . $newBorneMin);
 
 		$decallage = ($item->borneMin >= $newBorneMin ? ($item->borneMax - $item->borneMin + 1) : 0);
 
-		$qb3 = (new QueryBuilder())->update($this->table)
+		$qb3 = (new QueryBuilder())->update($this->getTable())
 			->set($this->intervallaireFieldBorneMin, $newBorneMin . ' + ' . $this->intervallaireFieldBorneMin . ' - ' . ($item->borneMin + $decallage),true)
 			->set($this->intervallaireFieldBorneMax, $newBorneMin . ' + ' . $this->intervallaireFieldBorneMax . ' - ' . ($item->borneMin + $decallage),true)
 			->set($this->intervallaireFieldNiveau  , $this->intervallaireFieldNiveau . ' + ' . ($newNiveau - $item->niveau),true)
@@ -165,11 +165,11 @@ trait Intervallaire
 			->where($this->intervallaireFieldBorneMax . ' <= ' . ($item->borneMax + $decallage));
 
 
-		$qb4 = (new QueryBuilder())->update($this->table)
+		$qb4 = (new QueryBuilder())->update($this->getTable())
 			->set($this->intervallaireFieldBorneMin, $this->intervallaireFieldBorneMin . ' - ' . ($item->borneMax - $item->borneMin + 1),true)
 			->where($this->intervallaireFieldBorneMin . ' > ' . $item->borneMax);
 
-		$qb5 = (new QueryBuilder())->update($this->table)
+		$qb5 = (new QueryBuilder())->update($this->getTable())
 			->set($this->intervallaireFieldBorneMax, $this->intervallaireFieldBorneMax . ' - ' . ($item->borneMax - $item->borneMin + 1),true)
 			->where($this->intervallaireFieldBorneMax . ' > ' . $item->borneMax);
 
