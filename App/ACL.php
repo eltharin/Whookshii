@@ -26,7 +26,7 @@ class Acl
 		
 		foreach($args as $right)
 		{
-			if (((array_key_exists($right,self::$roles)) && (self::$roles[$right] == true)) || (self::$admin == true))
+			if (((array_key_exists($right,self::$roles)) && ((is_callable(self::$roles[$right]) ? call_user_func(self::$roles[$right]) : self::$roles[$right]) == true)) || (self::$admin == true))
 			{
 				$ret = true;
 			}
