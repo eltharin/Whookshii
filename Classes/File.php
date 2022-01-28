@@ -1,7 +1,7 @@
 <?php
-namespace core\classes;
+namespace Core\Classes;
 
-class file
+class File
 {
 
 	static function glob_rec($folder)
@@ -30,6 +30,20 @@ class file
 		closedir($handle);
 	}
 
+	static function createFolder($path)
+	{
+		if(file_exists($path))
+		{
+			return true;
+		}
+
+		if(!file_exists(dirname($path)))
+		{
+			self::createFolder(dirname($path));
+		}
+
+		echo 'create ' . $path . BRN;
+		mkdir($path);
+	}
 }
-?>
 
