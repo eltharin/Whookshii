@@ -229,6 +229,7 @@ class Form
 													'classlabel' => 'radio_label ' . $params['classlabel'],
 													'id'=>$params['name'] . $k,
 													'name'=>$params['name'] . '[]',
+													'options' => $params['optionsForAll'] . ' ' . ($v['options']??''),
 													'valueon'=>$k,
 													'before'=>'',
 													'cotelabel' => 'r',
