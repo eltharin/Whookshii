@@ -93,7 +93,7 @@ trait Intervallaire
             return false;
         }
 
-        $qb1 = (new QueryBuilder())->delete($this->getTable(), $this->table)
+        $qb1 = (new QueryBuilder())->delete($this->getTable(), $this->getPrefixe())
                                     ->where($this->intervallaireFieldBorneMin . ' >= ' . $item->borneMin)
                                     ->where($this->intervallaireFieldBorneMax . ' <= ' . $item->borneMax);
 
