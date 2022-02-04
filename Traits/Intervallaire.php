@@ -30,7 +30,7 @@ trait Intervallaire
 
 	public function getMasterParent()
 	{
-		$qb = (new QueryBuilder($this->provider))->select('max(' . $this->intervallaireFieldBorneMax . ') max')->from($this->table);
+		$qb = (new QueryBuilder($this->provider))->select('max(' . $this->intervallaireFieldBorneMax . ') max')->from($this->getTable());
 
 		if($this->callable !== null)
 		{
