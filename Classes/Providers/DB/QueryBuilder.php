@@ -114,6 +114,11 @@ class QueryBuilder implements \Iterator
 					$table = implode(', ', $this->queryElements->from );
 					$query  = 'DELETE';
 
+					if (isset($this->queryElements->alias))
+					{
+						$query .= ' ' . implode(', ', $this->queryElements->alias );
+					}
+
 					if (isset($this->queryElements->from))
 					{
 						$query .= ' FROM ' . implode(', ', $this->queryElements->from );
@@ -241,7 +246,7 @@ class QueryBuilder implements \Iterator
 		return $this;
 	}
 
-	public function delete($table = null)
+	public function delete($table = null, $tableAlias = null)
 	{
 		$this->isQueryBuiled = false;
 
@@ -249,6 +254,10 @@ class QueryBuilder implements \Iterator
 		if($table !== null)
 		{
 			$this->from($table);
+		}
+		if($tableAlias !== null)
+		{
+			$this->alias($tableAlias);
 		}
 		return $this;
 	}
@@ -295,6 +304,14 @@ class QueryBuilder implements \Iterator
 		$this->isQueryBuiled = false;
 
 		$this->queryElements->from[] = $table;
+		return $this;
+	}
+
+	public function alias($tableAlias)
+	{
+		$this->isQueryBuiled = false;
+
+		$this->queryElements->alias[] = $tableAlias;
 		return $this;
 	}
 
