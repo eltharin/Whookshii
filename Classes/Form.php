@@ -225,7 +225,12 @@ class Form
 
 		foreach($tab as $k => $v)
 		{
-			$ret .= form::item_checkbox(array('label'=>$v,
+			if(!is_array($v))
+			{
+				$v = ['label' => $v];
+			}
+
+			$ret .= form::item_checkbox(array('label'=>$v['label'],
 													'classlabel' => 'radio_label ' . $params['classlabel'],
 													'id'=>$params['name'] . $k,
 													'name'=>$params['name'] . '[]',
