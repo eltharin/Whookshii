@@ -8,6 +8,7 @@ class QueryResult
     protected $stmt = null;
     protected $time = 0;
     protected $errorInfo = null;
+    protected $errorCode = null;
     protected $nbLigne = null;
     protected $qb = null;
 
@@ -16,10 +17,11 @@ class QueryResult
     	$this->stmt = $data['stmt'] ?? null;
         $this->time = $data['time'] ?? null;
         $this->errorInfo = $data['errorInfo'] ?? null;
+        $this->errorCode = $data['errorCode'] ?? null;
         $this->nbLigne = $data['nbLigne'] ?? null;
         $this->qb = $data['qb'] ?? null;
 
-		\Debug::sql($this->qb->getQuery(),$this->time,$this->errorInfo == null ? '' : implode(' - ', $this->errorInfo),$this->qb->getParams());
+		\Debug::sqldata($data);
     }
 
 	public function getStmt()

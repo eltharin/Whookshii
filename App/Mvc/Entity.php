@@ -128,13 +128,26 @@ class Entity implements \JsonSerializable
 		$this->errors[$errorType][] = $error;
 	}
 
-
 	public function affect(array $data)
 	{
 		foreach($data as $k => $v)
 		{
 			$this->__set($k,$v);
 		}
+	}
+
+	public function filter(array $filter)
+	{
+		$clone = clone($this);
+
+		foreach($clone->getAllProperties() as $k => $v)
+		{
+			if(!in_array($k, $filter))
+			{
+				unset($clone->$k);
+			}
+		}
+		return $clone;
 	}
 
 	/**
