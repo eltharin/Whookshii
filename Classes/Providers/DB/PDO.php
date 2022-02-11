@@ -66,6 +66,7 @@ abstract class PDO
 			return new QueryResult(['qb' => $qb,
 								   'stmt' => null,
 								   'time' => Timer::gettime(),
+								   'errorCode' => $this->dbh->errorCode(),
 								   'errorInfo' => $this->dbh->errorInfo(),
 								   'nbLigne' => 0]);
 		}
@@ -73,18 +74,20 @@ abstract class PDO
 		if($stmt->execute($qb->getParams()))
 		{
 			return new QueryResult(['qb' => $qb,
-								   'stmt' => $stmt,
+									'stmt' => $stmt,
 									'time' => Timer::gettime(),
-								   'errorInfo' => null,
-								   'nbLigne' => $stmt->rowCount()]);
+									'errorCode' => null,
+									'errorInfo' => null,
+									'nbLigne' => $stmt->rowCount()]);
 		}
 		else
 		{
 			return new QueryResult(['qb' => $qb,
-								    'stmt' => $stmt,
+									'stmt' => $stmt,
 									'time' => Timer::gettime(),
-								    'errorInfo' => $stmt->errorInfo(),
-								    'nbLigne' => $stmt->rowCount()]);
+									'errorCode' => $stmt->errorCode(),
+									'errorInfo' => $stmt->errorInfo(),
+									'nbLigne' => $stmt->rowCount()]);
 		}
 	}
 

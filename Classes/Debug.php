@@ -6,6 +6,7 @@ class Debug
 
 	private static $val;
 	private static $timer;
+	public static $bar = null;
 	
 	static function print_debug()
 	{
@@ -53,9 +54,21 @@ class Debug
 		return \timer::gettime();
 	}
 	
-	static function sql ($req,$time=0,$error=0,$params=array())
+	static function sql ($req,$time=0,$error=0,$params=array(), $errorCode = null)
 	{
-		self::$val['sql'][] = array('query'=>$req,'params'=>$params,'time'=>$time,'error'=>$error);
+		self::$val['sql'][] = array('query'=>$req,'params'=>$params,'time'=>$time,'error'=>$error, 'errorInfo' => $error, 'errorCode' => $errorCode);
+	}
+
+	static function sqldata($data)
+	{
+		self::$val['sql'][] = ['query'=>$data['qb']->getQuery(),
+								'params'=>$data['qb']->getParams(),
+								'time'=>$data['time'],
+								'error'=>$data['errorInfo'],
+								'errorInfo' => $data['errorInfo'],
+								'errorCode' => $data['errorCode'],
+								'nbLigne' => $data['nbLigne'],
+							];
 	}
 	
 	static function error ($errno, $errstr, $errfile, $errline,$errcontext)
