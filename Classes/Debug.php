@@ -117,7 +117,7 @@ class Debug
 	
 	static function get_sql()
 	{
-		return self::$val['sql'];
+		return self::$val['sql']??[];
 	}
 	
 	static function print_sql()
@@ -221,5 +221,26 @@ class Debug
 		}
 		echo $ret;
 	}
+
+	public static function printPhpDebugBar()
+	{
+		if (!empty(self::$val['error']))
+		{
+			foreach(self::$val['error'] as $err)
+			{
+				self::$bar['errors']->addMessage($err);
+			}
+		}
+
+		if(\Config::get('Vars')->getConfig('modeAjax') == true)
+		{
+			\DEBUG::$bar->sendDataInHeaders();
+		}
+		else
+		{
+			echo DEBUG::$bar->getJavascriptRenderer()->render();
+		}
+	}
+
 }
 ?>
