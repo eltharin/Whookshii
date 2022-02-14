@@ -13,6 +13,8 @@ class Service
 
 	final public function __construct($provider = null)
 	{
+		trigger_error('service ' . get_called_class() . ' non static in ' . implode(BRN,
+				array_map(function($a){return $a['function'] . ' in ' . ($a['file']??'') . '(' . ($a['line']??0) . ')';}, debug_backtrace())),E_USER_NOTICE);
 		/*$rfl = new \ReflectionClass($this);
 
 		$this->queryPrefixe  = $rfl->getShortName();
@@ -24,12 +26,12 @@ class Service
 
 	public function init() {}
 
-	public function findAll()
+	public static function findAll()
 	{
-		return (new $this->tableClass)->findWithRel();
+		return self::$tableClass::findWithRel();
 	}
 
-	public function expects($args, $cond) : \Core\App\Mvc\ServicesQR\Result
+	public static function expects($args, $cond) : \Core\App\Mvc\ServicesQR\Result
 	{
 		$reponse = (new \Core\App\Mvc\ServicesQR\Result);
 
@@ -63,43 +65,13 @@ class Service
 		return $reponse;
 	}
 
-	public function expectsOrDie(array $data, array $array)
+	public static function expectsOrDie(array $data, array $array)
 	{
-		$check = $this->expects ($data, $array);
+		$check = self::expects ($data, $array);
 
 		if($check->hasErrors ())
 		{
 			throw new HttpException('Arguments incorrects : ' . implode(BRN, $check->getErrors ()), 500);
 		}
 	}
-	/*public function add(Array $data)
-	{
-		$entite = new Entity();
-		$table  = new \Specs\Tables\Type();
-
-		$ret = new \stdClass();
-		$ret->plant = $entite;
-		$ret->errors    = [];
-
-		foreach($table->getFields() as $field)
-		{
-			if(isset($field['PK']))
-			{
-				continue;
-			}
-
-			$entite->{$field['entityField']} = $data[$field['entityField']] ?? $field['defaultValue'] ?? '';
-		}
-
-		$result = $table->DBInsert($entite);
-
-		if($result->hasError())
-		{
-			$ret->errors[] = 'Impossible d\'ajouter le plant';
-			$ret->errors[] = implode(' - ' , $result->getError());
-			return $ret;
-		}
-
-		return $ret;
-	}*/
 }
