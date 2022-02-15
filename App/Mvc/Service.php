@@ -9,7 +9,7 @@ class Service
 	/**
 	 * @var Table
 	 */
-	protected $tableClass = null;
+	protected static $tableClass = null;
 
 	final public function __construct($provider = null)
 	{
@@ -28,7 +28,7 @@ class Service
 
 	public static function findAll()
 	{
-		return self::$tableClass::findWithRel();
+		return (new static::$tableClass)->findWithRel();
 	}
 
 	public static function expects($args, $cond) : \Core\App\Mvc\ServicesQR\Result
@@ -67,7 +67,7 @@ class Service
 
 	public static function expectsOrDie(array $data, array $array)
 	{
-		$check = self::expects ($data, $array);
+		$check = static::expects ($data, $array);
 
 		if($check->hasErrors ())
 		{
