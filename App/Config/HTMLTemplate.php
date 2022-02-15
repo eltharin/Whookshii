@@ -7,6 +7,7 @@ class HTMLTemplate extends AbstractConfigElement
 	protected $noTemplate = false;
 	protected $css = [];
 	protected $scripts = [];
+	protected $inlineHead = [];
 	protected $menu = [];
 	protected $template_file = null;
 	protected $globaltitle = '';
@@ -47,7 +48,16 @@ class HTMLTemplate extends AbstractConfigElement
 	{
 		$this->template_file = $template_file;
 	}
-	
+
+	public function getHeaders()
+	{
+		$ret = '';
+		$ret .= $this->getCss();
+		$ret .= $this->getScript();
+		$ret .= $this->getInlineHead();
+		return $ret;
+	}
+
 	public function getCss()
 	{
 		$ret = '';
@@ -89,6 +99,28 @@ class HTMLTemplate extends AbstractConfigElement
 		else
 		{
 			echo '<script id="addscript">if($($($("head").get(0)).children("script[type=\'text/javascript\']")).filter("script[src=\'' . $script . '\']").length == 0){$("head").append($(\'<script type="text/javascript" src="' . $script . '"><\/script>\'));$(\'#addscript\').remove();}</script>';
+		}
+	}
+	public function getInlineHead()
+	{
+		$ret = '';
+		foreach ($this->inlineHead as $val)
+		{
+			$ret .= "\t" . $val . RN;
+		}
+		return $ret;
+	}
+
+	public function addInlineHead($header)
+	{
+		if(\Config::get('Vars')->getConfig('modeAjax') !== true)
+		{
+			$this->inlineHead[] = $header;
+		}
+		else
+		{
+			//TODO: on ajax mode
+			// echo '<script id="addscript">if($($($("head").get(0)).children("script[type=\'text/javascript\']")).filter("script[src=\'' . $script . '\']").length == 0){$("head").append($(\'<script type="text/javascript" src="' . $script . '"><\/script>\'));$(\'#addscript\').remove();}</script>';
 		}
 	}
 

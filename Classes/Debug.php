@@ -4,7 +4,7 @@ namespace Core\Classes;
 class Debug
 {
 
-	private static $val;
+	private static $val = [];
 	private static $timer;
 	public static $bar = null;
 	
@@ -32,7 +32,7 @@ class Debug
 	
 	static function get($key)
 	{
-		if (isset(self::$val[$key]))
+		if (array_key_exists($key, self::$val))
 		{
 			return self::$val[$key];
 		}
