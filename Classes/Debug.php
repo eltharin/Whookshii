@@ -64,7 +64,7 @@ class Debug
 		self::$val['sql'][] = ['query'=>$data['qb']->getQuery(),
 								'params'=>$data['qb']->getParams(),
 								'time'=>$data['time'],
-								'error'=>$data['errorInfo'],
+								'error'=>(is_array($data['errorInfo']) ? implode(' - ' , $data['errorInfo']) : $data['errorInfo']),
 								'errorInfo' => $data['errorInfo'],
 								'errorCode' => $data['errorCode'],
 								'nbLigne' => $data['nbLigne'],

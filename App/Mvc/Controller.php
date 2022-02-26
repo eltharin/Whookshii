@@ -80,13 +80,16 @@ class Controller
 			$this->vars[$k] = $v;
 		}
 	}
-	protected function render(string $vue,array $vars = [],Controller $controller = null)
+	protected function render(string $vue,array $vars = [],string $controller = null)
 	{
 		if ($controller !== null)
 		{
-			// TODO: Revoir ca
-			$ctrl = $this->LoadController($controller);
-			$ctrl->add_vars($this->vars);
+			$ctrl = new $controller($this->request);
+			if(! ($ctrl instanceof Controller))
+			{
+				throw new Exception($ctrl . ' is not a Controller');
+			}
+			$ctrl->addVars($this->vars);
 			$ctrl->render($vue);
 		}
 		else
