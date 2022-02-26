@@ -14,12 +14,18 @@ abstract class PDO
 	protected $lasterror = '';
 	private $dbh;
 	private $_connected = false;
+	private $withoutException = false;
 
 	abstract function createPdo() : \PDO;
 
 	function __construct($host = null,$user = null,$pass = null,$db = null)
 	{
 		$this->setParams($host,$user,$pass,$db);
+	}
+
+	public function setWithoutExceptions($val)
+	{
+		$this->withoutException = $val;
 	}
 
 	function setParams($host = null,$user = null,$pass = null,$db = null)
@@ -35,7 +41,7 @@ abstract class PDO
 		$this->setParams($host,$user,$pass,$db);
 
 		$this->dbh = $this->createPdo();
-		$this->dbh->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_SILENT );
+		$this->dbh->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION );
 		$this->dbh->setAttribute(\PDO::ATTR_DEFAULT_FETCH_MODE, \PDO::FETCH_OBJ );
 
 		$this->_connected = true;
@@ -59,20 +65,31 @@ abstract class PDO
 		}
 
 		Timer::start();
-		$stmt = $this->dbh->prepare($qb->getQuery());
 
-		if(!$stmt)
+		try
 		{
-			return new QueryResult(['qb' => $qb,
-								   'stmt' => null,
-								   'time' => Timer::gettime(),
-								   'errorCode' => $this->dbh->errorCode(),
-								   'errorInfo' => $this->dbh->errorInfo(),
-								   'nbLigne' => 0]);
+			$stmt = $this->dbh->prepare($qb->getQuery());
+		}
+		catch(\Exception $e)
+		{
+			$ret = new QueryResult(['qb' => $qb,
+				                      'stmt' => null,
+				                      'time' => Timer::gettime(),
+				                      'errorCode' => $this->dbh->errorCode(),
+				                      'errorInfo' => $this->dbh->errorInfo(),
+				                      'nbLigne' => 0]);
+			if(!$this->withoutException)
+			{
+				throw $e;
+			}
+
+			return $ret;
 		}
 
-		if($stmt->execute($qb->getParams()))
+		try
 		{
+			$stmt->execute($qb->getParams());
+
 			return new QueryResult(['qb' => $qb,
 									'stmt' => $stmt,
 									'time' => Timer::gettime(),
@@ -80,14 +97,21 @@ abstract class PDO
 									'errorInfo' => null,
 									'nbLigne' => $stmt->rowCount()]);
 		}
-		else
+		catch(\Exception $e)
 		{
-			return new QueryResult(['qb' => $qb,
-									'stmt' => $stmt,
-									'time' => Timer::gettime(),
-									'errorCode' => $stmt->errorCode(),
-									'errorInfo' => $stmt->errorInfo(),
-									'nbLigne' => $stmt->rowCount()]);
+			$ret =  new QueryResult(['qb' => $qb,
+				                       'stmt' => $stmt,
+				                       'time' => Timer::gettime(),
+				                       'errorCode' => $stmt->errorCode(),
+				                       'errorInfo' => $stmt->errorInfo(),
+				                       'nbLigne' => $stmt->rowCount()]);
+
+			if(!$this->withoutException)
+			{
+				throw $e;
+			}
+
+			return $ret;
 		}
 	}
 

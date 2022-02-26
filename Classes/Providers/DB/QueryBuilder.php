@@ -78,6 +78,12 @@ class QueryBuilder implements \Iterator
 		return $this->hydrator;
 	}
 
+	public function withoutExceptions()
+	{
+		$this->provider->setWithoutExceptions(true);
+		return $this;
+	}
+
 	private function buildQuery()
 	{
 		switch($this->type)

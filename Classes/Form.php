@@ -230,6 +230,16 @@ class Form
 				$v = ['label' => $v];
 			}
 
+			if(isset($v['key']))
+			{
+				$k = $v['key'];
+			}
+
+			if(!isset($v['checked']))
+			{
+				$v['checked'] = in_array($k,$params['value']);
+			}
+
 			$ret .= form::item_checkbox(array('label'=>$v['label'],
 													'classlabel' => 'radio_label ' . $params['classlabel'],
 													'id'=>$params['name'] . $k,
@@ -239,7 +249,7 @@ class Form
 													'before'=>'',
 													'cotelabel' => 'r',
 													'noDivRow' => true,
-													'checked' => (in_array($k,$params['value'])?'checked':''),
+													'checked' => ($v['checked']?'checked':''),
 													'valueoff' => null,
 													'after'=>''));
 
