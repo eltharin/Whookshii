@@ -29,6 +29,7 @@ class QueryBuilder implements \Iterator
 	public function __construct($provider = null, ?string $query = null, array $params = [])
 	{
 		$this->queryElements = new \stdClass();
+		$this->queryElements->options = new \stdClass();
 		$this->provider = $provider;
 		$this->hydrator = new Hydrator();
 
@@ -78,7 +79,7 @@ class QueryBuilder implements \Iterator
 		return $this->hydrator;
 	}
 
-	public function withoutExceptions()
+	public function withoutExceptions() : QueryBuilder
 	{
 		$this->provider->setWithoutExceptions(true);
 		return $this;
@@ -228,7 +229,7 @@ class QueryBuilder implements \Iterator
 		return $this->queryElements->select;
 	}
 
-	public function insert($table = null)
+	public function insert($table = null, $options = [])
 	{
 		$this->isQueryBuiled = false;
 
@@ -237,6 +238,12 @@ class QueryBuilder implements \Iterator
 		{
 			$this->from($table);
 		}
+
+		if(isset($options['ignore']))
+		{
+			$this->queryElements->options->ignore = $options['ignore'];
+		}
+
 		return $this;
 	}
 
