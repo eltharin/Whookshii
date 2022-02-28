@@ -329,10 +329,16 @@ class Table
 		return true;
 	}
 
-	public function DBInsert(Entity $entity, bool $withException = true) : QueryResult
+	public function DBInsert(Entity $entity, array $options = []) : QueryResult
 	{
+		$insertOptions = [];
+		if(isset($options['ignore']))
+		{
+			$insertOptions['ignore'] = $options['ignore'];
+		}
+
 		$qb = $this->newQueryBuilder()
-				   ->insert($this->table);
+				   ->insert($this->table,$insertOptions);
 
 		foreach($this->fields as $fieldName => $val)
 		{
@@ -352,11 +358,6 @@ class Table
 		}
 
 		$result = $qb->exec();
-
-		if($withException && $result->hasError ())
-		{
-			throw new HTTPException (implode(BRN, $result->getError ()), 500);
-		}
 
 		if($this->PKAI !== null)
 		{

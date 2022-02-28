@@ -31,7 +31,7 @@ class Service
 		return (new static::$tableClass)->findWithRel();
 	}
 
-	public static function expects($args, $cond) : \Core\App\Mvc\ServicesQR\Result
+	public static function expects($data, $cond) : \Core\App\Mvc\ServicesQR\Result
 	{
 		$reponse = (new \Core\App\Mvc\ServicesQR\Result);
 
@@ -41,7 +41,7 @@ class Service
 			{
 				if(is_callable($l))
 				{
-					$ret = call_user_func ($l, $args[$key]??null);
+					$ret = call_user_func ($l, $data[$key]??null);
 					if($ret != '')
 					{
 						$reponse->addError ($ret);
@@ -51,11 +51,11 @@ class Service
 				{
 					switch($l)
 					{
-						case 'required' : if(!array_key_exists($key, $args)) {$reponse->addError ($key . ' est requis');};break;
-						case 'float'    : if(!is_numeric($args[$key] ?? null)) {$reponse->addError ($key . ' n\'est pas un nombre');};break;
-						case 'int'      : if(!is_int($args[$key] ?? null)) {$reponse->addError ($key . ' n\'est pas un entier');};break;
-						case 'int'      : if(!is_string($args[$key] ?? null)) {$reponse->addError ($key . ' n\'est pas une chaine de caractères');};break;
-						case 'notEmpty' : if(empty($args[$key] ?? null)) {$reponse->addError ($key . ' est vide');};break;
+						case 'required' : if(!array_key_exists($key, $data)) {$reponse->addError ($key . ' est requis');};break;
+						case 'float'    : if(!is_numeric($data[$key] ?? null)) {$reponse->addError ($key . ' n\'est pas un nombre');};break;
+						case 'int'      : if(!is_int($data[$key] ?? null)) {$reponse->addError ($key . ' n\'est pas un entier');};break;
+						case 'int'      : if(!is_string($data[$key] ?? null)) {$reponse->addError ($key . ' n\'est pas une chaine de caractères');};break;
+						case 'notEmpty' : if(empty($data[$key] ?? null)) {$reponse->addError ($key . ' est vide');};break;
 						default : throw new \Exception ($l . ' is not a valid condition');
 					}
 				}
