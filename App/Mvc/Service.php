@@ -41,7 +41,7 @@ class Service
 			{
 				if(is_callable($l))
 				{
-					$ret = call_user_func ($l, $data[$key]??null);
+					$ret = call_user_func ($l, $data);
 					if($ret != '')
 					{
 						$reponse->addError ($ret);
