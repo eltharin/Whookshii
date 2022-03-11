@@ -36,7 +36,7 @@ class Acl
 
 	}
 	
-	public static function check($right)
+	public static function check($right, $msg = null)
 	{
 		$args = is_array($right)?$right:func_get_args();
 		
@@ -45,7 +45,7 @@ class Acl
 			return true;
 		}
 		
-		throw new HttpException('Vous n\'avez pas acces à cette partie', '403');
+		throw new HttpException($msg ?: 'Vous n\'avez pas acces à cette partie', '403');
 		
 	}
 		
