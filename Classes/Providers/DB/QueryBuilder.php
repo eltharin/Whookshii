@@ -618,6 +618,13 @@ class QueryBuilder implements \Iterator
 		$this->fetchMode(\PDO::FETCH_KEY_PAIR );
 		return $this->all();
 	}
+
+	public function cleanHydrator()
+	{
+		$this->getHydrator()->clean();
+		return $this;
+	}
+
     //-----------------------------------------------------------------------------------------------------------------
     //-- Iterator Elements
     //-----------------------------------------------------------------------------------------------------------------
@@ -659,11 +666,5 @@ class QueryBuilder implements \Iterator
 			$this->iteratorValid = $this->iteratorResult != false;
 		}
         $this->iteratorKey = 0;
-    }
-
-    public function cleanHydrator()
-    {
-        $this->getHydrator()->clean();
-        return $this;
     }
 }

@@ -55,7 +55,7 @@ class Launcher extends MiddlewareAbstract
 					ob_start();
 					if($controller instanceof \Core\App\Mvc\Controller)
 					{
-						if(count($attributes) == 1 /*&& isset($attributes['_params'])*/)
+						if(count($attributes) <= 1)
 						{
 							$actionReturn = call_user_func_array([$controller,'Action_' . $action],array_values($attributes['_params'] ?? $attributes));
 						}
@@ -63,10 +63,6 @@ class Launcher extends MiddlewareAbstract
 						{
 							$actionReturn = call_user_func([$controller,'Action_' . $action],$attributes);
 						}
-					}
-					elseif($controller instanceof \Core\App\Mvc\Oldcontroller)
-					{
-						$actionReturn = call_user_func_array([$controller,'Action_' . $action],$attributes['_params'] ?? $attributes);
 					}
 					else
 					{
