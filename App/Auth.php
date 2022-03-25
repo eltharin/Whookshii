@@ -87,7 +87,7 @@ class auth
 		{
 			call_user_func_array(static::$infos['connector'] . '::_disconnect', func_get_args());
 		}
-		static::$infos = array('connected'=>false);
+		static::$infos = array('connected'=>false, 'data' => []);
 	}
 
 	public static function get($key)
