@@ -176,7 +176,7 @@ class Table
 				}
 			}
 
-			$this->addRelationsToQB($qb, $arrWith, []);
+			$this->addRelationsToQB($qb, $arrWith);
 		}
 
 		if(isset($params['addQuery']))

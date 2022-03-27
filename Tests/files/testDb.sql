@@ -155,9 +155,9 @@ CREATE TABLE `user` (
 --
 
 INSERT INTO `user` (`CON_U_USER`, `CON_U_COMPTE`, `CON_U_NOM`, `CON_U_MAIL`) VALUES
-(1, 1, 'Roman', 'eltharin18@gmail.com'),
-(2, 1, 'Mag', 'mag@gmail.com'),
-(3, 2, 'Cécile', 'cecile@gmail.com'),
-(4, 2, 'Olivier', 'olivier@gmail.com');
+(1, 1, 'Jean', 'jean@pape.com'),
+(2, 1, 'Paul', 'paul@pape.com'),
+(3, 2, 'Benoit', 'benoit@pape.com'),
+(4, 2, 'Francois', 'francois@pape.com');
 
 

@@ -2,22 +2,20 @@
 namespace Core\Tests\files\Tables;
 
 use Core\App\Mvc\Table;
+use Core\App\Mvc\TableLink\Rel;
 
 class Marque extends Table
 {
 	public function init()
 	{
-		$this->fields = [
-			'VOI_MA_MARQUE' 	=> ['entityField' => 'id'],
-			'VOI_MA_PAYS'  		=> ['entityField' => 'pays'],
-			'VOI_MA_LIBELLE'  	=> ['entityField' => 'libelle'],
-		];
+		$this->table = 'marque';
+		$this->fieldPrefixe = 'VOI_MA_';
+		$this->fieldForce   = 'Camel';
 
-		$this->links = [
-			'Pays' => ['type' => 'rel', 'table' => Pays::class, 'joinOn' => [ 'FK' => 'VOI_MA_PAYS', 'PK' => 'VOI_PAY_PAYS']]
-		];
+		$this->addField('VOI_MA_MARQUE'      , ['PK' => 'AI', 'entityField' => 'id']);
+		$this->addField('VOI_MA_PAYS' , []);
+		$this->addField('VOI_MA_LIBELLE' , []);
 
-		$this->PKs = ['VOI_MA_MARQUE'];
-		$this->PKAI = 'VOI_MA_MARQUE';
+		$this->addLink('Pays', new Rel(['table' => Pays::class, 'joinOn' => [ 'FK' => 'VOI_MA_PAYS', 'PK' => 'VOI_PAY_PAYS']]));
 	}
 }

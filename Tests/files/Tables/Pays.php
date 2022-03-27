@@ -7,12 +7,11 @@ class Pays extends Table
 {
 	public function init()
 	{
-		$this->fields = [
-			'VOI_PAY_PAYS' 		=> ['entityField' => 'id'],
-			'VOI_PAY_LIBELLE'  	=> ['entityField' => 'libelle'],
-		];
+		$this->table = 'pays';
+		$this->fieldPrefixe = 'VOI_PAY_';
+		$this->fieldForce   = 'Camel';
 
-		$this->PKs = ['VOI_PAY_PAYS'];
-		$this->PKAI = 'VOI_PAY_PAYS';
+		$this->addField('VOI_PAY_PAYS'      , ['PK' => 'AI', 'entityField' => 'id']);
+		$this->addField('VOI_PAY_LIBELLE' , []);
 	}
 }

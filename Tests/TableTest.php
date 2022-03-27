@@ -18,19 +18,17 @@ class TableTest extends TestCase
 	public function setUp() : void
 	{
      	$core = new Core();
-        $this->dbFile = tempnam (__DIR__ . DS . 'files', 'tempdb_');
-        copy(__DIR__ . DS . 'files'. DS . 'test.db', $this->dbFile);
-	}
 
-    public function tearDown(): void
-    {
-        unlink($this->dbFile);
-    }
+		$_ENV['test'] = true;
+		\Config::get('Providers')->add('UnitTests',new SQLite(':memory:'));
+		\Config::get('Providers')->getConfig('UnitTests')->importFile(__DIR__ . DS . 'files'. DS . 'testdb1.sql');
+	}
 
     public function testFind()
     {
-        $table = new VoitureTable(new Sqlite( $this->dbFile));
-        $qb = $table->find();
+        $table = new VoitureTable(\Config::get('Providers')->getConfig('UnitTests'));
+
+		$qb = $table->find();
 
         $this->assertInstanceOf(QueryBuilder::class,$qb);
 
@@ -42,12 +40,13 @@ class TableTest extends TestCase
         $this->assertCount(3, $res);
 
         $this->assertInstanceOf(VoitureEntity::class,$res[0]);
+        $this->assertEquals(1, $res[0]->marque);
         $this->assertEquals('123-AB-456', $res[0]->immat);
     }
 
     public function testGet()
     {
-        $table = new VoitureTable(new Sqlite( $this->dbFile));
+        $table = new VoitureTable(\Config::get('Providers')->getConfig('UnitTests'));
 
         $voiture = $table->get(2);
 
@@ -57,7 +56,7 @@ class TableTest extends TestCase
 
 	public function testInsert()
 	{
-        $table = new VoitureTable(new Sqlite( $this->dbFile));
+        $table = new VoitureTable(\Config::get('Providers')->getConfig('UnitTests'));
 
         $voiture = new Voiture();
         $voiture->marque = 1;
@@ -78,7 +77,7 @@ class TableTest extends TestCase
 
 	public function testUpdate()
 	{
-		$table = new VoitureTable(new Sqlite( $this->dbFile));
+		$table = new VoitureTable(\Config::get('Providers')->getConfig('UnitTests'));
 		$voiture = $table->get(['id' => 2]);
 
 		$voiture->immat = '777-TT-888';
@@ -97,7 +96,7 @@ class TableTest extends TestCase
 
 	public function testDuplicate()
 	{
-		$table = new VoitureTable(new Sqlite( $this->dbFile));
+		$table = new VoitureTable(\Config::get('Providers')->getConfig('UnitTests'));
 		$voiture = $table->get(['id' => 2]);
 
 		$voiture->immat = '777-TT-888';
@@ -116,7 +115,7 @@ class TableTest extends TestCase
 
 	public function testFindWithRelations()
 	{
-		$table = new VoitureTable(new Sqlite( $this->dbFile));
+		$table = new VoitureTable(\Config::get('Providers')->getConfig('UnitTests'));
 		$qb = $table->find(['with' => ['Marque']]);
 
 		$this->assertInstanceOf(QueryBuilder::class,$qb);
@@ -139,7 +138,7 @@ class TableTest extends TestCase
 
 	public function testFindWithRelationsWithRelations()
 	{
-		$table = new VoitureTable(new Sqlite( $this->dbFile));
+		$table = new VoitureTable(\Config::get('Providers')->getConfig('UnitTests'));
 		$qb = $table->find(['with' => ['Marque','Marque.Pays']]);
 
 		$this->assertInstanceOf(QueryBuilder::class,$qb);
@@ -161,5 +160,29 @@ class TableTest extends TestCase
 
 		$this->assertInstanceOf(Entity::class,$res[0]->marque->pays);
 		$this->assertEquals('JAPON', $res[0]->marque->pays->libelle);
+	}
+
+
+	public function testFindWithRelationsAfter()
+	{
+		$table = new VoitureTable(\Config::get('Providers')->getConfig('UnitTests'));
+		$qb = $table->find();
+
+		$this->assertInstanceOf(QueryBuilder::class,$qb);
+
+		$table->addRelationsToQB($qb, ['Marque' => ['show' => 1, 'subRels' => []]]);
+
+		$res = $qb->all();
+
+		//\HTML::print_r($res);
+
+		$this->assertIsArray($res);
+		$this->assertCount(3, $res);
+
+		$this->assertInstanceOf(VoitureEntity::class,$res[0]);
+		$this->assertEquals('123-AB-456', $res[0]->immat);
+
+		$this->assertInstanceOf(Entity::class,$res[0]->marque);
+		$this->assertEquals('Honda', $res[0]->marque->libelle);
 	}
 }
