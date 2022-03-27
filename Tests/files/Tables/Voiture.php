@@ -2,6 +2,7 @@
 namespace Core\Tests\files\Tables;
 
 use Core\App\Mvc\Table;
+use Core\App\Mvc\TableLink\Rel;
 
 class Voiture extends Table
 {
@@ -9,18 +10,14 @@ class Voiture extends Table
 
 	public function init()
 	{
-		$this->fields = [
-			'VOI_VOI_VOITURE' => ['entityField' => 'id'],
-			'VOI_VOI_MARQUE'  => ['entityField' => 'marque'],
-			'VOI_VOI_IMMATRICULATION' => ['entityField' => 'immat'],
-		];
+		$this->table = 'voiture';
+		$this->fieldPrefixe = 'VOI_VOI_';
+		$this->fieldForce   = 'Camel';
 
-		$this->links = [
-			'Marque' => ['type' => 'rel', 'table' => Marque::class, 'joinOn' => ['FK' => 'VOI_VOI_MARQUE', 'PK' => 'VOI_MA_MARQUE']]
-			];
+		$this->addField('VOI_VOI_VOITURE'      , ['PK' => 'AI', 'entityField' => 'id']);
+		$this->addField('VOI_VOI_MARQUE' , []);
+		$this->addField('VOI_VOI_IMMATRICULATION' , ['entityField' => 'immat']);
 
-
-		$this->PKs = ['VOI_VOI_VOITURE'];
-		$this->PKAI = 'VOI_VOI_VOITURE';
+		$this->addLink('Marque' , new Rel(['table' => Marque::class, 'joinOn' => ['FK' => 'VOI_VOI_MARQUE', 'PK' => 'VOI_MA_MARQUE']]));
 	}
 }
