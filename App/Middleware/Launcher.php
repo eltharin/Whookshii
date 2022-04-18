@@ -10,64 +10,24 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
 
-class Launcher extends MiddlewareAbstract
+class Launcher extends AbstractMiddleware
 {
-	private $schema = 'controller/model';
-	private $namespace = '';
-	private $controller = '';
-	private $action = '';
-	private $params = [];
-
 	public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
 	{
 
-		if(($callback = $request->getAttribute('__callback')) !== null)
+		if(($callback = $request->getAttribute('__route')->getCallback()) !== null)
 		{
 			if($callback === '')
 			{
 				throw new \Exception('No Callback');
 			}
 
-			$controllername = $callback->getController();//ubstr($callback,0,$lastpos);
-			$action = $callback->getAction();//substr($callback,$lastpos+1);
-
-			$controllerclass = \Core\App\Loader::Load('Controllers',ucwords(str_replace(['/','_'],['\\','\\'],$controllername),'\\'));
-
-			if($controllerclass === null)
-			{
-				return new Response(404,[],'Controller ' . $controllername . ' Not Found');
-			}
-
 			try
 			{
 				try
 				{
-					$actionReturn = null;
-					$controller = new $controllerclass['name']($request);
-
-					if(!method_exists($controller, 'Action_' . $action))
-					{
-						return new Response(404,[],'Method ' .$action. ' Not Found in ' . $controllername);
-					}
-
-					$attributes = $request->getAttribute('__actionParams');
-
 					ob_start();
-					if($controller instanceof \Core\App\Mvc\Controller)
-					{
-						if(count($attributes) <= 1)
-						{
-							$actionReturn = call_user_func_array([$controller,'Action_' . $action],array_values($attributes['_params'] ?? $attributes));
-						}
-						else
-						{
-							$actionReturn = call_user_func([$controller,'Action_' . $action],$attributes);
-						}
-					}
-					else
-					{
-						throw new HTTPException('Controller invalide', 404);
-					}
+					$actionReturn = $request->getAttribute('__route')->execute($request);
 				}
 				catch(RenderResponseException $e)
 				{
@@ -92,15 +52,6 @@ class Launcher extends MiddlewareAbstract
 				//return new Response(301,['Location'=>$e->getMessage()]);
 				return new Response(200,[],'Redirection');
 			}
-				
-				/*}
-				else
-				{
-					throw new \Exception('Bad Type Controller received : ' . get_class($controller),500);
-					//return new Response('500',[],'Bad Type Controller received');
-				}*/
-
-
 		}
 
 		return new Response(500,[],'Erreur serveur');

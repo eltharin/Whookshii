@@ -7,4 +7,9 @@ class SQLite extends PDO
 	{
 		return new \PDO('sqlite:' . $this->host, null, null);
 	}
+
+	public function allowDeleteAliasTable()
+	{
+		return false;
+	}
 }

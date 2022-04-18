@@ -9,7 +9,7 @@ use Core\Classes\Providers\DB\QueryResult;
 
 class Table
 {
-	public $provider        	= null;
+	protected $provider        	= null;
 	protected $entityClassName 	= null;
 	protected $table           	= '';
 	protected $fields			= [];
@@ -32,7 +32,7 @@ class Table
 	{
 		$rfl = new \ReflectionClass($this);
 
-		$this->provider = $provider ?? \Config::get('Providers')->getConfig('db.default');
+		$this->provider = $provider ?? \Config::getProviders()->getDefault();
 		$this->queryPrefixe  = $rfl->getShortName();
 
 		$this->table = strtolower(preg_replace('#([\w])([A-Z]+)#','${1}_${2}',$rfl->getShortName()));

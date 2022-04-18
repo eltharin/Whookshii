@@ -5,6 +5,7 @@
     "license": "GPL-3.0",
     "type": "whookshii-core",
     "require": {
+		"php": ">=8.0",
 		"composer/installers": "*",
 		"oomphinc/composer-installers-extender": "*",
 		"guzzlehttp/psr7": "^1.6",

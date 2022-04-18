@@ -6,7 +6,7 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
-abstract class MiddlewareAbstract implements MiddlewareInterface
+abstract class AbstractMiddleware implements MiddlewareInterface
 {
 	/**
 	 * Fonction executée avant le prochain middleware

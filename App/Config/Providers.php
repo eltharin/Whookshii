@@ -7,27 +7,33 @@ class Providers extends AbstractConfigElement
 
 	public function getDefault()
 	{
-		if(count($this->config) == 1)
+		if(isset($this->config['default']))
 		{
-			return reset($this->config);
+			return $this->getProvider($this->config['default']);
 		}
-		return $this->config['default'] ?? null;
+		elseif(count($this->config['providers']) == 1)
+		{
+			return reset($this->config['providers']);
+		}
+		else
+		{
+			return $this->getProvider('db.default');
+		}
+		return null;
+	}
+
+	public function getProvider($key)
+	{
+		return $this->config['providers'][$key] ?? null;
 	}
 
 	public function add($key, $value, $params=[])
 	{
-		parent::add($key, $value, $params);
-
-		if(isset($params['default']) && $params['default'] === true)
+		if(isset($this->config['providers'][$key]))
 		{
-			$default = 'default';
-			if(($pos = strrpos( $key, '.')) !== false)
-			{
-				$default = substr($key,0,$pos+1) . $default;
-			}
-			$this->config[$default] = $this->config[$key];
+			throw new \Exception('La clé ' . $key . 'existe déjà');
 		}
-
-		return $this->config[$key];
+		$this->config['providers'][$key] = $value;
+		return $this->config['providers'][$key];
 	}
 }

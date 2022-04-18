@@ -121,7 +121,7 @@ class QueryBuilder implements \Iterator
 					$table = implode(', ', $this->queryElements->from );
 					$query  = 'DELETE';
 
-					if (isset($this->queryElements->alias))
+					if (isset($this->queryElements->alias) && $this->provider->allowDeleteAliasTable() == true)
 					{
 						$query .= ' ' . implode(', ', $this->queryElements->alias );
 					}

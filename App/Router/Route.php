@@ -2,6 +2,7 @@
 namespace Core\App\Router;
 
 use Core\App\Exception\HttpException;
+use Psr\Http\Message\ServerRequestInterface;
 
 class Route
 {
@@ -13,6 +14,7 @@ class Route
 	private $callback;
 	private $withParam;
 	private $params;
+	private $properties;
 
 
 	public function __construct(array $data = [])
@@ -22,6 +24,7 @@ class Route
 		$this->callback = new Callback($data['callback']??'');
 		$this->name = $data['name']??'';
 		$this->params = $data['params']??[];
+		$this->properties = $data['properties']??[];
 		$this->withParam = $data['withParam']??false;
 	}
 
@@ -74,6 +77,13 @@ class Route
 	{
 		return $this->params;
 	}
+	/**
+	 * @return array
+	 */
+	public function getProperties(): array
+	{
+		return $this->properties;
+	}
 
 	/**
 	 * @return bool
@@ -81,5 +91,25 @@ class Route
 	public function getWithParam(): bool
 	{
 		return $this->withParam;
+	}
+
+	public function execute(ServerRequestInterface $request)
+	{
+		if($this->callback->getCallback() !== null)
+		{
+			return call_user_func($this->callback->getCallback());
+		}
+
+		$controllername = $this->getCallback()->getController();
+		$attributes = $this->getParams();
+
+		if(count($attributes) <= 1)
+		{
+			return call_user_func_array([new $controllername($request), 'Action_' . $this->getCallback()->getAction()],array_values($attributes['_params'] ?? $attributes));
+		}
+		else
+		{
+			return call_user_func([new $controllername($request), 'Action_' . $this->getCallback()->getAction()],$attributes);
+		}
 	}
 }

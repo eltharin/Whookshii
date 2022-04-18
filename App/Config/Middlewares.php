@@ -10,6 +10,7 @@ class Middlewares extends AbstractConfigElement
 								\Core\App\Middleware\Subfolder::class,
 								\Core\App\Middleware\FileLoader::class,
 								\Core\App\Middleware\Router::class,
+								\Core\App\Middleware\Config::class,
 
 								\Core\App\Middleware\ErrorCatcher::class,
 								\Core\App\Middleware\Templater::class,
@@ -47,6 +48,16 @@ class Middlewares extends AbstractConfigElement
 		else
 		{
 			$this->config = array_merge(array_slice($this->config,0,$key+1),[$newMid],array_slice($this->config,$key+1));
+		}
+	}
+
+	public function remove($middleware)
+	{
+		$key = array_search($middleware, $this->config);
+
+		if($key !== false)
+		{
+			$this->config = array_merge(array_slice($this->config,0,$key),array_slice($this->config,$key+1));
 		}
 	}
 }

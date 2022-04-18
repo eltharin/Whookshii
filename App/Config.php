@@ -25,10 +25,13 @@ class Config
 
 
 		\Config::get('Vars')->LoadConfig();
+		\Config::get('Middlewares')->LoadConfig();
+		\Config::get('Routes')->LoadConfig();
+		\Config::get('Providers')->LoadConfig();
 
-		if(file_exists(SPECS . 'config.php'))
+		if(file_exists(CONFIG . 'app.config.php'))
 		{
-			require_once(SPECS . DS . 'config.php');
+			require_once(CONFIG . DS . 'app.config.php');
 		}
 
 		/*if(file_exists(SPECS . 'config.inc.php'))
@@ -36,8 +39,7 @@ class Config
 			\Config::get('Vars')->addConfig(SPECS . 'config.inc.php',false);
 		}*/
 
-		\Config::get('Middlewares')->LoadConfig();
-		\Config::get('Routes')->LoadConfig();
+
 	}
 
 	public static function createElement($name, $class)

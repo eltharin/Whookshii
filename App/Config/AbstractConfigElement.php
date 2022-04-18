@@ -1,7 +1,7 @@
 <?php
 namespace Core\App\Config;
 
-class AbstractConfigElement
+abstract class AbstractConfigElement
 {
 	protected const AUTOFILECONFIG = null;
 
@@ -15,9 +15,14 @@ class AbstractConfigElement
 		{
 			if(($config = $this->LoadConfigFile($file)) !== null)
 			{
-				$this->config = $config;
+				$this->importConfig($config);
 			}
 		}
+	}
+
+	protected function importConfig($config)
+	{
+		$this->config = $config;
 	}
 
 	public function addConfig(string $file = null)

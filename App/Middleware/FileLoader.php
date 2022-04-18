@@ -6,7 +6,7 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
-class FileLoader extends MiddlewareAbstract
+class FileLoader extends AbstractMiddleware
 {
 	public function beforeProcess(ServerRequestInterface $request) : ?ResponseInterface
 	{

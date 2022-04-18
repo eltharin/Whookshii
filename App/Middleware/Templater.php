@@ -10,7 +10,7 @@ use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use function GuzzleHttp\Psr7\stream_for;
 
-class Templater extends MiddlewareAbstract
+class Templater extends AbstractMiddleware
 {
 	public function afterProcess(ServerRequestInterface $request, ResponseInterface $response) : ResponseInterface
 	{

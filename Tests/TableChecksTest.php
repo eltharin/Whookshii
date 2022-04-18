@@ -37,7 +37,7 @@ class TableChecksTest extends TestCase
 		$this->assertEmpty($entity->getErrors());
 
 	}
-
+/*
 	public function testBadInsert()
 	{
 		$entity = new VoitureEntity();
@@ -52,5 +52,5 @@ class TableChecksTest extends TestCase
 		$this->assertArrayHasKey('marque',$errors);
 		$this->assertContains('marque n\'est pas un entier',$errors['marque']);
 
-	}
+	}*/
 }

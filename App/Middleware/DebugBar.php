@@ -7,7 +7,7 @@ use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
 
-class DebugBar extends MiddlewareAbstract
+class DebugBar extends AbstractMiddleware
 {
 
 	public function  beforeProcess(ServerRequestInterface $request) : ?ResponseInterface

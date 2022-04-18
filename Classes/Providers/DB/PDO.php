@@ -28,6 +28,11 @@ abstract class PDO
 		$this->withoutException = $val;
 	}
 
+	public function allowDeleteAliasTable()
+	{
+		return true;
+	}
+
 	function setParams($host = null,$user = null,$pass = null,$db = null)
 	{
 		if ($host !== null) {$this->host = $host;}

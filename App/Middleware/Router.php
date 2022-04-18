@@ -7,7 +7,7 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
-class Router extends MiddlewareAbstract
+class Router extends AbstractMiddleware
 {
 	private $ctrl = null;
 
@@ -20,15 +20,17 @@ class Router extends MiddlewareAbstract
 		}
 
 		$route = $this->match($request);
-
 		if($route === null)
 		{
 			return new Response('404',[],'Route Not found');
 		}
 
-		$request = $request
-					->withAttribute('__callback',$route->getCallback())
-					->withAttribute('__actionParams', $route->getParams());
+		if($route->getCallback()->analyse() === false)
+		{
+			return $route->getCallback()->getError();
+		}
+
+		$request = $request->withAttribute('__route',$route);
 
 		return $handler->handle($request);
 	}
@@ -87,7 +89,7 @@ class Router extends MiddlewareAbstract
 							function ($matches){
 								return '(?<' . $matches[1]. '>' . str_replace('.','[^/]',$matches[2]). ')';
 							},
-							$route->getPath()),'/') . ($route->getWithParam() == true ? '' : '$') . '#';
+							$route->getPath()),'/') . ($route->getWithParam() == true ? '(/(?<__params>.+))?' : '') . '$#';
 
 		if($route->getPath() == $request->getUri()->getPath())
 		{
@@ -96,7 +98,6 @@ class Router extends MiddlewareAbstract
 
 		if(preg_match($path,$request->getUri()->getPath(),$matches))
 		{
-
 			foreach($matches as $k => $match)
 			{
 				if($k === 'controller')
@@ -107,20 +108,14 @@ class Router extends MiddlewareAbstract
 				{
 					$route->getCallback()->setAction($match);
 				}
+				elseif($k === '__params')
+				{
+					$route->addParam('_params', explode('/',$match));
+				}
 				elseif(!is_int($k))
 				{
 					$route->addParam($k, $match);
 				}
-			}
-
-			if($request->getUri()->getPath() !== $matches[0])
-			{
-				$params = [];
-				foreach(explode('/',trim(substr($request->getUri()->getPath(),strlen($matches[0])),'/')) as $k => $p)
-				{
-					$params[] = $p;
-				}
-				$route->addParam('_params', $params);
 			}
 
 			return true;

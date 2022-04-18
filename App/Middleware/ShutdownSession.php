@@ -6,7 +6,7 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Psr\Http\Message\ResponseInterface;
 
-class ShutdownSession extends MiddlewareAbstract
+class ShutdownSession extends AbstractMiddleware
 {
 	private $enCours = false;
 	

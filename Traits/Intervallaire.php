@@ -93,15 +93,15 @@ trait Intervallaire
             return false;
         }
 
-        $qb1 = (new QueryBuilder())->delete($this->getTable(), $this->getPrefixe())
+        $qb1 = (new QueryBuilder($this->provider))->delete($this->getTable(), $this->getPrefixe())
                                     ->where($this->intervallaireFieldBorneMin . ' >= ' . $item->borneMin)
                                     ->where($this->intervallaireFieldBorneMax . ' <= ' . $item->borneMax);
 
-        $qb2 = (new QueryBuilder())->update($this->getTable())
+        $qb2 = (new QueryBuilder($this->provider))->update($this->getTable())
                                     ->set($this->intervallaireFieldBorneMin, $this->intervallaireFieldBorneMin . ' - ' . ($item->borneMax - $item->borneMin + 1),true)
                                     ->where($this->intervallaireFieldBorneMin . ' >= ' . $item->borneMax);
 
-        $qb3 = (new QueryBuilder())->update($this->getTable())
+        $qb3 = (new QueryBuilder($this->provider))->update($this->getTable())
                                     ->set($this->intervallaireFieldBorneMax, $this->intervallaireFieldBorneMax . ' - ' . ($item->borneMax - $item->borneMin + 1),true)
                                     ->where($this->intervallaireFieldBorneMax . ' > ' . $item->borneMax);
 

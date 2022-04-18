@@ -7,7 +7,7 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
-class Config extends MiddlewareAbstract
+class Config extends AbstractMiddleware
 {
 	public function beforeProcess(ServerRequestInterface $request) : ?ResponseInterface
 	{

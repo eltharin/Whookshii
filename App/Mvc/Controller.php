@@ -37,16 +37,6 @@ class Controller
 		$classArray = $this->classInfos->namespace;
 		$classArray[$this->classInfos->folderTypePosition] = 'Models';
 
-		
-		/*
-		 * $modelName = '\\' . implode('\\', $classArray);
-
-		if(class_exists($modelName))
-		{
-			$modelVarName = lcfirst(implode('',array_map('ucfirst',array_slice($this->classInfos->namespace, -1))));
-			$this->$modelVarName = new $modelName();
-		}
-*/
 		$this->_init();
 	}
 

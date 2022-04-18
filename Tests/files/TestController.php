@@ -20,4 +20,13 @@ class Test extends Controller
 		var_dump($param);
 		echo 'les routes automatiques fonctionnent et le param est ' . $param;
 	}
+
+	public function Action_actiondetestavecproperties()
+	{
+		foreach($this->request->getAttribute('__route')->getProperties() as $k => $v)
+		{
+			echo 'La propriété ' . $k . ' est ' . $v . '.'.BRN;
+		}
+
+	}
 }
