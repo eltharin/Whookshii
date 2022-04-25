@@ -14,6 +14,10 @@ class ServerRequest extends \GuzzleHttp\Psr7\ServerRequest
 		{
 			$body = self::decodeBody($bodyContent, $request->getHeaderLine('Content-Type'));
 			$request = $request->withQueryParams(array_merge($request->getQueryParams(),$body));
+			if($request->getMethod() == 'POST')
+			{
+				$_POST = array_merge($body,$_POST);
+			}
 		}
 
 		return $request;
