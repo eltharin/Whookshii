@@ -24,6 +24,7 @@ class Launcher extends AbstractMiddleware
 
 			try
 			{
+				$actionReturn = null;
 				try
 				{
 					ob_start();
