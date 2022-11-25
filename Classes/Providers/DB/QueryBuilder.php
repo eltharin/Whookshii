@@ -629,34 +629,36 @@ class QueryBuilder implements \Iterator
     //-- Iterator Elements
     //-----------------------------------------------------------------------------------------------------------------
 
-	public function current()
+	public function current(): mixed
     {
         return $this->iteratorResult;
     }
 
-    public function next()
+    public function next(): void
     {
         $this->iteratorKey++;
         $this->iteratorResult = $this->fetch($this->iteratorStmt);
         if (null == $this->iteratorResult)
         {
             $this->iteratorValid = false;
-            return null;
+            return;
+			//return null;
         }
-        return $this->iteratorResult;
+		return;
+        //return $this->iteratorResult;
     }
 
-    public function key()
+    public function key(): mixed
     {
         return $this->iteratorKey;
     }
 
-    public function valid()
+    public function valid(): bool
     {
         return $this->iteratorValid;
     }
 
-    public function rewind()
+    public function rewind(): void
     {
 		if(!$this->iteratorValid)
 		{
@@ -666,5 +668,6 @@ class QueryBuilder implements \Iterator
 			$this->iteratorValid = $this->iteratorResult != false;
 		}
         $this->iteratorKey = 0;
+		return;
     }
 }

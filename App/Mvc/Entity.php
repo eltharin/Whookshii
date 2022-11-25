@@ -50,7 +50,7 @@ class Entity implements \JsonSerializable
 		$this->remplacementValue = $val;
 	}
 
-	public function jsonSerialize()
+	public function jsonSerialize(): mixed
 	{
 		return $this->properties;
 	}

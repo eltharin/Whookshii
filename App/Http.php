@@ -42,7 +42,7 @@ class Http
 		
 		if(!\Config::get('Vars')->getConfig('modeAjax'))
 		{
-			if (($_SESSION['debug_mode'] === true) || (self::$doNotRedirect == true))
+			/*if (($_SESSION['debug_mode'] === true) || (self::$doNotRedirect == true))
 			{
 				echo BRN;
 				echo \HTML::link($page,'redirection');
@@ -60,7 +60,7 @@ class Http
 					\Config::get('Response')->addHeader('Location', BASE_URL . $page);
 				}
 				\Config::get('Response')->setCode(301);
-			}
+			}*/
 			throw new RenderResponseException();	
 		}	
 	}
